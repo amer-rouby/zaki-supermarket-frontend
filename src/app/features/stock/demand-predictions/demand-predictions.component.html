@@ -124,6 +124,23 @@
             </td>
           </ng-container>
 
+          <!-- Stockout Risk -->
+          <ng-container matColumnDef="risk">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.STOCKOUT_RISK' | translate}}</th>
+            <td mat-cell *matCellDef="let prediction">
+              @if (prediction.riskLevel) {
+              <div class="trend-badge" [style.background]="getRiskColor(prediction.riskLevel)">
+                <span>{{'PREDICTIONS.RISK.' + prediction.riskLevel | translate}}</span>
+                @if (prediction.daysUntilStockout !== null) {
+                <span>&nbsp;· {{prediction.daysUntilStockout}} {{'PREDICTIONS.DAYS_LEFT' | translate}}</span>
+                }
+              </div>
+              } @else {
+              <span>&mdash;</span>
+              }
+            </td>
+          </ng-container>
+
           <!-- Confidence -->
           <ng-container matColumnDef="confidence">
             <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.CONFIDENCE' | translate}}</th>

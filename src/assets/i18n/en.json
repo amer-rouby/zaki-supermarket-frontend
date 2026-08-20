@@ -1428,6 +1428,13 @@
       "ACCURACY": "Prediction Accuracy",
       "TOTAL": "Total Predictions",
       "DAYS": "Upcoming Days"
+    },
+    "STOCKOUT_RISK": "Stockout Risk",
+    "RISK": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High",
+      "CRITICAL": "Critical"
     }
   },
   "NOTIFICATION_SETTINGS": {

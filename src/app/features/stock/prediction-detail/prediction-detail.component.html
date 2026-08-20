@@ -60,6 +60,19 @@
         </div>
       </div>
 
+      @if (prediction()!.riskLevel) {
+      <div class="trend-section">
+        <h3>{{'PREDICTIONS.STOCKOUT_RISK' | translate}}</h3>
+        <div class="trend-badge" [style.background]="getRiskColor(prediction()!.riskLevel)">
+          <mat-icon>warning</mat-icon>
+          <span>{{'PREDICTIONS.RISK.' + prediction()!.riskLevel | translate}}</span>
+          @if (prediction()!.daysUntilStockout !== null) {
+          <span>&nbsp;· {{prediction()!.daysUntilStockout}} {{'PREDICTIONS.DAYS_LEFT' | translate}}</span>
+          }
+        </div>
+      </div>
+      }
+
       <div class="info-section">
         <div class="info-row">
           <span class="label">{{'PREDICTIONS.COLUMN.DATE' | translate}}:</span>

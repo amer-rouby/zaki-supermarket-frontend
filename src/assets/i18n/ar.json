@@ -1430,6 +1430,13 @@
       "ACCURACY": "دقة التنبؤ",
       "TOTAL": "إجمالي التنبؤات",
       "DAYS": "أيام قادمة"
+    },
+    "STOCKOUT_RISK": "خطر نفاد المخزون",
+    "RISK": {
+      "LOW": "منخفض",
+      "MEDIUM": "متوسط",
+      "HIGH": "مرتفع",
+      "CRITICAL": "حرج"
     }
   },
   "NOTIFICATION_SETTINGS": {

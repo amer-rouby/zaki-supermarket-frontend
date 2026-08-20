@@ -47,7 +47,7 @@ export class DemandPredictionsComponent implements OnInit {
 
   readonly displayedColumns = [
     'productName', 'predictionDate', 'predictedQuantity',
-    'currentStock', 'recommendedOrder', 'trend', 'confidence', 'actions'
+    'currentStock', 'recommendedOrder', 'trend', 'risk', 'confidence', 'actions'
   ];
 
   ngOnInit(): void {
@@ -356,6 +356,16 @@ export class DemandPredictionsComponent implements OnInit {
     if (recommendedOrder > 50) return '#ef4444';
     if (recommendedOrder > 20) return '#f59e0b';
     return '#10b981';
+  }
+
+  getRiskColor(riskLevel: string | null): string {
+    const colors: Record<string, string> = {
+      'CRITICAL': '#dc2626',
+      'HIGH': '#ef4444',
+      'MEDIUM': '#f59e0b',
+      'LOW': '#10b981'
+    };
+    return riskLevel ? colors[riskLevel] || '#6b7280' : '#6b7280';
   }
 
   formatDate(dateString: string): string {
