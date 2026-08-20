@@ -106,7 +106,7 @@ export class SearchableSelectComponent<T = any> implements OnChanges {
   }
 
   private applyFilter(): void {
-    const query = this.searchText.trim().toLowerCase();
+    const query = String(this.searchText ?? '').trim().toLowerCase();
     let opts = this.options;
 
     if (query) {
