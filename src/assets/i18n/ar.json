@@ -1437,7 +1437,20 @@
       "MEDIUM": "متوسط",
       "HIGH": "مرتفع",
       "CRITICAL": "حرج"
-    }
+    },
+    "REORDER_RECOMMENDATIONS": "توصيات إعادة الطلب",
+    "NO_RECOMMENDATIONS": "لا توجد توصيات لإعادة الطلب",
+    "NO_RECOMMENDATIONS_DESC": "مستويات المخزون الحالية تبدو كافية لجميع المنتجات",
+    "SUPPLIER": "المورد",
+    "UNKNOWN_SUPPLIER": "لا يوجد سجل مورد",
+    "PRIORITY": "الأولوية",
+    "PRIORITY_LEVEL": {
+      "HIGH": "مرتفعة",
+      "MEDIUM": "متوسطة",
+      "LOW": "منخفضة"
+    },
+    "REASON": "السبب",
+    "REVIEW": "مراجعة"
   },
   "NOTIFICATION_SETTINGS": {
     "TITLE": "إعدادات الإشعارات",

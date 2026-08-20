@@ -128,17 +128,6 @@ export class PurchaseOrderService {
       );
   }
 
-  createFromPrediction(predictionId: number): Observable<PurchaseOrder> {
-    return this.http
-      .post<ApiResponse<PurchaseOrder>>(`${this.apiUrl}/from-prediction/${predictionId}`, null, {
-        params: this.store.storeParams()
-      })
-      .pipe(
-        map((response) => response.data),
-        withHttpErrorFallback<PurchaseOrder>('createFromPrediction')
-      );
-  }
-
   // Deliberately no withHttpErrorFallback here - unlike a fetch, a failed send (no
   // supplier email on file, SMTP down, etc.) needs its real error message to reach
   // the caller so the UI can show *why* it failed, not swallow it into a generic result.
