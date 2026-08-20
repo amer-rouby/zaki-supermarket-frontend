@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -7,6 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
   standalone: true,
   imports: [MatProgressSpinnerModule, TranslateModule],
   templateUrl: './loading-spinner.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './loading-spinner.component.scss'
 })
 export class LoadingSpinnerComponent {

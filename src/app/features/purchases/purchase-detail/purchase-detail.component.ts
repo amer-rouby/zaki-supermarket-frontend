@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -16,6 +16,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, RouterLink, CommonModule],
   templateUrl: './purchase-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './purchase-detail.component.scss'
 })
 export class PurchaseDetailComponent implements OnInit {

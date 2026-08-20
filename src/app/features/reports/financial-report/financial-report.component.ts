@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, effect } from '@angular/core';
+import { Component, inject, signal, OnInit, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -22,6 +22,7 @@ import { FinancialReportData, ReportRequest } from '../../../core/models/Report.
     PageHeaderComponent, BaseChartDirective
   ],
   templateUrl: './financial-report.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './financial-report.component.scss'
 })
 export class FinancialReportComponent implements OnInit {

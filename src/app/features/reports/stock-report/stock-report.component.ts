@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, effect } from '@angular/core';
+import { Component, inject, signal, OnInit, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -27,6 +27,7 @@ import { ExpiringRow, LowStockRow, ReportRequest, StockCategoryRow, StockReportD
     BaseChartDirective
   ],
   templateUrl: './stock-report.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './stock-report.component.scss'
 })
 export class StockReportComponent implements OnInit {

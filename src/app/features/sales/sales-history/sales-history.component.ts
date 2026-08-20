@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -22,6 +22,7 @@ import { StoreSettings } from '../../../core/models/settings/store-settings.mode
   standalone: true,
   imports: [FormsModule, RouterLink, MaterialModule, PageHeaderComponent, TableLoadingComponent],
   templateUrl: './sales-history.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './sales-history.component.scss'
 })
 export class SalesHistoryComponent implements OnInit {

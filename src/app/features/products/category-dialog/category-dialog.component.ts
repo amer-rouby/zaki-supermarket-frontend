@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MaterialModule } from '../../../shared/material.module';
@@ -11,6 +11,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
   standalone: true,
   imports: [MaterialModule, ReactiveFormsModule],
   templateUrl: "./category-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./category-dialog.component.scss"
 })
 export class CategoryDialogComponent {

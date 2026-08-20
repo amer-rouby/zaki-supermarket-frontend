@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -31,6 +31,7 @@ import { TableLoadingComponent } from '../../../shared/components/table-loading/
     TableLoadingComponent,
   ],
   templateUrl: './stock-management.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './stock-management.component.scss'
 })
 export class StockManagementComponent implements OnInit, AfterViewInit {

@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, inject, ChangeDetectionStrategy } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { MaterialModule } from '../../material.module';
 import { LanguageService } from '../../../core/services/language.service';
@@ -10,6 +10,7 @@ import { TopProductTableItem } from '../../models/top-product-table.model';
   standalone: true,
   imports: [MaterialModule, TranslateModule],
   templateUrl: './top-products-table.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './top-products-table.component.scss'
 })
 export class TopProductsTableComponent {

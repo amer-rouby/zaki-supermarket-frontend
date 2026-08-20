@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
@@ -20,6 +20,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, FormsModule, EmptyStateComponent, TableLoadingComponent],
   templateUrl: './users.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './users.component.scss'
 })
 export class UsersComponent implements OnInit {

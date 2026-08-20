@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { MaterialModule } from '../../material.module';
 
@@ -7,6 +7,7 @@ import { MaterialModule } from '../../material.module';
   standalone: true,
   imports: [MaterialModule, TranslateModule],
   templateUrl: './table-loading.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './table-loading.component.scss'
 })
 export class TableLoadingComponent {

@@ -89,8 +89,8 @@
           <div class="stat-info">
             <h3>{{ stat.label | translate }}</h3>
             <p class="stat-value">{{ getStatValue(stat.key) }}</p>
-            @if (stat.showMargin && analytics()?.profitMargin !== undefined) {
-            <span class="stat-margin" [class]="getProfitClass(analytics()?.profitMargin)">
+            @if (stat.showMargin && $safeNavigationMigration(analytics()?.profitMargin) !== undefined) {
+            <span class="stat-margin" [class]="getProfitClass($safeNavigationMigration(analytics()?.profitMargin))">
               {{ analytics()?.profitMargin }}%
             </span>
             }

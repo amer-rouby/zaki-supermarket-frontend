@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, map, startWith } from 'rxjs';
@@ -30,6 +30,7 @@ import { Product } from '../../../core/models/product.model';
     SearchableSelectComponent
   ],
   templateUrl: './purchase-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './purchase-form.component.scss'
 })
 export class PurchaseFormComponent implements OnInit {

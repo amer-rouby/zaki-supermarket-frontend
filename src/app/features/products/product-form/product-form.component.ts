@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -18,6 +18,7 @@ import { SearchableSelectComponent } from '../../../shared/components/searchable
   standalone: true,
   imports: [FormsModule, MaterialModule, PageHeaderComponent, SearchableSelectComponent],
   templateUrl: './product-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './product-form.component.scss'
 })
 export class ProductFormComponent implements OnInit, AfterViewInit {

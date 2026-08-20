@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient, HttpEventType, HttpHeaders } from '@angular/common/http';
@@ -17,6 +17,7 @@ import { environment } from '../../../../environments/environment';
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule],
   templateUrl: './profile-settings.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './profile-settings.component.scss'
 })
 export class ProfileSettingsComponent implements OnInit {

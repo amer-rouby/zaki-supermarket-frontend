@@ -1,5 +1,5 @@
 // src/app/shared/components/language-switcher/language-switcher.component.ts
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MaterialModule } from '../../material.module';
 import { LanguageService } from '../../../core/services/language.service';
@@ -40,6 +40,7 @@ import { LanguageService } from '../../../core/services/language.service';
       </button>
     </mat-menu>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .lang-switcher-btn {
       position: relative;

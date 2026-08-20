@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
@@ -10,6 +10,7 @@ import { SecuritySettingsService } from '../../../core/services/settings/securit
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule, FormsModule],
   templateUrl: './security-settings.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './security-settings.component.scss'
 })
 export class SecuritySettingsComponent implements OnInit {

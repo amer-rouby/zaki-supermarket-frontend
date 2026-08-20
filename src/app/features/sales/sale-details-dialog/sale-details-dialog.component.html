@@ -40,12 +40,12 @@
       </div>
       <div class="info-item">
         <span class="label">{{'SALES.DATE' | translate}}</span>
-        <span class="value">{{formatDate(data.sale?.transactionDate)}}</span>
+        <span class="value">{{formatDate($safeNavigationMigration(data.sale?.transactionDate))}}</span>
       </div>
       <div class="info-item">
         <span class="label">{{'SALES.PAYMENT_METHODS' | translate}}</span>
         <span class="value">
-          <mat-chip>{{getPaymentMethodLabel(data.sale?.paymentMethod)}}</mat-chip>
+          <mat-chip>{{getPaymentMethodLabel($safeNavigationMigration(data.sale?.paymentMethod))}}</mat-chip>
         </span>
       </div>
       @if (data.sale?.customerPhone) {

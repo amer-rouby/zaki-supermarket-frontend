@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MaterialModule } from '../../../shared/material.module';
@@ -11,6 +11,7 @@ import { UserRequest, UserRole } from '../../../core/models/user.model';
   standalone: true,
   imports: [MaterialModule, ReactiveFormsModule],
   templateUrl: './user-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl:'./user-dialog.component.scss'
 })
 export class UserDialogComponent {

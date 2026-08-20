@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MaterialModule } from '../../../shared/material.module';
 import { FormsModule } from '@angular/forms';
@@ -15,6 +15,7 @@ export interface UpdatePredictionDTO {
   standalone: true,
   imports: [MaterialModule, FormsModule],
   templateUrl: "./edit-prediction-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./edit-prediction-dialog.component.scss"
 })
 export class EditPredictionDialogComponent {

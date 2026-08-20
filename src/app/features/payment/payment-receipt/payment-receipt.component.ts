@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PaymentService } from '../../../core/services/payment.service';
 import { Payment } from '../../../core/models/payment.model';
@@ -13,6 +13,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
   standalone: true,
   imports: [MaterialModule, CommonModule, TranslateModule],
   templateUrl: './payment-receipt.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './payment-receipt.component.scss'
 })
 export class PaymentReceiptComponent implements OnInit {

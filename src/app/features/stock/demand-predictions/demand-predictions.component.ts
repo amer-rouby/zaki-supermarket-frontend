@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -25,6 +25,7 @@ import { EmptyStateComponent } from '../../../shared/components/empty-state/empt
     EmptyStateComponent
   ],
   templateUrl: './demand-predictions.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './demand-predictions.component.scss'
 })
 export class DemandPredictionsComponent implements OnInit {

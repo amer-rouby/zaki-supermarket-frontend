@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -24,6 +24,7 @@ import { PrintHelperService } from '../../../core/services/print-helper.service'
     PageHeaderComponent, BaseChartDirective
   ],
   templateUrl: './expiry-report.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './expiry-report.component.scss'
 })
 export class ExpiryReportComponent implements OnInit {

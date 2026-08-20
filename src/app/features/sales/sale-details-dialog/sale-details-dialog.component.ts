@@ -1,4 +1,4 @@
-import { Component, Inject, inject, signal } from '@angular/core';
+import { Component, Inject, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +17,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatIconModule, MatChipsModule, TranslateModule],
   templateUrl: './sale-details-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './sale-details-dialog.component.scss'
 })
 export class SaleDetailsDialogComponent {
