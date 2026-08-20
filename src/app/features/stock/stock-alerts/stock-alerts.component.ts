@@ -2,11 +2,10 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { StockAlertService } from '../../../core/services/stock-alert.service';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 
 interface StockAlert {
   id: number; productId: number; productName: string; batchNumber?: string;
@@ -32,7 +31,7 @@ export class StockAlertsComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly stockAlertService = inject(StockAlertService);
-  private readonly dialog = inject(MatDialog);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   readonly loading = signal(false);
   readonly alerts = signal<StockAlert[]>([]);
@@ -95,16 +94,12 @@ export class StockAlertsComponent implements OnInit {
   }
 
   onResolve(alertId: number): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: this.translate.instant('STOCK_ALERTS.CONFIRM_RESOLVE_TITLE') || 'تأكيد الحل',
-        message: this.translate.instant('STOCK_ALERTS.CONFIRM_RESOLVE_MSG') || 'هل أنت متأكد من حل هذا التنبيه؟',
-        confirmText: this.translate.instant('COMMON.CONFIRM') || 'تأكيد',
-        cancelText: this.translate.instant('COMMON.CANCEL') || 'إلغاء'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+    this.confirmDialog.open({
+      titleKey: 'STOCK_ALERTS.CONFIRM_RESOLVE_TITLE',
+      messageKey: 'STOCK_ALERTS.CONFIRM_RESOLVE_MSG',
+      confirmKey: 'COMMON.CONFIRM',
+      color: 'primary'
+    }).subscribe(result => {
       if (result) {
         this.stockAlertService.resolveAlert(alertId).subscribe({
           next: () => {
@@ -119,16 +114,12 @@ export class StockAlertsComponent implements OnInit {
   }
 
   onDelete(alertId: number): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: this.translate.instant('STOCK_ALERTS.CONFIRM_DELETE_TITLE') || 'تأكيد الحذف',
-        message: this.translate.instant('STOCK_ALERTS.CONFIRM_DELETE_MSG') || 'هل أنت متأكد من حذف هذا التنبيه؟',
-        confirmText: this.translate.instant('COMMON.DELETE') || 'حذف',
-        cancelText: this.translate.instant('COMMON.CANCEL') || 'إلغاء'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+    this.confirmDialog.open({
+      titleKey: 'STOCK_ALERTS.CONFIRM_DELETE_TITLE',
+      messageKey: 'STOCK_ALERTS.CONFIRM_DELETE_MSG',
+      confirmKey: 'COMMON.DELETE',
+      color: 'warn'
+    }).subscribe(result => {
       if (result) {
         this.stockAlertService.deleteAlert(alertId).subscribe({
           next: () => {

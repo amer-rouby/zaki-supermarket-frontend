@@ -21,7 +21,7 @@ import { Payment } from '../../../core/models/payment.model';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { RefundFormComponent } from '../refund-form/refund-form.component';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -56,6 +56,7 @@ export class PaymentHistoryComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly dialog = inject(MatDialog);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly router = inject(Router);
   private readonly currencyService = inject(CurrencyService);
 
@@ -136,19 +137,14 @@ export class PaymentHistoryComponent implements OnInit {
   async onRefund(payment: Payment): Promise<void> {
     if (!payment.referenceNumber) return;
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'PAYMENTS.CONFIRM_REFUND_TITLE',
+      messageKey: 'PAYMENTS.CONFIRM_REFUND_TEXT',
+      messageParams: { amount: payment.amount },
+      confirmKey: 'COMMON.CONFIRM',
       width: '400px',
-      disableClose: false,
-      data: {
-        title: this.translate.instant('PAYMENTS.CONFIRM_REFUND_TITLE'),
-        message: this.translate.instant('PAYMENTS.CONFIRM_REFUND_TEXT', { amount: payment.amount }),
-        confirmText: this.translate.instant('COMMON.CONFIRM'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        icon: 'refund'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(async (result) => {
+      color: 'primary'
+    }).subscribe(async (result) => {
       if (result) {
         const refundDialogRef = this.dialog.open(RefundFormComponent, {
           width: '500px',
@@ -171,19 +167,13 @@ export class PaymentHistoryComponent implements OnInit {
   async onCancel(payment: Payment): Promise<void> {
     if (!payment.referenceNumber) return;
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'PAYMENTS.CONFIRM_CANCEL_TITLE',
+      messageKey: 'PAYMENTS.CONFIRM_CANCEL_TEXT',
+      confirmKey: 'COMMON.CONFIRM',
       width: '400px',
-      disableClose: false,
-      data: {
-        title: this.translate.instant('PAYMENTS.CONFIRM_CANCEL_TITLE'),
-        message: this.translate.instant('PAYMENTS.CONFIRM_CANCEL_TEXT'),
-        confirmText: this.translate.instant('COMMON.CONFIRM'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        icon: 'cancel'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
+      color: 'warn'
+    }).subscribe((result) => {
       if (result) {
         this.paymentService.cancelPayment(payment.referenceNumber).subscribe({
           next: () => {

@@ -2,13 +2,12 @@ import { Component, inject, signal, OnInit, ViewChild, AfterViewInit } from '@an
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { SupplierService } from '../../../core/services/supplier.service';
 import { Supplier } from '../../../core/models/purchase-order.model';
 import { SupplierRequest } from '../../../core/models/purchase-request.model';
@@ -29,7 +28,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 })
 export class SuppliersComponent implements OnInit, AfterViewInit {
   private readonly supplierService = inject(SupplierService);
-  private readonly dialog = inject(MatDialog);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
@@ -116,18 +115,14 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'SUPPLIERS.DELETE',
+      messageKey: 'SUPPLIERS.CONFIRM_DELETE',
+      messageParams: { name: supplier.name },
+      confirmKey: 'COMMON.DELETE',
       width: '400px',
-      data: {
-        title: this.translate.instant('SUPPLIERS.DELETE'),
-        message: this.translate.instant('SUPPLIERS.CONFIRM_DELETE', { name: supplier.name }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'warn'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+      color: 'warn'
+    }).subscribe(result => {
       if (result) {
         this.supplierService.deleteSupplier(supplier.id).subscribe({
           next: () => {

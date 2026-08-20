@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { WhatsAppDialogComponent } from '../../../shared/components/whatsapp-dialog/whatsapp-dialog.component';
 import { PurchaseOrderService } from '../../../core/services/purchase-order.service';
 import { PurchaseOrder } from '../../../core/models/purchase-order.model';
@@ -26,6 +26,7 @@ export class PurchaseDetailComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly currencyService = inject(CurrencyService);
@@ -68,18 +69,14 @@ export class PurchaseDetailComponent implements OnInit {
       return;
     }
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'PURCHASES.CONFIRM_DELETE',
+      messageKey: 'PURCHASES.CONFIRM_DELETE_MSG',
+      messageParams: { order: this.order()!.orderNumber },
+      confirmKey: 'COMMON.DELETE',
       width: '500px',
-      data: {
-        title: this.translate.instant('PURCHASES.CONFIRM_DELETE'),
-        message: this.translate.instant('PURCHASES.CONFIRM_DELETE_MSG', { order: this.order()!.orderNumber }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'warn'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+      color: 'warn'
+    }).subscribe(result => {
       if (result) {
         this.purchaseService.deleteOrder(this.order()!.id).subscribe({
           next: () => {
@@ -93,18 +90,14 @@ export class PurchaseDetailComponent implements OnInit {
   }
 
   onApprove(): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'PURCHASES.CONFIRM_APPROVE',
+      messageKey: 'PURCHASES.CONFIRM_APPROVE_MSG',
+      messageParams: { order: this.order()!.orderNumber },
+      confirmKey: 'PURCHASES.APPROVE',
       width: '500px',
-      data: {
-        title: this.translate.instant('PURCHASES.CONFIRM_APPROVE'),
-        message: this.translate.instant('PURCHASES.CONFIRM_APPROVE_MSG', { order: this.order()!.orderNumber }),
-        confirmText: this.translate.instant('PURCHASES.APPROVE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'primary'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+      color: 'primary'
+    }).subscribe(result => {
       if (result) {
         this.purchaseService.approveOrder(this.order()!.id).subscribe({
           next: () => {
@@ -145,17 +138,14 @@ export class PurchaseDetailComponent implements OnInit {
     const order = this.order();
     if (!order) return;
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'PURCHASES.SEND_EMAIL',
+      messageKey: 'PURCHASES.SEND_EMAIL_CONFIRM',
+      messageParams: { supplier: order.supplierName },
+      confirmKey: 'PURCHASES.SEND_EMAIL',
       width: '400px',
-      data: {
-        title: this.translate.instant('PURCHASES.SEND_EMAIL'),
-        message: this.translate.instant('PURCHASES.SEND_EMAIL_CONFIRM', { supplier: order.supplierName }),
-        confirmText: this.translate.instant('PURCHASES.SEND_EMAIL'),
-        cancelText: this.translate.instant('COMMON.CANCEL')
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+      color: 'primary'
+    }).subscribe(confirmed => {
       if (!confirmed) return;
 
       this.emailSending.set(true);
@@ -185,18 +175,14 @@ export class PurchaseDetailComponent implements OnInit {
   }
 
   onReceive(): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'PURCHASES.CONFIRM_RECEIVE',
+      messageKey: 'PURCHASES.CONFIRM_RECEIVE_MSG',
+      messageParams: { order: this.order()!.orderNumber },
+      confirmKey: 'PURCHASES.RECEIVE',
       width: '400px',
-      data: {
-        title: this.translate.instant('PURCHASES.CONFIRM_RECEIVE'),
-        message: this.translate.instant('PURCHASES.CONFIRM_RECEIVE_MSG', { order: this.order()!.orderNumber }),
-        confirmText: this.translate.instant('PURCHASES.RECEIVE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'accent'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+      color: 'accent'
+    }).subscribe(result => {
       if (result) {
         this.purchaseService.receiveOrder(this.order()!.id).subscribe({
           next: () => {

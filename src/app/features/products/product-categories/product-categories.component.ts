@@ -10,7 +10,7 @@ import { MaterialModule } from '../../../shared/material.module';
 import { CategoryService } from '../../../core/services/category.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { Category, CategoryRequest } from '../../../core/models/category';
 import { CategoryDialogComponent } from '../category-dialog/category-dialog.component';
 
@@ -29,6 +29,7 @@ const SEARCH_DEBOUNCE_MS = 350;
 })
 export class ProductCategoriesComponent implements OnInit, OnDestroy {
   private readonly dialog = inject(MatDialog);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly categoryService = inject(CategoryService);
@@ -130,18 +131,12 @@ export class ProductCategoriesComponent implements OnInit, OnDestroy {
   }
 
   onDelete(category: Category): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      messageKey: 'CATEGORIES.CONFIRM_DELETE',
+      messageParams: { name: category.name },
       width: '400px',
-      data: {
-        title: this.translate.instant('COMMON.CONFIRM'),
-        message: this.translate.instant('CATEGORIES.CONFIRM_DELETE', { name: category.name }),
-        confirmText: this.translate.instant('COMMON.YES'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'warn'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+      color: 'warn'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.categoryService.deleteCategory(category.id).subscribe({
           next: () => {

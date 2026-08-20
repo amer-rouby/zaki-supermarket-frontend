@@ -1,14 +1,14 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../shared/material.module';
 import { ExpenseService } from '../../core/services/expense.service';
 import { AddExpenseDialogComponent } from './add-expense-dialog/add-expense-dialog.component';
-import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { ErrorHandlerService } from '../../core/services/error-handler.service';
 import { CurrencyService } from '../../core/services/currency.service';
 
@@ -41,7 +41,7 @@ export class ExpensesComponent implements OnInit {
   private readonly expenseService = inject(ExpenseService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
-  private readonly translate = inject(TranslateService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly currencyService = inject(CurrencyService);
 
@@ -101,17 +101,14 @@ export class ExpensesComponent implements OnInit {
   }
 
   deleteExpense(id: number): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'EXPENSES.DELETE_CONFIRM_TITLE',
+      messageKey: 'EXPENSES.DELETE_CONFIRM_MESSAGE',
+      confirmKey: 'EXPENSES.DELETE_CONFIRM_YES',
+      cancelKey: 'EXPENSES.DELETE_CONFIRM_NO',
       width: '400px',
-      data: {
-        title: this.translate.instant('EXPENSES.DELETE_CONFIRM_TITLE'),
-        message: this.translate.instant('EXPENSES.DELETE_CONFIRM_MESSAGE'),
-        confirmText: this.translate.instant('EXPENSES.DELETE_CONFIRM_YES'),
-        cancelText: this.translate.instant('EXPENSES.DELETE_CONFIRM_NO')
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      color: 'warn'
+    }).subscribe((confirmed: boolean) => {
       if (confirmed) {
         this.expenseService.deleteExpense(id).subscribe({
           next: () => {
