@@ -7,6 +7,9 @@
     </button>
   </app-page-header>
 
+  <mat-tab-group (selectedIndexChange)="onTabChange($event)">
+  <mat-tab [label]="'SUPPLIERS.LIST' | translate">
+
   @if (loading() && !dataSource.data.length) {
   <app-table-loading />
   } @else {
@@ -102,6 +105,77 @@
     </mat-card-content>
   </mat-card>
   }
+
+  </mat-tab>
+
+  <mat-tab [label]="'SUPPLIERS.RECOMMENDED_ORDERS' | translate">
+
+  @if (recommendationsLoading() && !recommendationGroups().length) {
+  <app-table-loading />
+  } @else if (recommendationGroups().length) {
+
+  @for (group of recommendationGroups(); track group.supplierId) {
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>local_shipping</mat-icon>
+        {{group.supplierName || ('SUPPLIERS.UNKNOWN_SUPPLIER' | translate)}}
+      </mat-card-title>
+      <mat-card-subtitle>{{group.recommendations.length}} {{'SUPPLIERS.RECOMMENDED_ITEMS' | translate}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="group.recommendations" class="suppliers-table">
+
+          <ng-container matColumnDef="productName">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.PRODUCT' | translate}}</th>
+            <td mat-cell *matCellDef="let rec"><strong>{{rec.productName}}</strong></td>
+          </ng-container>
+
+          <ng-container matColumnDef="currentStock">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.CURRENT' | translate}}</th>
+            <td mat-cell *matCellDef="let rec">{{rec.currentStock}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="recommendedQuantity">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.RECOMMENDED' | translate}}</th>
+            <td mat-cell *matCellDef="let rec">{{rec.recommendedQuantity}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="priority">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.PRIORITY' | translate}}</th>
+            <td mat-cell *matCellDef="let rec">
+              <mat-chip [style.background]="getPriorityColor(rec.priority)">
+                {{'PREDICTIONS.PRIORITY_LEVEL.' + rec.priority | translate}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
+            <td mat-cell *matCellDef="let rec">
+              <button mat-raised-button color="primary" (click)="onReviewRecommendation(rec)">
+                <mat-icon>rate_review</mat-icon>
+                <span>{{'PREDICTIONS.REVIEW' | translate}}</span>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['productName', 'currentStock', 'recommendedQuantity', 'priority', 'actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['productName', 'currentStock', 'recommendedQuantity', 'priority', 'actions'];"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  }
+
+  } @else if (!recommendationsLoading()) {
+  <app-empty-state icon="local_shipping" title="SUPPLIERS.NO_RECOMMENDATIONS"
+    message="SUPPLIERS.NO_RECOMMENDATIONS_DESC" />
+  }
+
+  </mat-tab>
+  </mat-tab-group>
 
   <!-- ✅ Supplier Dialog -->
   @if (showDialog()) {
