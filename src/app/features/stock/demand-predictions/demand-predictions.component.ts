@@ -1,6 +1,4 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -11,6 +9,7 @@ import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.se
 import { ShareDialogComponent } from '../../../shared/components/share-dialog/share-dialog.component';
 import { DemandPredictionService, DemandPrediction, PredictionStats, UpdatePredictionDTO } from '../../../core/services/demand-prediction.service';
 import { EditPredictionDialogComponent } from '../edit-prediction-dialog/edit-prediction-dialog.component';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-demand-predictions',
@@ -25,11 +24,10 @@ import { EditPredictionDialogComponent } from '../edit-prediction-dialog/edit-pr
   styleUrl: './demand-predictions.component.scss'
 })
 export class DemandPredictionsComponent implements OnInit {
-  private readonly snackBar = inject(MatSnackBar);
-  private readonly translate = inject(TranslateService);
   private readonly predictionService = inject(DemandPredictionService);
   private readonly dialog = inject(MatDialog);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly router = inject(Router);
   readonly loading = signal(false);
@@ -61,7 +59,7 @@ export class DemandPredictionsComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.showError('PREDICTIONS.LOAD_ERROR');
+        this.errorHandler.showError('PREDICTIONS.LOAD_ERROR');
         this.loading.set(false);
       }
     });
@@ -87,18 +85,18 @@ export class DemandPredictionsComponent implements OnInit {
         this.loading.set(false);
         this.loadPredictions();
         this.loadStats();
-        this.showSuccess('PREDICTIONS.GENERATED');
+        this.errorHandler.showSuccess('PREDICTIONS.GENERATED');
       },
       error: () => {
         this.loading.set(false);
-        this.showError('PREDICTIONS.GENERATE_ERROR');
+        this.errorHandler.showError('PREDICTIONS.GENERATE_ERROR');
       }
     });
   }
 
   onViewPrediction(prediction: DemandPrediction): void {
     if (!prediction?.predictionId) {
-      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      this.errorHandler.showError('PREDICTIONS.INVALID_PREDICTION');
       return;
     }
     this.router.navigate(['/stock/predictions', prediction.predictionId]);
@@ -106,7 +104,7 @@ export class DemandPredictionsComponent implements OnInit {
 
   onCreatePurchaseOrder(prediction: DemandPrediction): void {
     if (!prediction?.productId || prediction.recommendedOrder <= 0) {
-      this.showError('PREDICTIONS.INVALID_PRODUCT');
+      this.errorHandler.showError('PREDICTIONS.INVALID_PRODUCT');
       return;
     }
 
@@ -133,7 +131,7 @@ export class DemandPredictionsComponent implements OnInit {
 
   onQuickOrder(prediction: DemandPrediction): void {
     if (!prediction?.predictionId) {
-      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      this.errorHandler.showError('PREDICTIONS.INVALID_PREDICTION');
       return;
     }
 
@@ -150,12 +148,12 @@ export class DemandPredictionsComponent implements OnInit {
         this.predictionService.createPurchaseFromPrediction(prediction.predictionId).subscribe({
           next: () => {
             this.loading.set(false);
-            this.showSuccess('PREDICTIONS.ORDER_CREATED', { product: prediction.productName });
+            this.errorHandler.showSuccess('PREDICTIONS.ORDER_CREATED', { params: { product: prediction.productName } });
             this.loadPredictions();
           },
           error: () => {
             this.loading.set(false);
-            this.showError('PREDICTIONS.ORDER_ERROR');
+            this.errorHandler.showError('PREDICTIONS.ORDER_ERROR');
           }
         });
       }
@@ -164,7 +162,7 @@ export class DemandPredictionsComponent implements OnInit {
 
   onEditPrediction(prediction: DemandPrediction): void {
     if (!prediction?.predictionId) {
-      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      this.errorHandler.showError('PREDICTIONS.INVALID_PREDICTION');
       return;
     }
 
@@ -187,19 +185,19 @@ export class DemandPredictionsComponent implements OnInit {
     this.predictionService.updatePrediction(id, updates).subscribe({
       next: (updated) => {
         this.loading.set(false);
-        this.showSuccess('PREDICTIONS.UPDATED_SUCCESS');
+        this.errorHandler.showSuccess('PREDICTIONS.UPDATED_SUCCESS');
         this.loadPredictions();
       },
       error: () => {
         this.loading.set(false);
-        this.showError('PREDICTIONS.UPDATE_ERROR');
+        this.errorHandler.showError('PREDICTIONS.UPDATE_ERROR');
       }
     });
   }
 
   onDeletePrediction(prediction: DemandPrediction): void {
     if (!prediction?.predictionId) {
-      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      this.errorHandler.showError('PREDICTIONS.INVALID_PREDICTION');
       return;
     }
 
@@ -216,12 +214,12 @@ export class DemandPredictionsComponent implements OnInit {
         this.predictionService.deletePrediction(prediction.predictionId).subscribe({
           next: () => {
             this.loading.set(false);
-            this.showSuccess('PREDICTIONS.DELETED_SUCCESS');
+            this.errorHandler.showSuccess('PREDICTIONS.DELETED_SUCCESS');
             this.loadPredictions();
           },
           error: () => {
             this.loading.set(false);
-            this.showError('PREDICTIONS.DELETE_ERROR');
+            this.errorHandler.showError('PREDICTIONS.DELETE_ERROR');
           }
         });
       }
@@ -230,7 +228,7 @@ export class DemandPredictionsComponent implements OnInit {
 
   onExportPdf(prediction: DemandPrediction): void {
     if (!prediction?.predictionId) {
-      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      this.errorHandler.showError('PREDICTIONS.INVALID_PREDICTION');
       return;
     }
 
@@ -239,18 +237,18 @@ export class DemandPredictionsComponent implements OnInit {
       next: (blob) => {
         this.downloadFile(blob, `prediction_${prediction.predictionId}.pdf`, 'application/pdf');
         this.exportLoading.set(false);
-        this.showSuccess('PREDICTIONS.EXPORTED_SUCCESS');
+        this.errorHandler.showSuccess('PREDICTIONS.EXPORTED_SUCCESS');
       },
       error: () => {
         this.exportLoading.set(false);
-        this.showError('PREDICTIONS.EXPORT_ERROR');
+        this.errorHandler.showError('PREDICTIONS.EXPORT_ERROR');
       }
     });
   }
 
   onExportExcel(prediction: DemandPrediction): void {
     if (!prediction?.predictionId) {
-      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      this.errorHandler.showError('PREDICTIONS.INVALID_PREDICTION');
       return;
     }
 
@@ -260,18 +258,18 @@ export class DemandPredictionsComponent implements OnInit {
         this.downloadFile(blob, `prediction_${prediction.predictionId}.xlsx`,
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         this.exportLoading.set(false);
-        this.showSuccess('PREDICTIONS.EXPORTED_SUCCESS');
+        this.errorHandler.showSuccess('PREDICTIONS.EXPORTED_SUCCESS');
       },
       error: () => {
         this.exportLoading.set(false);
-        this.showError('PREDICTIONS.EXPORT_ERROR');
+        this.errorHandler.showError('PREDICTIONS.EXPORT_ERROR');
       }
     });
   }
 
   onSharePrediction(prediction: DemandPrediction): void {
     if (!prediction?.predictionId) {
-      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      this.errorHandler.showError('PREDICTIONS.INVALID_PREDICTION');
       return;
     }
 
@@ -298,7 +296,7 @@ export class DemandPredictionsComponent implements OnInit {
   private copyToClipboard(text: string): void {
     if (navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(text).then(() => {
-        this.showCopySuccess();
+        this.errorHandler.showSuccess('PREDICTIONS.LINK_COPIED');
       }).catch(() => this.fallbackCopy(text));
     } else {
       this.fallbackCopy(text);
@@ -316,21 +314,13 @@ export class DemandPredictionsComponent implements OnInit {
 
     try {
       document.execCommand('copy');
-      this.showCopySuccess();
+      this.errorHandler.showSuccess('PREDICTIONS.LINK_COPIED');
     } catch (err) {
       console.error('Copy failed:', err);
-      this.showError('PREDICTIONS.COPY_ERROR');
+      this.errorHandler.showError('PREDICTIONS.COPY_ERROR');
     } finally {
       document.body.removeChild(textarea);
     }
-  }
-
-  private showCopySuccess(): void {
-    this.snackBar.open(
-      this.translate.instant('PREDICTIONS.LINK_COPIED'),
-      this.translate.instant('COMMON.CLOSE'),
-      { duration: 3000, panelClass: ['success-snackbar'] }
-    );
   }
 
   getTrendIcon(trend: string): string {
@@ -378,19 +368,4 @@ export class DemandPredictionsComponent implements OnInit {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
-  private showSuccess(message: string, params?: any): void {
-    this.snackBar.open(
-      this.translate.instant(message, params),
-      this.translate.instant('COMMON.CLOSE'),
-      { duration: 3000, panelClass: ['success-snackbar'] }
-    );
-  }
-
-  private showError(message: string): void {
-    this.snackBar.open(
-      this.translate.instant(message),
-      this.translate.instant('COMMON.CLOSE'),
-      { duration: 4000, panelClass: ['error-snackbar'] }
-    );
-  }
 }

@@ -1,6 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
@@ -204,7 +203,6 @@ import { UserSettings } from '../../../core/models/settings/user-settings.model'
   `]
 })
 export class SessionSettingsComponent implements OnInit {
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly userSettingsService = inject(UserSettingsService);
@@ -295,11 +293,7 @@ export class SessionSettingsComponent implements OnInit {
         this.saving.set(false);
         if (response.success) {
           this.currentTimeout = this.selectedTimeout;
-          this.snackBar.open(
-            this.translate.instant('SETTINGS.SESSION.SAVE_SUCCESS'),
-            this.translate.instant('COMMON.CLOSE'),
-            { duration: 3000, panelClass: 'success-snackbar' }
-          );
+          this.errorHandler.showSuccess('SETTINGS.SESSION.SAVE_SUCCESS');
         }
       },
       error: (err) => {

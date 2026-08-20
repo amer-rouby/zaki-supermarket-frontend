@@ -1,12 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { PaymentService } from '../../../core/services/payment.service';
 import { PaymentMethod, PaymentRequest } from '../../../core/models/payment.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { MaterialModule } from '../../../shared/material.module';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-payment-form',
@@ -21,9 +21,8 @@ import { MaterialModule } from '../../../shared/material.module';
 export class PaymentFormComponent {
   private readonly fb = inject(FormBuilder);
   private readonly paymentService = inject(PaymentService);
-  private readonly snackBar = inject(MatSnackBar);
-  private readonly translate = inject(TranslateService);
   private readonly authService = inject(AuthService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly loading = signal(false);
   readonly PaymentMethod = PaymentMethod;
@@ -72,32 +71,16 @@ export class PaymentFormComponent {
       next: (response) => {
         this.loading.set(false);
         if (response.status === 'COMPLETED') {
-          this.showSuccess('PAYMENT.SUCCESS');
+          this.errorHandler.showSuccess('PAYMENT.SUCCESS');
           this.paymentForm.reset();
         } else {
-          this.showError(response.message || 'PAYMENT.FAILED');
+          this.errorHandler.showError(response.message || 'PAYMENT.FAILED', { duration: 4000 });
         }
       },
       error: () => {
         this.loading.set(false);
-        this.showError('PAYMENT.ERROR');
+        this.errorHandler.showError('PAYMENT.ERROR', { duration: 4000 });
       }
     });
-  }
-
-  private showSuccess(message: string): void {
-    this.snackBar.open(
-      this.translate.instant(message),
-      this.translate.instant('COMMON.CLOSE'),
-      { duration: 3000, panelClass: ['success-snackbar'] }
-    );
-  }
-
-  private showError(message: string): void {
-    this.snackBar.open(
-      this.translate.instant(message),
-      this.translate.instant('COMMON.CLOSE'),
-      { duration: 4000, panelClass: ['error-snackbar'] }
-    );
   }
 }

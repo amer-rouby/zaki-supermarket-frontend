@@ -1,7 +1,6 @@
 import { Component, inject, signal, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -29,7 +28,6 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 export class SuppliersComponent implements OnInit, AfterViewInit {
   private readonly supplierService = inject(SupplierService);
   private readonly confirmDialog = inject(ConfirmDialogService);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);

@@ -1,11 +1,11 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { StockAlertService } from '../../../core/services/stock-alert.service';
 import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 interface StockAlert {
   id: number; productId: number; productName: string; batchNumber?: string;
@@ -28,10 +28,10 @@ interface AlertStats {
 })
 export class StockAlertsComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly stockAlertService = inject(StockAlertService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly loading = signal(false);
   readonly alerts = signal<StockAlert[]>([]);
@@ -57,7 +57,7 @@ export class StockAlertsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading alerts:', error);
-        this.snackBar.open(this.translate.instant('STOCK_ALERTS.LOAD_ERROR'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
+        this.errorHandler.showError('STOCK_ALERTS.LOAD_ERROR');
         this.alerts.set([]);
         this.loading.set(false);
       }
@@ -87,7 +87,7 @@ export class StockAlertsComponent implements OnInit {
       next: () => {
         this.alerts.update(alerts => alerts.map(a => a.id === alertId ? { ...a, status: 'READ' as const } : a));
         this.loadStats();
-        this.snackBar.open(this.translate.instant('STOCK_ALERTS.MARKED_READ'), this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
+        this.errorHandler.showSuccess('STOCK_ALERTS.MARKED_READ');
       },
       error: (error) => { console.error('Error marking as read:', error); }
     });
@@ -105,7 +105,7 @@ export class StockAlertsComponent implements OnInit {
           next: () => {
             this.alerts.update(alerts => alerts.map(a => a.id === alertId ? { ...a, status: 'RESOLVED' as const } : a));
             this.loadStats();
-            this.snackBar.open(this.translate.instant('STOCK_ALERTS.RESOLVED'), this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
+            this.errorHandler.showSuccess('STOCK_ALERTS.RESOLVED');
           },
           error: (error) => { console.error('Error resolving alert:', error); }
         });
@@ -125,7 +125,7 @@ export class StockAlertsComponent implements OnInit {
           next: () => {
             this.alerts.update(alerts => alerts.filter(a => a.id !== alertId));
             this.loadStats();
-            this.snackBar.open(this.translate.instant('STOCK_ALERTS.DELETED'), this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
+            this.errorHandler.showSuccess('STOCK_ALERTS.DELETED');
           },
           error: (error) => { console.error('Error deleting alert:', error); }
         });
@@ -138,7 +138,7 @@ export class StockAlertsComponent implements OnInit {
       next: () => {
         this.alerts.update(alerts => alerts.map(a => ({ ...a, status: 'READ' as const })));
         this.loadStats();
-        this.snackBar.open(this.translate.instant('STOCK_ALERTS.ALL_MARKED_READ'), this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
+        this.errorHandler.showSuccess('STOCK_ALERTS.ALL_MARKED_READ');
       },
       error: (error) => { console.error('Error marking all as read:', error); }
     });

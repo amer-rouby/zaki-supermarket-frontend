@@ -11,7 +11,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -22,6 +21,7 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { MaterialModule } from '../../../shared/material.module';
 import { RefundFormComponent } from '../refund-form/refund-form.component';
 import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -51,8 +51,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 })
 export class PaymentHistoryComponent implements OnInit {
   private readonly paymentService = inject(PaymentService);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly dialog = inject(MatDialog);
@@ -123,7 +123,7 @@ export class PaymentHistoryComponent implements OnInit {
         console.error('Error loading payments:', err);
         this.payments.set([]);
         this.loading.set(false);
-        this.showError('PAYMENTS.LOAD_ERROR');
+        this.errorHandler.showError('PAYMENTS.LOAD_ERROR', { duration: 4000 });
       }
     });
   }
@@ -156,7 +156,7 @@ export class PaymentHistoryComponent implements OnInit {
 
         refundDialogRef.afterClosed().subscribe((success) => {
           if (success) {
-            this.showSuccess('PAYMENTS.REFUND_SUCCESS');
+            this.errorHandler.showSuccess('PAYMENTS.REFUND_SUCCESS');
             this.loadPayments();
           }
         });
@@ -177,10 +177,10 @@ export class PaymentHistoryComponent implements OnInit {
       if (result) {
         this.paymentService.cancelPayment(payment.referenceNumber).subscribe({
           next: () => {
-            this.showSuccess('PAYMENTS.CANCEL_SUCCESS');
+            this.errorHandler.showSuccess('PAYMENTS.CANCEL_SUCCESS');
             this.loadPayments();
           },
-          error: () => this.showError('PAYMENTS.CANCEL_ERROR')
+          error: () => this.errorHandler.showError('PAYMENTS.CANCEL_ERROR', { duration: 4000 })
         });
       }
     });
@@ -251,22 +251,6 @@ export class PaymentHistoryComponent implements OnInit {
 
   canCancel(payment: Payment): boolean {
     return payment.status === 'PENDING' || payment.status === 'PROCESSING';
-  }
-
-  private showSuccess(message: string): void {
-    this.snackBar.open(
-      this.translate.instant(message),
-      this.translate.instant('COMMON.CLOSE'),
-      { duration: 3000, panelClass: ['success-snackbar'] }
-    );
-  }
-
-  private showError(message: string): void {
-    this.snackBar.open(
-      this.translate.instant(message),
-      this.translate.instant('COMMON.CLOSE'),
-      { duration: 4000, panelClass: ['error-snackbar'] }
-    );
   }
 
   viewReceipt(referenceNumber: string): void {

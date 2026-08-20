@@ -1,7 +1,6 @@
 import { Component, inject, signal, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -22,7 +21,6 @@ import { CurrencyService } from '../../../core/services/currency.service';
 export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly purchaseService = inject(PurchaseOrderService);
   private readonly confirmDialog = inject(ConfirmDialogService);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
   private readonly errorHandler = inject(ErrorHandlerService);

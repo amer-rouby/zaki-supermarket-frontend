@@ -1,6 +1,5 @@
 import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -19,7 +18,6 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
   imports: [
     RouterLink,
     MaterialModule,
-    MatSnackBarModule,
     PageHeaderComponent,
     EmptyStateComponent,
     TopProductsTableComponent
@@ -29,7 +27,6 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private readonly dashboardService = inject(DashboardService);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
   private readonly router = inject(Router);

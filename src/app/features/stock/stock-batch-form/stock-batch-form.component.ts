@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { StockBatchService } from '../../../core/services/stock.service';
 import { Product } from '../../../core/models/product.model';
 import { StockBatch } from '../../../core/models/stock.model';
 import { StoreContextService } from '../../../core/services/store-context.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-stock-batch-form',
@@ -29,7 +29,7 @@ export class StockBatchFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly errorHandler = inject(ErrorHandlerService);
   private readonly stockBatchService = inject(StockBatchService);
   private readonly storeContext = inject(StoreContextService);
 
@@ -102,7 +102,7 @@ export class StockBatchFormComponent implements OnInit {
       error: (error: unknown) => {
         console.error('Error loading products:', error);
         this.products.set([]);
-        this.snackBar.open('Failed to load products', 'Close', { duration: 3000 });
+        this.errorHandler.showError('STOCK.BATCH_LOAD_ERROR');
       }
     });
   }
@@ -166,7 +166,7 @@ export class StockBatchFormComponent implements OnInit {
         this.loading.set(false);
       },
       error: (error: unknown) => {
-        this.snackBar.open('فشل في تحميل بيانات الدفعة', 'إغلاق', { duration: 3000 });
+        this.errorHandler.showError('STOCK.BATCH_LOAD_FAILED_REDIRECT');
         this.loading.set(false);
         this.router.navigate(['/stock']);
       }
@@ -185,24 +185,24 @@ export class StockBatchFormComponent implements OnInit {
     if (this.isEditMode() && this.batchId()) {
       this.stockBatchService.updateBatch(this.batchId()!, formData, this.storeId).subscribe({
         next: () => {
-          this.snackBar.open('Batch updated successfully', 'Close', { duration: 3000 });
+          this.errorHandler.showSuccess('STOCK.BATCH_UPDATE_SUCCESS');
           this.router.navigate(['/stock']);
         },
         error: (error: unknown) => {
           console.error('Error updating batch:', error);
-          this.snackBar.open('Failed to update batch', 'Close', { duration: 3000 });
+          this.errorHandler.showError('STOCK.BATCH_UPDATE_ERROR');
           this.loading.set(false);
         }
       });
     } else {
       this.stockBatchService.createBatch(formData, this.storeId).subscribe({
         next: () => {
-          this.snackBar.open('Batch added successfully', 'Close', { duration: 3000 });
+          this.errorHandler.showSuccess('STOCK.BATCH_ADD_SUCCESS');
           this.router.navigate(['/stock']);
         },
         error: (error: unknown) => {
           console.error('Error creating batch:', error);
-          this.snackBar.open('Failed to add batch', 'Close', { duration: 3000 });
+          this.errorHandler.showError('STOCK.BATCH_ADD_ERROR');
           this.loading.set(false);
         }
       });

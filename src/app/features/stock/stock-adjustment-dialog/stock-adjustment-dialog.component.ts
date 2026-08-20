@@ -6,11 +6,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { StockBatchService } from '../../../core/services/stock.service';
 import { StockBatch } from '../../../core/models/stock.model';
-import { TranslateService } from '@ngx-translate/core';
 import { MaterialModule } from '../../../shared/material.module';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-stock-adjustment-dialog',
@@ -25,8 +24,7 @@ import { MaterialModule } from '../../../shared/material.module';
 export class StockAdjustmentDialogComponent {
   private readonly fb = inject(FormBuilder);
   private readonly stockService = inject(StockBatchService);
-  private readonly snackBar = inject(MatSnackBar);
-  private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   dialogRef = inject(MatDialogRef<StockAdjustmentDialogComponent>);
   data = inject(MAT_DIALOG_DATA);
@@ -53,11 +51,11 @@ export class StockAdjustmentDialogComponent {
 
     this.stockService.adjustStock(this.data.batch.id, adjustment, storeId).subscribe({
       next: () => {
-        this.snackBar.open(this.translate.instant('STOCK.ADJUSTMENT_SUCCESS'), 'OK', { duration: 2000 });
+        this.errorHandler.showSuccess('STOCK.ADJUSTMENT_SUCCESS', { duration: 2000 });
         this.dialogRef.close(true);
       },
       error: () => {
-        this.snackBar.open(this.translate.instant('STOCK.ADJUSTMENT_ERROR'), 'OK', { duration: 3000 });
+        this.errorHandler.showError('STOCK.ADJUSTMENT_ERROR');
         this.loading = false;
       }
     });

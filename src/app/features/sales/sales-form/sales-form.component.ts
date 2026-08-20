@@ -2,7 +2,6 @@ import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, 
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, startWith } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -50,7 +49,6 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   private readonly salesService = inject(SalesService);
   private readonly paymentService = inject(PaymentService);
   private readonly router = inject(Router);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
   private readonly currencyService = inject(CurrencyService);

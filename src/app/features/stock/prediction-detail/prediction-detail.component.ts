@@ -1,11 +1,10 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { CommonModule } from '@angular/common';
 import { DemandPrediction, DemandPredictionService } from '../../../core/services/demand-prediction.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-prediction-detail',
@@ -16,8 +15,7 @@ import { DemandPrediction, DemandPredictionService } from '../../../core/service
 })
 export class PredictionDetailComponent implements OnInit {
   private readonly predictionService = inject(DemandPredictionService);
-  private readonly snackBar = inject(MatSnackBar);
-  private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
   readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -41,13 +39,13 @@ export class PredictionDetailComponent implements OnInit {
           this.prediction.set(pred);
           this.loadSalesHistory(pred.productId);
         } else {
-          this.showError('PREDICTIONS.NOT_FOUND');
+          this.errorHandler.showError('PREDICTIONS.NOT_FOUND');
           this.router.navigate(['/stock/predictions']);
         }
         this.loading.set(false);
       },
       error: () => {
-        this.showError('PREDICTIONS.LOAD_ERROR');
+        this.errorHandler.showError('PREDICTIONS.LOAD_ERROR');
         this.loading.set(false);
       }
     });
@@ -66,7 +64,7 @@ export class PredictionDetailComponent implements OnInit {
   onCreatePurchaseOrder(): void {
     const pred = this.prediction();
     if (!pred || pred.recommendedOrder <= 0) {
-      this.showError('PREDICTIONS.INVALID_PRODUCT');
+      this.errorHandler.showError('PREDICTIONS.INVALID_PRODUCT');
       return;
     }
     this.router.navigate(['/purchases/new'], {
@@ -103,21 +101,5 @@ export class PredictionDetailComponent implements OnInit {
       'stable': '#6b7280'
     };
     return colors[trend] || '#6b7280';
-  }
-
-  private showSuccess(message: string, params?: any): void {
-    this.snackBar.open(
-      this.translate.instant(message, params),
-      this.translate.instant('COMMON.CLOSE'),
-      { duration: 3000, panelClass: ['success-snackbar'] }
-    );
-  }
-
-  private showError(message: string): void {
-    this.snackBar.open(
-      this.translate.instant(message),
-      this.translate.instant('COMMON.CLOSE'),
-      { duration: 3000, panelClass: ['error-snackbar'] }
-    );
   }
 }
