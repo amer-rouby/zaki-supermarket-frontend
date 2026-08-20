@@ -8,19 +8,7 @@ import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.se
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { TableLoadingComponent } from '../../../shared/components/table-loading/table-loading.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
-
-interface StockAlert {
-  id: number; productId: number; productName: string; batchNumber?: string;
-  alertType: 'LOW_STOCK' | 'OUT_OF_STOCK' | 'EXPIRING_SOON' | 'EXPIRED';
-  message: string; severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-  status: 'UNREAD' | 'READ' | 'RESOLVED'; currentStock?: number;
-  minStock?: number; expiryDate?: string; daysUntilExpiry?: number; createdAt: string;
-}
-
-interface AlertStats {
-  totalAlerts: number; unreadAlerts: number; lowStockAlerts: number;
-  expiredAlerts: number; expiringSoonAlerts: number; outOfStockAlerts: number;
-}
+import { AlertStats, StockAlert } from '../../../core/models/stock-alert.model';
 
 @Component({
   selector: 'app-stock-alerts', standalone: true,
@@ -53,9 +41,8 @@ export class StockAlertsComponent implements OnInit {
   loadAlerts(): void {
     this.loading.set(true);
     this.stockAlertService.getAlerts().subscribe({
-      next: (response: any) => {
-        const alertsData = response?.data?.content || response?.content || response || [];
-        this.alerts.set(Array.isArray(alertsData) ? alertsData : []);
+      next: (alerts) => {
+        this.alerts.set(alerts || []);
         this.loading.set(false);
       },
       error: (error) => {

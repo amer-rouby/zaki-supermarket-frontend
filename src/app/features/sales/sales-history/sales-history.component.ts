@@ -93,10 +93,9 @@ export class SalesHistoryComponent implements OnInit {
     const storeId = this.getStoreId();
 
     this.salesService.getAllSales(storeId, this.page(), this.size()).subscribe({
-      next: (response: any) => {
-        const data = response.data || response;
-        this.sales.set(data.content || data.sales || []);
-        this.totalElements.set(data.totalElements || this.sales().length);
+      next: (page) => {
+        this.sales.set(page.content || []);
+        this.totalElements.set(page.totalElements || 0);
         this.loading.set(false);
       },
       error: (err) => {
@@ -114,9 +113,8 @@ export class SalesHistoryComponent implements OnInit {
 
       this.page.set(0);
       this.salesService.searchSales(storeId, query).subscribe({
-        next: (response: any) => {
-          const data = response.data || response;
-          const results = data.content || data.sales || [];
+        next: (page) => {
+          const results = page.content || [];
           this.sales.set(results);
           this.totalElements.set(results.length);
           this.loading.set(false);

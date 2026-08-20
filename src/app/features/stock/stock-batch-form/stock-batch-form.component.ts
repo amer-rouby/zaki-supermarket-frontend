@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -43,10 +43,6 @@ export class StockBatchFormComponent implements OnInit {
   get storeId(): number {
     return this.storeContext.getStoreId();
   }
-  readonly productsList = computed(() => {
-    const prods = this.products();
-    return Array.isArray(prods) ? prods : [];
-  });
   readonly productValueFn = (p: Product) => p.id;
   readonly productLabelFn = (p: Product) => `${p.name} (${p.barcode})`;
   readonly productSearchFn = (p: Product, q: string) =>
@@ -78,21 +74,7 @@ export class StockBatchFormComponent implements OnInit {
 
   private loadProducts(): void {
     this.stockBatchService.getProducts(this.storeId).subscribe({
-      next: (response: any) => {
-        let productsList: Product[] = [];
-
-        if (Array.isArray(response)) {
-          productsList = response;
-        } else if (response?.data && Array.isArray(response.data)) {
-          productsList = response.data;
-        } else if (response?.content && Array.isArray(response.content)) {
-          productsList = response.content;
-        } else if (response?.products && Array.isArray(response.products)) {
-          productsList = response.products;
-        }
-
-        this.products.set(productsList);
-      },
+      next: (products) => this.products.set(products),
       error: (error: unknown) => {
         console.error('Error loading products:', error);
         this.products.set([]);
@@ -122,17 +104,7 @@ export class StockBatchFormComponent implements OnInit {
     this.loading.set(true);
 
     this.stockBatchService.getBatch(id, this.storeId).subscribe({
-      next: (response: any) => {
-        let batch: StockBatch;
-
-        if (response?.data) {
-          batch = response.data;
-        } else if (response?.content) {
-          batch = response.content;
-        } else {
-          batch = response;
-        }
-
+      next: (batch) => {
         this.batchForm.patchValue({
           productId: batch.productId,
           batchNumber: batch.batchNumber,

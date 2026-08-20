@@ -19,6 +19,7 @@ import {
   SalesTrend,
   PaymentMethodStats
 } from '../models/sale.model';
+import { PaginatedResponse } from '../models/api-response.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -135,11 +136,11 @@ export class SalesService {
     );
   }
 
-  getAllSales(storeId: number, page: number, size: number): Observable<any> {
-    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/sales`, {
+  getAllSales(storeId: number, page: number, size: number): Observable<PaginatedResponse<SaleResponse>> {
+    return this.http.get<ApiResponse<PaginatedResponse<SaleResponse>>>(`${this.baseUrl}/sales`, {
       params: { storeId: storeId.toString(), page: page.toString(), size: size.toString() }
     }).pipe(
-      map(response => response.data || response),
+      map(response => response.data),
       catchError(() => throwError(() => new Error('Failed to load sales')))
     );
   }
@@ -177,17 +178,17 @@ export class SalesService {
     }).pipe(catchError(() => throwError(() => new Error('Failed to delete sale'))));
   }
 
-  searchSales(storeId: number, query: string): Observable<any> {
-    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/sales/search`, {
+  searchSales(storeId: number, query: string): Observable<PaginatedResponse<SaleResponse>> {
+    return this.http.get<ApiResponse<PaginatedResponse<SaleResponse>>>(`${this.baseUrl}/sales/search`, {
       params: { storeId: storeId.toString(), query }
     }).pipe(
-      map(response => response.data || response),
+      map(response => response.data),
       catchError(() => throwError(() => new Error('Failed to search sales')))
     );
   }
 
-  getSalesByDateRange(startDate: string, endDate: string): Observable<any> {
-    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/sales/range`, {
+  getSalesByDateRange(startDate: string, endDate: string): Observable<PaginatedResponse<SaleResponse>> {
+    return this.http.get<ApiResponse<PaginatedResponse<SaleResponse>>>(`${this.baseUrl}/sales/range`, {
       params: { storeId: this.getStoreId().toString(), startDate, endDate }
     }).pipe(
       map(response => response.data),
