@@ -21,7 +21,15 @@ export interface DemandPrediction {
   trend: 'increasing' | 'decreasing' | 'stable';
   seasonalityFactor: 'high' | 'medium' | 'low';
   recommendation: string;
+  daysUntilStockout: number | null;
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' | null;
   createdAt: string;
+}
+
+export interface SalesHistoryPoint {
+  date: string;
+  quantity: number;
+  sales: number;
 }
 
 export interface PredictionStats {
@@ -155,6 +163,15 @@ export class DemandPredictionService {
     return this.http
       .get(`${this.apiUrl}/${predictionId}/export/excel`, { responseType: 'blob' })
       .pipe(withHttpErrorFallback<Blob>('exportToExcel'));
+  }
+
+  getProductSalesHistory(productId: number, days: number = 30): Observable<SalesHistoryPoint[]> {
+    return this.http.get<ApiResponse<SalesHistoryPoint[]>>(`${this.apiUrl}/sales-history`, {
+      params: this.store.storeParams({ productId, days })
+    }).pipe(
+      map((response) => response.data || []),
+      withHttpErrorFallback<SalesHistoryPoint[]>('getProductSalesHistory', [])
+    );
   }
 
   sharePrediction(predictionId: number): Observable<{ shareUrl: string; expiresAt: string }> {

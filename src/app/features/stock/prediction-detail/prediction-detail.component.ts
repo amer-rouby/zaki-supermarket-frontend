@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { CommonModule } from '@angular/common';
-import { DemandPrediction, DemandPredictionService } from '../../../core/services/demand-prediction.service';
+import { DemandPrediction, DemandPredictionService, SalesHistoryPoint } from '../../../core/services/demand-prediction.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
@@ -22,7 +22,7 @@ export class PredictionDetailComponent implements OnInit {
 
   readonly loading = signal(false);
   readonly prediction = signal<DemandPrediction | null>(null);
-  readonly salesHistory = signal<Array<{ date: string; quantity: number; sales: number }>>([]);
+  readonly salesHistory = signal<SalesHistoryPoint[]>([]);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -53,13 +53,9 @@ export class PredictionDetailComponent implements OnInit {
   }
 
   loadSalesHistory(productId: number): void {
-    this.salesHistory.set([
-      { date: '2026-02-25', quantity: 5, sales: 450 },
-      { date: '2026-02-26', quantity: 3, sales: 270 },
-      { date: '2026-02-27', quantity: 7, sales: 630 },
-      { date: '2026-02-28', quantity: 4, sales: 360 },
-      { date: '2026-03-01', quantity: 6, sales: 540 }
-    ]);
+    this.predictionService.getProductSalesHistory(productId, 30).subscribe({
+      next: (history) => this.salesHistory.set(history)
+    });
   }
 
   onCreatePurchaseOrder(): void {
@@ -102,5 +98,15 @@ export class PredictionDetailComponent implements OnInit {
       'stable': '#6b7280'
     };
     return colors[trend] || '#6b7280';
+  }
+
+  getRiskColor(riskLevel: string | null): string {
+    const colors: Record<string, string> = {
+      'CRITICAL': '#dc2626',
+      'HIGH': '#ef4444',
+      'MEDIUM': '#f59e0b',
+      'LOW': '#10b981'
+    };
+    return riskLevel ? colors[riskLevel] || '#6b7280' : '#6b7280';
   }
 }
