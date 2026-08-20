@@ -531,6 +531,16 @@
     "EXPIRING_PRODUCTS": "المنتجات منتهية الصلاحية",
     "NO_EXPIRING_PRODUCTS": "لا توجد منتجات منتهية الصلاحية",
     "PRODUCTS_FOUND": "منتج وجد",
+    "PRICING": {
+      "TITLE": "توصيات التسعير الذكية",
+      "SUBTITLE": "خصومات مقترحة للمنتجات القريبة من انتهاء الصلاحية أو بطيئة الحركة",
+      "REASON": "السبب",
+      "REASON_EXPIRING": "قريب من انتهاء الصلاحية",
+      "REASON_SLOW_MOVING": "بطيء الحركة",
+      "SUGGESTED_DISCOUNT": "الخصم المقترح",
+      "DETAILS": "التفاصيل",
+      "NO_RECOMMENDATIONS": "لا توجد توصيات تسعير حاليًا"
+    },
     "PROFIT": "الربح",
     "SALES_BY_CATEGORY": "المبيعات حسب التصنيف",
     "NO_TREND_DATA": "لا توجد بيانات للاتجاه",

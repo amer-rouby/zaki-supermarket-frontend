@@ -14,6 +14,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { PrintHelperService } from '../../../core/services/print-helper.service';
+import { PricingRecommendationService, PricingRecommendation } from '../../../core/services/pricing-recommendation.service';
 
 
 @Component({
@@ -36,6 +37,7 @@ export class ExpiryReportComponent implements OnInit {
   private readonly languageService = inject(LanguageService);
   private readonly currencyService = inject(CurrencyService);
   private readonly printHelper = inject(PrintHelperService);
+  private readonly pricingRecommendationService = inject(PricingRecommendationService);
 
   readonly reportType = signal<'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM'>('CUSTOM');
   readonly expiryData = signal<ExpiryData | null>(null);
@@ -44,6 +46,10 @@ export class ExpiryReportComponent implements OnInit {
   readonly exportLoading = signal(false);
 
   readonly displayedColumns = ['productName', 'batchNumber', 'expiryDate', 'daysUntilExpiry', 'currentStock', 'status'];
+
+  readonly pricingRecommendations = signal<PricingRecommendation[]>([]);
+  readonly pricingLoading = signal(false);
+  readonly pricingColumns = ['productName', 'currentStock', 'reason', 'suggestedDiscountPercent', 'message'];
 
   readonly doughnutChartData: ChartConfiguration<'doughnut'>['data'] = {
     labels: [],
@@ -59,6 +65,37 @@ export class ExpiryReportComponent implements OnInit {
   ngOnInit(): void {
     this.updateChartLabels();
     this.generateReport();
+    this.loadPricingRecommendations();
+  }
+
+  loadPricingRecommendations(): void {
+    this.pricingLoading.set(true);
+    this.pricingRecommendationService.getRecommendations().subscribe({
+      next: (data) => {
+        this.pricingRecommendations.set(data);
+        this.pricingLoading.set(false);
+      },
+      error: () => {
+        this.pricingLoading.set(false);
+      }
+    });
+  }
+
+  getReasonLabel(reason: string): string {
+    const keyMap: Record<string, string> = {
+      'EXPIRING': 'REPORTS.PRICING.REASON_EXPIRING',
+      'SLOW_MOVING': 'REPORTS.PRICING.REASON_SLOW_MOVING'
+    };
+    const key = keyMap[reason] || reason;
+    const translated = this.translate.instant(key);
+    return translated !== key ? translated : reason;
+  }
+
+  getPriorityColor(priority: string): 'warn' | 'accent' | 'primary' {
+    const map: Record<string, 'warn' | 'accent' | 'primary'> = {
+      'HIGH': 'warn', 'MEDIUM': 'accent', 'LOW': 'primary'
+    };
+    return map[priority] || 'primary';
   }
 
   private updateChartLabels(): void {
