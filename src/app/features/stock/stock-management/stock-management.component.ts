@@ -75,12 +75,9 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
     this.loading.set(true);
 
     this.stockBatchService.getBatches(this.storeId, this.currentPage(), this.pageSize()).subscribe({
-      next: (response: any) => {
-        const batches = this.extractBatches(response);
-        const total = this.extractTotal(response);
-
-        this.dataSource.data = batches;
-        this.totalElements.set(total);
+      next: (page) => {
+        this.dataSource.data = page.content || [];
+        this.totalElements.set(page.totalElements || 0);
         this.loading.set(false);
       },
       error: () => {
@@ -88,20 +85,6 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
         this.loading.set(false);
       }
     });
-  }
-
-  private extractBatches(response: any): StockBatch[] {
-    if (response?.content && Array.isArray(response.content)) return response.content;
-    if (response?.data?.content && Array.isArray(response.data.content)) return response.data.content;
-    if (response?.data && Array.isArray(response.data)) return response.data;
-    if (Array.isArray(response)) return response;
-    return [];
-  }
-
-  private extractTotal(response: any): number {
-    if (response?.totalElements) return response.totalElements;
-    if (response?.data?.totalElements) return response.data.totalElements;
-    return this.dataSource.data.length;
   }
 
   onPageChange(event: PageEvent): void {

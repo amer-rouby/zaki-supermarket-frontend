@@ -103,8 +103,8 @@ export class QuickAddScanComponent implements OnInit, AfterViewInit {
   }
 
   private loadProducts(): void {
-    this.productService.getProducts().subscribe({
-      next: (response: any) => this.allProducts.set(response.data || []),
+    this.productService.getProductsList().subscribe({
+      next: (products) => this.allProducts.set(products),
       error: () => {}
     });
   }

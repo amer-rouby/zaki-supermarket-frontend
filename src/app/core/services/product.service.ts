@@ -32,23 +32,6 @@ export class ProductService {
     );
   }
 
-  getProducts(page: number = 0, size: number = 10): Observable<PaginatedResponse<Product>> {
-    const storeId = this.getStoreId();
-
-    if (!storeId) {
-      return of(this.getEmptyPaginatedResponse<Product>());
-    }
-
-    return this.http.get<PaginatedResponse<Product>>(this.apiUrl, {
-      params: new HttpParams()
-        .set('storeId', storeId)
-        .set('page', page)
-        .set('size', size)
-    }).pipe(
-      catchError(this.handleError<PaginatedResponse<Product>>('getProducts', this.getEmptyPaginatedResponse()))
-    );
-  }
-
   getProductsPaged(page: number, size: number, search?: string, category?: string,
                     sortBy = 'name', sortDirection = 'asc'): Observable<PaginatedResponse<Product>> {
     const storeId = this.getStoreId();
@@ -80,9 +63,10 @@ export class ProductService {
       return of([]);
     }
 
-    return this.http.get<Product[]>(this.apiUrl, {
+    return this.http.get<ApiResponse<Product[]>>(this.apiUrl, {
       params: new HttpParams().set('storeId', storeId)
     }).pipe(
+      map(response => response.data || []),
       catchError(this.handleError<Product[]>('getProductsList', []))
     );
   }
@@ -183,10 +167,7 @@ export class ProductService {
         .set('storeId', storeId)
         .set('query', barcode)
     }).pipe(
-      map(response => {
-        const products = response.data || response;
-        return products.find(p => p.barcode === barcode) || null;
-      }),
+      map(response => (response.data || []).find(p => p.barcode === barcode) || null),
       catchError(() => of(null))
     );
   }

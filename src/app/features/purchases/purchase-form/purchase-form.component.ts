@@ -109,18 +109,8 @@ export class PurchaseFormComponent implements OnInit {
 
   loadProducts(): void {
     this.productService.getProductsList().subscribe({
-      next: (response: any) => {
-        if (response && response.success && Array.isArray(response.data)) {
-          this.products.set(response.data);
-        } else if (Array.isArray(response)) {
-          this.products.set(response);
-        } else {
-          console.error('Unexpected data structure:', response);
-          this.products.set([]);
-        }
-      },
+      next: (products) => this.products.set(products),
       error: (err) => {
-        console.error('Error loading products from server:', err);
         this.errorHandler.handleHttpError(err, 'PRODUCTS.LOAD_ERROR');
         this.products.set([]);
       }

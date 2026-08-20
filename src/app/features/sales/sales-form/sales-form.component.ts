@@ -164,12 +164,9 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   }
 
   loadProducts(): void {
-    this.productService.getProducts().subscribe({
-      next: (response: any) => {
-        const data = (response.data || []).map((p: Product) => ({
-          ...p,
-          sellPrice: p.sellPrice || 0
-        }));
+    this.productService.getProductsList().subscribe({
+      next: (products) => {
+        const data = products.map((p) => ({ ...p, sellPrice: p.sellPrice || 0 }));
         this.allProducts.set(data);
         this.products.set(data);
         this.filteredProductsSubject.next(data.slice(0, 10));

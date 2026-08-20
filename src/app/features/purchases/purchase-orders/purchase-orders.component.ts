@@ -59,11 +59,9 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy
   loadOrders(pageIndex: number = 0, pageSize: number = 10): void {
     this.loading.set(true);
     this.purchaseService.getOrders(pageIndex, pageSize).subscribe({
-      next: (response: any) => {
-        const content = response?.data?.content || response?.content || [];
-        const total = response?.data?.totalElements || response?.totalElements || content.length;
-        this.dataSource.data = content;
-        this.totalElements.set(total);
+      next: (page) => {
+        this.dataSource.data = page.content || [];
+        this.totalElements.set(page.totalElements || 0);
         this.loading.set(false);
       },
       error: (err) => {
