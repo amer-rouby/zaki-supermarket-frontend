@@ -5,6 +5,7 @@ import { SidebarComponent } from '../../shared/components/sidebar/sidebar.compon
 import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { LanguageService } from '../../core/services/language.service';
+import { ZakiFeatureSettingsService } from '../../core/services/settings/zaki-feature-settings.service';
 import { inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
@@ -24,6 +25,7 @@ import { Subscription } from 'rxjs';
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
   private readonly languageService = inject(LanguageService);
+  private readonly zakiFeatureSettingsService = inject(ZakiFeatureSettingsService);
 
   readonly currentLang = signal<string>(this.languageService.getCurrentLanguage());
   readonly isSidebarCollapsed = signal(false);
@@ -35,6 +37,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.checkScreenSize();
     window.addEventListener('resize', () => this.checkScreenSize());
+    this.zakiFeatureSettingsService.getSettings().subscribe();
 
     this.langSubscription = this.languageService.currentLang$.subscribe(lang => {
       this.currentLang.set(lang);

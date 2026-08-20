@@ -57,5 +57,12 @@ export const SETTINGS_ROUTES: Routes = [
     loadComponent: () => import('./backup/backup-settings.component')
       .then(m => m.BackupSettingsComponent),
     canActivate: [authGuard]
+  },
+  {
+    path: 'zaki-features',
+    loadComponent: () => import('./zaki-features/zaki-features-settings.component')
+      .then(m => m.ZakiFeaturesSettingsComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] }
   }
 ];
