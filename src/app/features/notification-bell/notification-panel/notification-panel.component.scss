@@ -1,0 +1,290 @@
+::ng-deep .bordio-style-menu {
+  min-width: 380px !important;
+  max-width: 420px !important;
+  border-radius: 20px !important;
+  padding: 0 !important;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15) !important;
+  background: #ffffff !important;
+  direction: inherit !important;
+
+  .menu-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    direction: inherit;
+
+    h3 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: #4338ca;
+    }
+  }
+
+  .notifications-container {
+    padding: 12px;
+    background: #f8fafc;
+    max-height: 450px;
+    overflow-y: auto;
+    direction: inherit;
+  }
+
+  .notification-wrapper {
+    margin-bottom: 10px;
+    border-radius: 15px;
+    display: flex;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    direction: inherit;
+
+    /* ألوان واضحة وتغطية كاملة */
+    &.urgent {
+      background: #fee2e2 !important;
+      border-color: #fca5a5;
+
+      .message {
+        color: #991b1b;
+      }
+
+      .icon-box {
+        background: #ef4444;
+        color: #fff;
+      }
+    }
+
+    &.high {
+      background: #ffedd5 !important;
+      border-color: #fdba74;
+
+      .message {
+        color: #9a3412;
+      }
+
+      .icon-box {
+        background: #f97316;
+        color: #fff;
+      }
+    }
+
+    &.medium {
+      background: #e0e7ff !important;
+      border-color: #c7d2fe;
+
+      .message {
+        color: #3730a3;
+      }
+
+      .icon-box {
+        background: #6366f1;
+        color: #fff;
+      }
+    }
+
+    &.low {
+      background: #dcfce7 !important;
+      border-color: #86efac;
+
+      .message {
+        color: #166534;
+      }
+
+      .icon-box {
+        background: #22c55e;
+        color: #fff;
+      }
+    }
+
+    &.is-read {
+      background: #ffffff !important;
+      border-color: #e2e8f0;
+      opacity: 0.8;
+
+      .message {
+        color: #64748b;
+        font-weight: 500;
+      }
+
+      .icon-box {
+        background: #cbd5e0;
+        color: #64748b;
+      }
+    }
+
+    .notification-content {
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      gap: 12px;
+      cursor: pointer;
+      direction: inherit;
+
+      .icon-box {
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .text-section {
+        flex: 1;
+
+        .message {
+          font-size: 13px;
+          font-weight: 700;
+          line-height: 1.4;
+          display: block;
+        }
+
+        .meta {
+          font-size: 11px;
+          margin-top: 4px;
+          opacity: 0.7;
+          display: flex;
+          gap: 6px;
+          align-items: center;
+        }
+      }
+    }
+
+    .notification-actions {
+      display: flex;
+      align-items: center;
+      padding: 0 5px;
+    }
+  }
+
+  .menu-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #f1f5f9;
+    background: #ffffff;
+    direction: inherit;
+
+    .full-width-btn {
+      width: 100%;
+    }
+  }
+
+  .empty-state {
+    text-align: center !important;
+    padding: 40px 20px !important;
+
+    mat-icon {
+      font-size: 48px !important;
+      color: #cbd5e1 !important;
+    }
+
+    p {
+      color: #64748b !important;
+    }
+  }
+}
+
+.notification-btn .mat-icon {
+  color: var(--color-text-secondary, #64748b) !important;
+}
+
+/* RTL/LTR Support */
+[dir="rtl"] .bordio-style-menu {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+[dir="ltr"] .bordio-style-menu {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* Dark mode - this panel is portaled by Angular CDK into a global
+   overlay, so it needs its own ::ng-deep rules regardless of the
+   `body.dark-theme` toggle living on an ancestor outside its render
+   tree. The priority backgrounds are light-tint + dark-text pairs
+   that don't map to a single color token, so they get dedicated
+   translucent versions here instead. */
+::ng-deep body.dark-theme .bordio-style-menu {
+  background: var(--color-surface, #1e293b) !important;
+  box-shadow: var(--shadow-lg, 0 15px 50px rgba(0, 0, 0, 0.4)) !important;
+
+  .menu-header {
+    border-bottom-color: var(--color-border, #334155);
+
+    h3 {
+      color: var(--color-primary-700, #a5b4fc);
+    }
+  }
+
+  .notifications-container {
+    background: var(--color-slate-50, #1e293b);
+  }
+
+  .notification-wrapper {
+    &.urgent {
+      background: rgba(239, 68, 68, 0.15) !important;
+      border-color: rgba(239, 68, 68, 0.35);
+
+      .message {
+        color: #fca5a5;
+      }
+    }
+
+    &.high {
+      background: rgba(249, 115, 22, 0.15) !important;
+      border-color: rgba(249, 115, 22, 0.35);
+
+      .message {
+        color: #fdba74;
+      }
+    }
+
+    &.medium {
+      background: rgba(99, 102, 241, 0.15) !important;
+      border-color: rgba(99, 102, 241, 0.35);
+
+      .message {
+        color: #a5b4fc;
+      }
+    }
+
+    &.low {
+      background: rgba(34, 197, 94, 0.15) !important;
+      border-color: rgba(34, 197, 94, 0.35);
+
+      .message {
+        color: #86efac;
+      }
+    }
+
+    &.is-read {
+      background: var(--color-slate-100, #273549) !important;
+      border-color: var(--color-border, #334155);
+
+      .message {
+        color: var(--color-text-muted, #94a3b8);
+      }
+    }
+
+    .meta {
+      color: var(--color-text-muted, #94a3b8);
+    }
+  }
+
+  .menu-footer {
+    border-top-color: var(--color-border, #334155);
+    background: var(--color-surface, #1e293b);
+  }
+
+  .empty-state {
+    mat-icon {
+      color: var(--color-slate-300, #475569) !important;
+    }
+
+    p {
+      color: var(--color-text-secondary, #cbd5e1) !important;
+    }
+  }
+}

@@ -1,0 +1,105 @@
+<div class="login-container">
+  <app-auth-background />
+  <div class="login-wrapper">
+    <mat-card class="login-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>local_store</mat-icon>
+          <span>{{'APP.NAME' | translate}}</span>
+        </mat-card-title>
+        <mat-card-subtitle>{{'AUTH.LOGIN' | translate}}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        @if (!twoFactorRequired) {
+        <form (ngSubmit)="onSubmit()">
+
+          <!-- Username Field -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{'AUTH.USERNAME' | translate}}</mat-label>
+            <input matInput type="text" [(ngModel)]="credentials.username" name="username" required
+              autocomplete="username">
+            <mat-icon matPrefix>person</mat-icon>
+            <mat-error *ngIf="!credentials.username && isSubmitted">
+              {{'VALIDATION.REQUIRED' | translate}}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Password Field -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{'AUTH.PASSWORD' | translate}}</mat-label>
+            <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="credentials.password"
+              name="password" required autocomplete="current-password">
+            <mat-icon matPrefix>lock</mat-icon>
+            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button" tabindex="-1"
+              [attr.aria-label]="'Toggle password visibility'">
+              <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error *ngIf="!credentials.password && isSubmitted">
+              {{'VALIDATION.REQUIRED' | translate}}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-checkbox [(ngModel)]="credentials.rememberMe" name="rememberMe" class="remember-me-checkbox">
+            {{'AUTH.REMEMBER_ME' | translate}}
+          </mat-checkbox>
+
+          <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="loading">
+            @if (loading) {
+            <mat-icon class="spin-icon">refresh</mat-icon>
+            }
+            <span>{{loading ? ('COMMON.LOADING' | translate) : ('AUTH.LOGIN' | translate)}}</span>
+          </button>
+        </form>
+        } @else {
+        <!-- Two-factor verification step -->
+        <form (ngSubmit)="onSubmitTwoFactorCode()">
+          <p class="two-factor-prompt">{{'AUTH.TWO_FACTOR_PROMPT' | translate}}</p>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{'AUTH.TWO_FACTOR_CODE' | translate}}</mat-label>
+            <input matInput type="text" inputmode="numeric" maxlength="6" [(ngModel)]="twoFactorCode" name="twoFactorCode"
+              required autocomplete="one-time-code">
+            <mat-icon matPrefix>verified_user</mat-icon>
+            <mat-error *ngIf="!twoFactorCode && twoFactorSubmitted">
+              {{'VALIDATION.REQUIRED' | translate}}
+            </mat-error>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="loading">
+            @if (loading) {
+            <mat-icon class="spin-icon">refresh</mat-icon>
+            }
+            <span>{{loading ? ('COMMON.LOADING' | translate) : ('AUTH.VERIFY' | translate)}}</span>
+          </button>
+
+          <button mat-button type="button" class="full-width" (click)="backToLogin()" [disabled]="loading">
+            {{'AUTH.BACK_TO_LOGIN' | translate}}
+          </button>
+        </form>
+        }
+      </mat-card-content>
+
+      @if (!twoFactorRequired) {
+      <mat-card-actions class="center-actions">
+        <p>
+          {{'AUTH.NO_ACCOUNT' | translate}}
+          <a routerLink="/auth/register">{{'AUTH.REGISTER' | translate}}</a>
+        </p>
+      </mat-card-actions>
+      }
+
+      <mat-divider></mat-divider>
+
+      <mat-card-actions class="language-actions">
+        <button mat-button (click)="changeLanguage('ar')" [class.active]="getCurrentLang() === 'ar'">
+          العربية
+        </button>
+        <span class="divider">|</span>
+        <button mat-button (click)="changeLanguage('en')" [class.active]="getCurrentLang() === 'en'">
+          English
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

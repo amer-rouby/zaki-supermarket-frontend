@@ -1,0 +1,345 @@
+.notification-settings-container {
+  padding: 24px;
+  direction: inherit;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--mat-sys-on-surface-variant);
+
+  p {
+    margin-top: 16px;
+    font-size: 14px;
+  }
+}
+
+mat-card {
+  margin-bottom: 24px;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  direction: inherit;
+}
+
+.general-settings {
+  mat-card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 18px;
+      font-weight: 600;
+
+      mat-icon {
+        color: var(--color-primary-600, #667eea);
+      }
+    }
+  }
+
+  .settings-grid {
+    display: grid;
+    gap: 20px;
+    padding: 24px 0;
+  }
+
+  .setting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: rgba(102, 126, 234, 0.03);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+
+    .language-select {
+      width: 140px;
+      margin-bottom: -1.25em;
+    }
+
+    &:hover {
+      background: rgba(102, 126, 234, 0.06);
+    }
+
+    .setting-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+        color: var(--color-primary-600, #667eea);
+      }
+
+      h4 {
+        margin: 0 0 4px;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--color-text-primary, #2d3748);
+      }
+
+      p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--color-text-secondary, #718096);
+      }
+    }
+  }
+
+  .quiet-hours {
+    margin-top: 24px;
+    padding: 20px;
+    background: rgba(118, 75, 162, 0.03);
+    border-radius: 12px;
+    border-inline-start: 4px solid #764ba2;
+
+    h4 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-text-primary, #2d3748);
+
+      mat-icon {
+        color: var(--color-primary-700, #764ba2);
+      }
+    }
+
+    .description {
+      margin: 0 0 16px;
+      font-size: 13px;
+      color: var(--color-text-secondary, #718096);
+    }
+
+    .quiet-hours-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .time-inputs {
+        display: flex;
+        gap: 16px;
+        margin-inline-start: 32px;
+
+        mat-form-field {
+          flex: 1;
+          max-width: 200px;
+        }
+      }
+    }
+  }
+}
+
+.category-card {
+  mat-card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 18px;
+      font-weight: 600;
+
+      mat-icon {
+        color: var(--color-primary-600, #667eea);
+      }
+    }
+  }
+
+  .channel-toggles {
+    display: flex;
+    gap: 8px;
+    padding: 16px 24px;
+    background: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+    button {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+
+      &.active {
+        background: rgba(102, 126, 234, 0.1);
+        color: var(--color-primary-600, #667eea);
+        font-weight: 600;
+
+        mat-icon {
+          color: var(--color-primary-600, #667eea);
+        }
+      }
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .settings-list {
+    padding: 16px 24px;
+  }
+
+  .setting-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    transition: opacity 0.2s ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &.disabled {
+      opacity: 0.5;
+    }
+
+    .setting-details {
+      flex: 1;
+      padding-inline-end: 16px;
+
+      h5 {
+        margin: 0 0 4px;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--color-text-primary, #2d3748);
+      }
+
+      .description {
+        margin: 0;
+        font-size: 13px;
+        color: var(--color-text-secondary, #718096);
+      }
+    }
+
+    .setting-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+
+      .channel-checkboxes {
+        display: flex;
+        gap: 12px;
+
+        mat-checkbox {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            color: var(--color-text-secondary, #718096);
+          }
+
+          ::ng-deep .mat-mdc-checkbox-label {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 24px;
+  background: var(--color-surface, white);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .notification-settings-container {
+    padding: 16px;
+  }
+
+  .setting-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .setting-row {
+    flex-direction: column;
+    gap: 16px;
+
+    .setting-details {
+      padding-inline-end: 0;
+    }
+
+    .setting-controls {
+      align-items: flex-start;
+      width: 100%;
+    }
+  }
+
+  .channel-toggles {
+    flex-direction: column;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+::ng-deep {
+  .notification-settings-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+
+      .mat-form-field-label {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
+}

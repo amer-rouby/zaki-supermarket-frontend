@@ -1,0 +1,242 @@
+<div class="predictions-container">
+  <app-page-header [title]="'PREDICTIONS.TITLE' | translate" [subtitle]="'PREDICTIONS.SUBTITLE' | translate"
+    icon="psychology">
+    <button mat-raised-button color="primary" (click)="onGeneratePredictions()" [disabled]="loading()">
+      <mat-icon>auto_awesome</mat-icon>
+      <span>{{'PREDICTIONS.GENERATE' | translate}}</span>
+    </button>
+  </app-page-header>
+
+  @if (stats()) {
+  <div class="stats-grid">
+    <mat-card class="stat-card success">
+      <mat-card-content>
+        <div class="stat-icon"><mat-icon>accuracy</mat-icon></div>
+        <div class="stat-info">
+          <h3>{{stats()!.averageAccuracy | number:'1.0-0'}}%</h3>
+          <p>{{'PREDICTIONS.STATS.ACCURACY' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card primary">
+      <mat-card-content>
+        <div class="stat-icon"><mat-icon>list</mat-icon></div>
+        <div class="stat-info">
+          <h3>{{stats()!.totalPredictions}}</h3>
+          <p>{{'PREDICTIONS.STATS.TOTAL' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card info">
+      <mat-card-content>
+        <div class="stat-icon"><mat-icon>schedule</mat-icon></div>
+        <div class="stat-info">
+          <h3>{{daysAhead()}}</h3>
+          <p>{{'PREDICTIONS.STATS.DAYS' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  }
+
+  @if (loading() && !predictions().length) {
+  <div class="loading-state">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>{{'COMMON.LOADING' | translate}}</p>
+  </div>
+  } @else if (predictions().length) {
+
+  <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>psychology</mat-icon>
+        {{'PREDICTIONS.UPCOMING' | translate}}
+      </mat-card-title>
+      <mat-card-subtitle>{{stats()!.totalPredictions}} {{'PREDICTIONS.COUNT' | translate}}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content [class.list-content-refreshing]="loading()">
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="predictions()" class="predictions-table">
+
+          <!-- Product Name -->
+          <ng-container matColumnDef="productName">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.PRODUCT' | translate}}</th>
+            <td mat-cell *matCellDef="let prediction">
+              <div class="product-info">
+                <strong>{{prediction.productName}}</strong>
+                @if (prediction.productCode) {
+                <small>{{prediction.productCode}}</small>
+                }
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Prediction Date -->
+          <ng-container matColumnDef="predictionDate">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.DATE' | translate}}</th>
+            <td mat-cell *matCellDef="let prediction">
+              <span class="date">{{formatDate(prediction.predictionDate)}}</span>
+              <small class="days-left">
+                {{getDaysUntil(prediction.predictionDate)}} {{'PREDICTIONS.DAYS_LEFT' | translate}}
+              </small>
+            </td>
+          </ng-container>
+
+          <!-- Predicted Quantity -->
+          <ng-container matColumnDef="predictedQuantity">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.PREDICTED' | translate}}</th>
+            <td mat-cell *matCellDef="let prediction">
+              <span class="predicted">{{prediction.predictedQuantity}}</span>
+            </td>
+          </ng-container>
+
+          <!-- Current Stock -->
+          <ng-container matColumnDef="currentStock">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.CURRENT' | translate}}</th>
+            <td mat-cell *matCellDef="let prediction">
+              <span class="current" [class.low]="prediction.currentStock < prediction.predictedQuantity">
+                {{prediction.currentStock}}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Recommended Order -->
+          <ng-container matColumnDef="recommendedOrder">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.RECOMMENDED' | translate}}</th>
+            <td mat-cell *matCellDef="let prediction">
+              <span class="recommended" [style.color]="getRecommendationColor(prediction.recommendedOrder)">
+                {{prediction.recommendedOrder}}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Trend -->
+          <ng-container matColumnDef="trend">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.TREND' | translate}}</th>
+            <td mat-cell *matCellDef="let prediction">
+              <div class="trend-badge" [style.background]="getTrendColor(prediction.trend)">
+                <mat-icon>{{getTrendIcon(prediction.trend)}}</mat-icon>
+                <span>{{'PREDICTIONS.TREND.' + prediction.trend | translate}}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Confidence -->
+          <ng-container matColumnDef="confidence">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.CONFIDENCE' | translate}}</th>
+            <td mat-cell *matCellDef="let prediction">
+              <div class="confidence-bar">
+                <div class="confidence-fill" [style.width.%]="prediction.confidenceLevel * 100"
+                  [style.background]="getConfidenceColor(prediction.confidenceLevel)">
+                </div>
+                <span class="confidence-text">{{(prediction.confidenceLevel * 100) | number:'1.0-0'}}%</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Actions UPDATED WITH ALL BUTTONS -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
+            <td mat-cell *matCellDef="let prediction">
+              <div class="action-buttons">
+                <!-- View Details -->
+                <button mat-icon-button color="primary" (click)="onViewPrediction(prediction)"
+                  [matTooltip]="'PREDICTIONS.VIEW_DETAILS' | translate" [disabled]="!prediction?.predictionId">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+
+                <!-- Create Purchase Order -->
+                <button mat-icon-button color="accent" (click)="onCreatePurchaseOrder(prediction)"
+                  [matTooltip]="'PREDICTIONS.CREATE_ORDER' | translate"
+                  [disabled]="!prediction?.productId || prediction.recommendedOrder <= 0">
+                  <mat-icon>shopping_cart</mat-icon>
+                </button>
+
+                <!-- Quick Actions Menu -->
+                <button mat-icon-button [matMenuTriggerFor]="quickOrderMenu"
+                  [matTooltip]="'PREDICTIONS.QUICK_ACTIONS' | translate">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+
+                <mat-menu #quickOrderMenu="matMenu">
+                  <!-- Edit -->
+                  <button mat-menu-item (click)="onEditPrediction(prediction)"
+                    [disabled]="!prediction?.predictionId || exportLoading()">
+                    <mat-icon>edit</mat-icon>
+                    <span>{{'COMMON.EDIT' | translate}}</span>
+                  </button>
+                  <button mat-menu-item (click)="prediction?.predictionId ? onViewPrediction(prediction) : null"
+                    [disabled]="!prediction?.predictionId">
+                    <mat-icon>description</mat-icon>
+                    <span>{{'PREDICTIONS.VIEW_REPORT' | translate}}</span>
+                  </button>
+                  <!-- Export PDF -->
+                  <button mat-menu-item (click)="onExportPdf(prediction)"
+                    [disabled]="!prediction?.predictionId || exportLoading()">
+                    <mat-icon>picture_as_pdf</mat-icon>
+                    <span>{{'COMMON.EXPORT_PDF' | translate}}</span>
+                  </button>
+
+                  <!-- Export Excel -->
+                  <button mat-menu-item (click)="onExportExcel(prediction)"
+                    [disabled]="!prediction?.predictionId || exportLoading()">
+                    <mat-icon>table_chart</mat-icon>
+                    <span>{{'COMMON.EXPORT_EXCEL' | translate}}</span>
+                  </button>
+
+                  <!-- Share -->
+                  <button mat-menu-item (click)="onSharePrediction(prediction)"
+                    [disabled]="!prediction?.predictionId || loading()">
+                    <mat-icon>share</mat-icon>
+                    <span>{{'COMMON.SHARE' | translate}}</span>
+                  </button>
+
+                  <mat-divider></mat-divider>
+
+                  <!-- Quick Order -->
+                  <button mat-menu-item (click)="onQuickOrder(prediction)" [disabled]="!prediction?.predictionId">
+                    <mat-icon>fast_forward</mat-icon>
+                    <span>{{'PREDICTIONS.QUICK_ORDER' | translate}}</span>
+                  </button>
+
+                  <!-- Delete -->
+                  <button mat-menu-item (click)="onDeletePrediction(prediction)" [disabled]="!prediction?.predictionId"
+                    class="text-warn">
+                    <mat-icon color="warn">delete</mat-icon>
+                    <span class="text-warn">{{'COMMON.DELETE' | translate}}</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="prediction-row"></tr>
+        </table>
+
+        <mat-paginator [length]="totalElements()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
+          [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="true" [disabled]="loading()"
+          (page)="onPageChange($event)" aria-label="Select page" class="predictions-paginator">
+        </mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  } @else if (!loading()) {
+  <div class="empty-state">
+    <mat-icon class="empty-icon">psychology</mat-icon>
+    <h3>{{'PREDICTIONS.NO_PREDICTIONS' | translate}}</h3>
+    <p>{{'PREDICTIONS.NO_PREDICTIONS_DESC' | translate}}</p>
+    <button mat-raised-button color="primary" (click)="onGeneratePredictions()">
+      <mat-icon>auto_awesome</mat-icon>
+      <span>{{'PREDICTIONS.GENERATE_FIRST' | translate}}</span>
+    </button>
+  </div>
+  }
+</div>

@@ -1,0 +1,99 @@
+<div class="security-settings-container">
+  <app-page-header [title]="'SETTINGS.SECURITY' | translate" [subtitle]="'SECURITY.SUBTITLE' | translate"
+    icon="security">
+  </app-page-header>
+
+  @if (loading()) {
+  <div class="loading-state">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>{{'COMMON.LOADING' | translate}}</p>
+  </div>
+  }
+
+  @if (!loading()) {
+  <mat-card class="security-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>lock</mat-icon>
+        {{'SECURITY.CHANGE_PASSWORD' | translate}}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
+        <div class="form-grid">
+          <!-- Current Password -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{'SECURITY.CURRENT_PASSWORD' | translate}}</mat-label>
+            <input matInput [type]="showCurrentPassword() ? 'text' : 'password'" formControlName="currentPassword">
+            <button mat-icon-button matSuffix (click)="toggleShowCurrentPassword()" type="button">
+              <mat-icon>{{showCurrentPassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            @if (passwordForm.get('currentPassword')?.invalid &&
+            passwordForm.get('currentPassword')?.touched) {
+            <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- New Password -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{'SECURITY.NEW_PASSWORD' | translate}}</mat-label>
+            <input matInput [type]="showNewPassword() ? 'text' : 'password'" formControlName="newPassword">
+            <button mat-icon-button matSuffix (click)="toggleShowNewPassword()" type="button">
+              <mat-icon>{{showNewPassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            @if (passwordForm.get('newPassword')?.invalid &&
+            passwordForm.get('newPassword')?.touched) {
+            <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+            }
+            <mat-hint>{{'SECURITY.PASSWORD_HINT' | translate}}</mat-hint>
+          </mat-form-field>
+
+          <!-- Confirm Password -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{'SECURITY.CONFIRM_PASSWORD' | translate}}</mat-label>
+            <input matInput [type]="showConfirmPassword() ? 'text' : 'password'" formControlName="confirmPassword">
+            <button mat-icon-button matSuffix (click)="toggleShowConfirmPassword()" type="button">
+              <mat-icon>{{showConfirmPassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            @if (passwordForm.get('confirmPassword')?.hasError('passwordMismatch') &&
+            passwordForm.get('confirmPassword')?.touched) {
+            <mat-error>{{'VALIDATION.PASSWORD_MISMATCH' | translate}}</mat-error>
+            }
+            @if (passwordForm.get('confirmPassword')?.hasError('required') &&
+            passwordForm.get('confirmPassword')?.touched) {
+            <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Password Strength Indicator -->
+        @if (passwordForm.get('newPassword')?.value) {
+        <div class="password-strength">
+          <div class="strength-label">{{'SECURITY.PASSWORD_STRENGTH' | translate}}</div>
+          <div class="strength-bar">
+            <div class="strength-fill" [style.width]="getPasswordStrengthWidth()"
+              [style.background]="getPasswordStrengthColor()">
+            </div>
+          </div>
+          <div class="strength-text" [style.color]="getPasswordStrengthColor()">
+            {{'SECURITY.' + (passwordStrength | uppercase) | translate}}
+          </div>
+        </div>
+        }
+
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="saving() || passwordForm.invalid">
+            @if (saving()) {
+            <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+            <mat-icon>lock_open</mat-icon>
+            }
+            <span>{{saving() ? ('COMMON.SAVING' | translate) : ('SECURITY.CHANGE_PASSWORD' | translate)}}</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+  }
+</div>

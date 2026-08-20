@@ -1,0 +1,14 @@
+<div class="empty-state">
+  <mat-icon>{{ icon }}</mat-icon>
+  @if (message) {
+    <p>{{ message | translate }}</p>
+  }
+  @if (hint) {
+    <small>{{ hint | translate }}</small>
+  }
+  @if (actionLabel) {
+    <button mat-raised-button color="primary" type="button" (click)="onAction()">
+      {{ actionLabel | translate }}
+    </button>
+  }
+</div>

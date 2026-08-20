@@ -1,0 +1,110 @@
+<div class="details-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon>inventory_2</mat-icon>
+      <div>
+        <h2>{{product.name}}</h2>
+      </div>
+    </div>
+    <button mat-icon-button (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <div class="badges-row">
+      @if (product.category) {
+      <mat-chip color="primary">{{product.category}}</mat-chip>
+      }
+    </div>
+
+    <div class="detail-grid">
+      @if (extra['manufacturer']) {
+      <div class="detail-item">
+        <mat-icon>factory</mat-icon>
+        <div>
+          <span class="label">{{'PRODUCTS.MANUFACTURER' | translate}}</span>
+          <span class="value">{{extra['manufacturer']}}</span>
+        </div>
+      </div>
+      }
+
+      @if (product.barcode) {
+      <div class="detail-item">
+        <mat-icon>qr_code_2</mat-icon>
+        <div>
+          <span class="label">{{'PRODUCTS.BARCODE' | translate}}</span>
+          <span class="value"><code>{{product.barcode}}</code></span>
+        </div>
+      </div>
+      }
+
+      <div class="detail-item">
+        <mat-icon>package</mat-icon>
+        <div>
+          <span class="label">{{'PRODUCTS.UNIT_TYPE' | translate}}</span>
+          <span class="value">{{('PRODUCTS.UNIT_' + product.unitType) | translate}}</span>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <mat-icon>inventory</mat-icon>
+        <div>
+          <span class="label">{{'PRODUCTS.STOCK' | translate}}</span>
+          <span class="value">{{product.totalStock || 0}}</span>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <mat-icon>warning</mat-icon>
+        <div>
+          <span class="label">{{'PRODUCTS.MIN_STOCK_LEVEL' | translate}}</span>
+          <span class="value">{{product.minStockLevel}}</span>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <mat-icon>payments</mat-icon>
+        <div>
+          <span class="label">{{'PRODUCTS.BUY_PRICE' | translate}}</span>
+          <span class="value">{{formatCurrency(product.buyPrice || 0)}}</span>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <mat-icon>attach_money</mat-icon>
+        <div>
+          <span class="label">{{'PRODUCTS.SELL_PRICE' | translate}}</span>
+          <span class="value price">{{formatCurrency(product.sellPrice || 0)}}</span>
+        </div>
+      </div>
+    </div>
+
+    @if (hasAdditionalInfo) {
+    <div class="additional-section">
+      <h3>{{'PRODUCTS.SECTION_ADDITIONAL_INFO' | translate}}</h3>
+
+      @if (extra['description']) {
+      <div class="text-block">
+        <span class="label">{{'PRODUCTS.DESCRIPTION' | translate}}</span>
+        <p>{{extra['description']}}</p>
+      </div>
+      }
+
+      @if (extra['storageConditions']) {
+      <div class="text-block">
+        <span class="label">{{'PRODUCTS.STORAGE_CONDITIONS' | translate}}</span>
+        <p>{{extra['storageConditions']}}</p>
+      </div>
+      }
+    </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-raised-button color="primary" [routerLink]="['/products/edit', product.id]" (click)="close()">
+      <mat-icon>edit</mat-icon>
+      {{'COMMON.EDIT' | translate}}
+    </button>
+  </mat-dialog-actions>
+</div>

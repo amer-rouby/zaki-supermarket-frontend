@@ -1,0 +1,225 @@
+.reports-container {
+  padding: 24px;
+  direction: inherit;
+
+  .export-buttons {
+    display: flex;
+    gap: 8px;
+    direction: inherit;
+
+    button {
+      min-width: 120px;
+
+      @media (max-width: 768px) {
+        min-width: auto;
+        padding: 0 12px;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+
+        span {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .filters-card {
+    margin: 24px 0;
+    border-radius: 16px;
+    background: var(--color-surface, #fff);
+    border: 1px solid var(--color-border, #e2e8f0);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.06));
+    direction: inherit;
+
+    mat-card-content {
+      padding: 20px;
+
+      .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        align-items: end;
+      }
+    }
+  }
+
+  .loading-overlay,
+  .error-card,
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    gap: 16px;
+    text-align: center;
+
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: var(--color-text-muted, #cbd5e0);
+    }
+
+    p {
+      margin: 0;
+      font-size: 16px;
+      color: var(--color-text-secondary, #666);
+    }
+  }
+
+  .error-card {
+    background: var(--color-danger-bg, #fef2f2);
+    border: 1px solid var(--color-danger-border, #fecaca);
+    border-radius: 12px;
+
+    mat-icon {
+      color: var(--color-danger, #ef4444);
+    }
+
+    p {
+      color: var(--color-danger, #dc2626);
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 24px 0;
+
+    .stat-card {
+      border-radius: 16px;
+      background: var(--color-surface, #fff);
+      border: 1px solid var(--color-border, #e2e8f0);
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.06));
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      direction: inherit;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md, 0 4px 12px rgba(15, 23, 42, 0.08));
+      }
+
+      mat-card-content {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 24px;
+
+        .stat-icon {
+          width: 64px;
+          height: 64px;
+          border-radius: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          mat-icon {
+            font-size: 32px;
+            width: 32px;
+            height: 32px;
+            color: white;
+          }
+        }
+
+        .stat-info {
+          flex: 1;
+
+          h3 {
+            margin: 0 0 4px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-text-primary, #1a1a1a);
+          }
+
+          p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--color-text-secondary, #666);
+          }
+        }
+      }
+    }
+  }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+    margin: 24px 0;
+
+    .chart-card {
+      border-radius: 16px;
+      background: var(--color-surface, #fff);
+      border: 1px solid var(--color-border, #e2e8f0);
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.06));
+      direction: inherit;
+
+      mat-card-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--color-border, #e9ecef);
+
+        mat-card-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--color-text-primary, #1a1a1a);
+        }
+      }
+
+      mat-card-content {
+        padding: 24px;
+
+        .chart-container {
+          height: 300px;
+          position: relative;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .reports-container {
+    padding: 16px;
+
+    .stats-grid,
+    .charts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+::ng-deep {
+  .reports-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+
+      .mat-form-field-label {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
+}

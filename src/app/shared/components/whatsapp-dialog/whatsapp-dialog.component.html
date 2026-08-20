@@ -1,0 +1,93 @@
+<div class="whatsapp-dialog">
+  <div class="dialog-header">
+    <div class="header-icon">
+      <mat-icon class="whatsapp-icon">chat</mat-icon>
+    </div>
+    <h2>{{'PURCHASES.WHATSAPP_DIALOG_TITLE' | translate}}</h2>
+    <p class="subtitle">{{'PURCHASES.WHATSAPP_ORDER_INFO' | translate:{order: data.orderNumber, supplier: data.supplierName} }}</p>
+    <button class="close-btn" (click)="onClose()" [disabled]="loading()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  @if (loading()) {
+  <div class="loading-state">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>{{'PURCHASES.WHATSAPP_LOADING' | translate}}</p>
+  </div>
+  }
+
+  @if (!loading() && !phoneNumber() && !opened() && !desktopOpened()) {
+  <div class="error-state">
+    <div class="error-icon">
+      <mat-icon>error_outline</mat-icon>
+    </div>
+    <p>{{'PURCHASES.WHATSAPP_LOAD_ERROR' | translate}}</p>
+    <p class="error-detail">{{'PURCHASES.WHATSAPP_CHECK_ORDER' | translate}}</p>
+    <button class="retry-btn" (click)="onRetry()">
+      <mat-icon>refresh</mat-icon>
+      {{'PURCHASES.WHATSAPP_RETRY' | translate}}
+    </button>
+  </div>
+  }
+
+  @if (!loading() && phoneNumber()) {
+  <div class="message-preview">
+    <div class="preview-header">
+      <mat-icon>preview</mat-icon>
+      <span>{{'PURCHASES.WHATSAPP_PREVIEW' | translate}}</span>
+    </div>
+    <div class="preview-body">
+      @if (decodedMessage() && decodedMessage().trim() !== '') {
+      <pre>{{ decodedMessage() }}</pre>
+      } @else {
+      <p class="no-message">{{'PURCHASES.WHATSAPP_NO_MESSAGE' | translate}}</p>
+      }
+    </div>
+  </div>
+
+  <div class="phone-info">
+    <mat-icon>phone</mat-icon>
+    <span>{{'PURCHASES.WHATSAPP_SEND_TO' | translate}}: <strong dir="ltr">{{ phoneNumber() }}</strong></span>
+  </div>
+
+  <div class="open-whatsapp-section">
+    <button class="desktop-btn" (click)="onOpenDesktop()" [disabled]="desktopOpened()">
+      @if (desktopOpened()) {
+      <mat-icon>check_circle</mat-icon>
+      <span>{{'PURCHASES.WHATSAPP_OPEN_DESKTOP_DONE' | translate}}</span>
+      } @else {
+      <mat-icon>desktop_windows</mat-icon>
+      <span>{{'PURCHASES.WHATSAPP_OPEN_DESKTOP' | translate}}</span>
+      }
+    </button>
+    <p class="hint">{{'PURCHASES.WHATSAPP_HINT_DESKTOP' | translate}}</p>
+  </div>
+
+  <div class="web-fallback">
+    <button class="web-btn" (click)="onOpenWeb()" [disabled]="opened()">
+      @if (opened()) {
+      <mat-icon>check</mat-icon>
+      <span>{{'PURCHASES.WHATSAPP_OPEN_WEB_DONE' | translate}}</span>
+      } @else {
+      <mat-icon>language</mat-icon>
+      <span>{{'PURCHASES.WHATSAPP_OPEN_WEB' | translate}}</span>
+      }
+    </button>
+  </div>
+  }
+
+  <div class="dialog-footer">
+    <button class="close-footer-btn" (click)="onClose()">{{'PURCHASES.WHATSAPP_CLOSE' | translate}}</button>
+  </div>
+
+  @if (desktopOpened() || opened()) {
+  <div class="sent-overlay">
+    <div class="sent-content">
+      <mat-icon class="sent-icon">check_circle</mat-icon>
+      <p>{{'PURCHASES.WHATSAPP_SUCCESS' | translate}}</p>
+      <span class="sent-hint">{{'PURCHASES.WHATSAPP_SUCCESS_HINT' | translate}}</span>
+    </div>
+  </div>
+  }
+</div>

@@ -1,0 +1,78 @@
+<!-- Notification Button -->
+<button mat-icon-button [matMenuTriggerFor]="notificationMenu" [matBadge]="unreadCount()" matBadgeColor="warn"
+  class="notification-btn" [matTooltip]="'HEADER.NOTIFICATIONS' | translate">
+  <mat-icon>notifications</mat-icon>
+</button>
+
+<!-- Notification Menu - Bordio Style -->
+<mat-menu #notificationMenu="matMenu" class="bordio-style-menu" xPosition="before" [overlapTrigger]="false">
+
+  <!-- Menu Header -->
+  <div class="menu-header" (click)="$event.stopPropagation()">
+    <div class="header-main">
+      <h3>{{'NOTIFICATIONS.TITLE' | translate}}</h3>
+      @if (unreadCount() > 0) {
+      <span class="unread-pill">{{unreadCount()}} {{'NOTIFICATIONS.NEW' | translate}}</span>
+      }
+    </div>
+    <button mat-button color="primary" (click)="markAllAsRead()">
+      {{'NOTIFICATIONS.MARK_ALL_READ' | translate}}
+    </button>
+  </div>
+
+  <!-- Notifications List -->
+  <div class="notifications-container">
+    @for (notification of notifications(); track notification.id) {
+    <div class="notification-wrapper"
+      [ngClass]="[getPriorityClass(notification.priority), notification.read ? 'is-read' : '']">
+
+      <div class="notification-content" (click)="onNotificationClick(notification)">
+        <div class="icon-box">
+          <mat-icon>{{notification.icon || 'notifications'}}</mat-icon>
+        </div>
+        <div class="text-section">
+          <span class="message">{{notification.message}}</span>
+          <div class="meta">
+            <span>{{formatTime(notification.createdAt)}}</span>
+            <span>•</span>
+            <span>{{getPriorityLabel(notification.priority)}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Menu -->
+      <div class="notification-actions">
+        <button mat-icon-button [matMenuTriggerFor]="itemMenu" (click)="$event.stopPropagation()"
+          [matTooltip]="'COMMON.ACTIONS' | translate">
+          <mat-icon>more_horiz</mat-icon>
+        </button>
+
+        <mat-menu #itemMenu="matMenu">
+          @if (!notification.read) {
+          <button mat-menu-item (click)="markAsRead(notification.id); $event.stopPropagation()">
+            <mat-icon color="primary">check_circle</mat-icon>
+            <span>{{'NOTIFICATIONS.MARK_AS_READ' | translate}}</span>
+          </button>
+          }
+          <button mat-menu-item (click)="onDelete(notification.id); $event.stopPropagation()">
+            <mat-icon color="warn">delete_outline</mat-icon>
+            <span>{{'NOTIFICATIONS.DELETE' | translate}}</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+    } @empty {
+    <div class="empty-state" style="text-align: center; padding: 40px 20px;" (click)="$event.stopPropagation()">
+      <mat-icon style="font-size: 48px; color: #cbd5e1;">notifications_off</mat-icon>
+      <p style="color: #64748b;">{{'NOTIFICATIONS.EMPTY' | translate}}</p>
+    </div>
+    }
+  </div>
+
+  <!-- Menu Footer -->
+  <div class="menu-footer" (click)="$event.stopPropagation()">
+    <button mat-flat-button color="primary" (click)="viewAllNotifications()" class="full-width-btn">
+      {{'NOTIFICATIONS.VIEW_ALL' | translate}}
+    </button>
+  </div>
+</mat-menu>

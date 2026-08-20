@@ -1,0 +1,63 @@
+.data-table {
+  width: 100%;
+  direction: inherit;
+
+  th,
+  td {
+    padding: 14px 20px;
+    text-align: start;
+  }
+
+  th {
+    font-weight: 700;
+    color: var(--color-text-secondary, #64748b);
+    font-size: 12.5px;
+    background: var(--color-slate-50, #f8fafc);
+    border-bottom: 1px solid var(--color-border, #e2e8f0);
+  }
+
+  td {
+    border-bottom: 1px solid var(--color-border, #e2e8f0);
+    font-size: 13.5px;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover td {
+    background: var(--color-slate-50, #f8fafc);
+  }
+}
+
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-primary-50, #eef2ff);
+  color: var(--color-primary-700, #4338ca);
+  font-weight: 700;
+  font-size: 12.5px;
+}
+
+.product-name {
+  font-weight: 600;
+  color: var(--color-text-primary, #1e293b);
+}
+
+.quantity {
+  color: var(--color-text-secondary, #64748b);
+}
+
+.revenue {
+  font-weight: 700;
+  color: var(--color-success, #10b981);
+}
+
+.small-chip {
+  font-size: 12px;
+  min-height: 24px;
+}

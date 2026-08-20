@@ -1,0 +1,91 @@
+<div class="receipt-container" *ngIf="!loading && !error; else loadingOrError">
+  <div class="receipt-header">
+    <div class="store-info">
+      <h1>{{'STORE.NAME' | translate}}</h1>
+      <p>{{'STORE.ADDRESS' | translate}}</p>
+      <p>
+        <mat-icon>phone</mat-icon>
+        {{'STORE.PHONE' | translate}}: {{'STORE.PHONE_NUMBER' | translate}}
+      </p>
+    </div>
+    <div class="receipt-title">
+      <h2>{{'PAYMENTS.RECEIPT_TITLE' | translate}}</h2>
+      <mat-icon>receipt_long</mat-icon>
+    </div>
+  </div>
+
+  <div class="receipt-body" *ngIf="payment">
+    <div class="receipt-info">
+      <div class="info-row">
+        <span>{{'PAYMENTS.REFERENCE' | translate}}:</span>
+        <strong>{{payment.referenceNumber}}</strong>
+      </div>
+      <div class="info-row">
+        <span>{{'PAYMENTS.DATE' | translate}}:</span>
+        <strong>{{formatDate(payment.createdAt)}}</strong>
+      </div>
+      <div class="info-row">
+        <span>{{'PAYMENTS.STATUS' | translate}}:</span>
+        <span class="status-badge" [style.background]="getStatusColor(payment.status)">
+          {{getStatusLabel(payment.status) | translate}}
+        </span>
+      </div>
+    </div>
+
+    <div class="payment-details">
+      <h3>{{'PAYMENTS.PAYMENT_DETAILS' | translate}}</h3>
+      <div class="detail-row">
+        <span>{{'PAYMENTS.METHOD' | translate}}:</span>
+        <div class="method-info">
+          <mat-icon>{{getPaymentMethodIcon(payment.paymentMethod)}}</mat-icon>
+          <span>{{getPaymentMethodLabel(payment.paymentMethod) | translate}}</span>
+        </div>
+      </div>
+      <div class="detail-row amount-row">
+        <span>{{'PAYMENTS.AMOUNT' | translate}}:</span>
+        <strong class="total-amount">{{formatAmount(payment.amount)}}</strong>
+      </div>
+      <div class="detail-row" *ngIf="payment.description">
+        <span>{{'PAYMENTS.DESCRIPTION' | translate}}:</span>
+        <span>{{payment.description}}</span>
+      </div>
+    </div>
+
+    <div class="customer-info" *ngIf="payment.customerName || payment.customerPhone">
+      <h3>{{'PAYMENTS.CUSTOMER_INFO' | translate}}</h3>
+      <div class="detail-row" *ngIf="payment.customerName">
+        <span>{{'PAYMENTS.CUSTOMER_NAME' | translate}}:</span>
+        <span>{{payment.customerName}}</span>
+      </div>
+      <div class="detail-row" *ngIf="payment.customerPhone">
+        <span>{{'PAYMENTS.CUSTOMER_PHONE' | translate}}:</span>
+        <span>{{payment.customerPhone}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="receipt-footer">
+    <p>{{'PAYMENTS.THANK_YOU' | translate}}</p>
+    <p class="small">{{'PAYMENTS.RECEIPT_FOOTER' | translate}}</p>
+  </div>
+
+  <div class="receipt-actions no-print">
+    <button mat-raised-button color="primary" (click)="printReceipt()">
+      <mat-icon>print</mat-icon>
+      {{'COMMON.PRINT' | translate}}
+    </button>
+    <button mat-button color="warn" (click)="closeReceipt()">
+      <mat-icon>close</mat-icon>
+      {{'COMMON.CLOSE' | translate}}
+    </button>
+  </div>
+</div>
+
+<ng-template #loadingOrError>
+  <div class="loading-container">
+    <mat-progress-spinner *ngIf="loading" mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p *ngIf="loading">{{'COMMON.LOADING' | translate}}</p>
+    <mat-icon *ngIf="error" class="error-icon">error</mat-icon>
+    <p *ngIf="error">{{'PAYMENTS.LOAD_ERROR' | translate}}</p>
+  </div>
+</ng-template>

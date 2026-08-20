@@ -1,0 +1,29 @@
+<div class="app-container" [attr.dir]="currentLang() === 'ar' ? 'rtl' : 'ltr'">
+  <!-- Header - ثابت في فوق -->
+  <header class="main-header">
+    <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+  </header>
+
+  <div class="content-area">
+    <!-- Sidebar - بيتحرك حسب اللغة -->
+    <aside class="sidebar-wrapper" [class.collapsed]="isSidebarCollapsed()" [class.mobile-open]="isSidebarOpen()"
+      (clickOutside)="closeSidebar()">
+      <app-sidebar [isCollapsed]="isSidebarCollapsed()"></app-sidebar>
+    </aside>
+
+    <!-- Main Content - ده اللي بيسكرول -->
+    <main class="main-content">
+      <div class="content-container">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer - ثابت في الآخر -->
+  <footer class="main-footer" [class.collapsed]="isSidebarCollapsed()">
+    <app-footer></app-footer>
+  </footer>
+
+  <!-- Loading Spinner -->
+  <app-loading-spinner></app-loading-spinner>
+</div>

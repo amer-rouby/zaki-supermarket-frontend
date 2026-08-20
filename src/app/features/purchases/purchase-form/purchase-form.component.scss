@@ -1,0 +1,169 @@
+.purchase-form-container {
+  padding: 24px;
+  direction: inherit;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.purchase-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  direction: inherit;
+}
+
+.form-section {
+  border-radius: 12px;
+  direction: inherit;
+
+  mat-card-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    mat-card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+
+  mat-card-content {
+    padding: 24px;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+.item-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background: var(--mat-sys-surface-variant);
+  direction: inherit;
+
+  .product-field {
+    grid-column: 1 / -2;
+  }
+
+  .item-total {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+
+    .label {
+      font-size: 12px;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    .value {
+      font-weight: 600;
+      color: #10b981;
+    }
+  }
+}
+
+.no-items {
+  text-align: center;
+  padding: 24px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-top: 2px solid var(--mat-sys-outline-variant);
+  margin-top: 16px;
+  direction: inherit;
+
+  .amount {
+    font-size: 24px;
+    font-weight: 700;
+    color: #667eea;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+@media (max-width: 768px) {
+  .purchase-form-container {
+    padding: 16px;
+  }
+
+  .item-row {
+    grid-template-columns: 1fr;
+
+    .product-field {
+      grid-column: 1;
+    }
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+::ng-deep {
+  .purchase-form-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+
+      .mat-form-field-label {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
+}

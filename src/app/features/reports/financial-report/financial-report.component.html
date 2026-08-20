@@ -1,0 +1,176 @@
+<div class="reports-container">
+  <!-- Page Header with Export Buttons -->
+  <app-page-header [title]="'REPORTS.FINANCIAL_REPORTS' | translate" [subtitle]="'REPORTS.FINANCIAL_DESC' | translate"
+    icon="account_balance">
+
+    <!-- Export Buttons -->
+    <div class="export-buttons">
+      <button mat-raised-button color="primary" (click)="exportPDF()" [disabled]="exportLoading()">
+        @if (exportLoading()) {
+        <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+        <mat-icon>picture_as_pdf</mat-icon>
+        }
+        <span>{{ 'REPORTS.EXPORT_PDF' | translate }}</span>
+      </button>
+    </div>
+
+  </app-page-header>
+
+  <!-- Filters Card -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-grid">
+        <!-- Start Date -->
+        <mat-form-field appearance="outline">
+          <mat-label>{{'REPORTS.FROM' | translate}}</mat-label>
+          <input matInput [matDatepicker]="fromPicker" [(ngModel)]="startDate">
+          <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromPicker></mat-datepicker>
+        </mat-form-field>
+
+        <!-- End Date -->
+        <mat-form-field appearance="outline">
+          <mat-label>{{'REPORTS.TO' | translate}}</mat-label>
+          <input matInput [matDatepicker]="toPicker" [(ngModel)]="endDate">
+          <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toPicker></mat-datepicker>
+        </mat-form-field>
+
+        <!-- Report Type -->
+        <mat-form-field appearance="outline">
+          <mat-label>{{'REPORTS.REPORT_TYPE' | translate}}</mat-label>
+          <mat-select [(ngModel)]="reportType">
+            <mat-option value="DAILY">{{'REPORTS.DAILY' | translate}}</mat-option>
+            <mat-option value="MONTHLY">{{'REPORTS.MONTHLY' | translate}}</mat-option>
+            <mat-option value="YEARLY">{{'REPORTS.YEARLY' | translate}}</mat-option>
+            <mat-option value="CUSTOM">{{'REPORTS.CUSTOM' | translate}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Generate Button -->
+        <button mat-raised-button color="primary" (click)="generateReport()" [disabled]="reportLoading()">
+          @if (reportLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+          <mat-icon>refresh</mat-icon>
+          }
+          <span>{{reportLoading() ? ('COMMON.LOADING' | translate) : ('REPORTS.GENERATE' | translate)}}</span>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  @if (reportLoading()) {
+  <div class="loading-overlay">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>{{'COMMON.LOADING' | translate}}</p>
+  </div>
+  }
+
+  <!-- Error State -->
+  @if (reportError()) {
+  <mat-card class="error-card">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>{{reportError() | translate}}</p>
+    <button mat-raised-button color="primary" (click)="generateReport()">
+      {{'COMMON.RETRY' | translate}}
+    </button>
+  </mat-card>
+  }
+
+  <!-- Data State -->
+  @if (!reportLoading() && !reportError() && financialData()) {
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%)">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{formatCurrency(financialData()!.totalRevenue)}}</h3>
+          <p>{{'REPORTS.REVENUE' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%)">
+          <mat-icon>trending_down</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{formatCurrency(financialData()!.totalExpenses)}}</h3>
+          <p>{{'REPORTS.EXPENSES' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{formatCurrency(financialData()!.netProfit)}}</h3>
+          <p>{{'REPORTS.NET_PROFIT' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%)">
+          <mat-icon>percent</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{financialData()!.profitMargin}}%</h3>
+          <p>{{'REPORTS.PROFIT_MARGIN' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Charts Grid -->
+  <div class="charts-grid">
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>{{'REPORTS.REVENUE_VS_EXPENSES' | translate}}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container">
+          <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="'line'">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>{{'REPORTS.EXPENSES_BY_CATEGORY' | translate}}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container">
+          <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="'doughnut'">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  } @else if (!reportLoading() && !financialData() && !reportError()) {
+
+  <!-- Empty State -->
+  <div class="empty-state">
+    <mat-icon>analytics</mat-icon>
+    <p>{{'REPORTS.SELECT_FILTERS' | translate}}</p>
+    <button mat-raised-button color="primary" (click)="generateReport()">
+      {{'REPORTS.GENERATE' | translate}}
+    </button>
+  </div>
+
+  }
+</div>

@@ -1,0 +1,29 @@
+<div class="stats-grid">
+  <mat-card class="stat-card success">
+    <mat-card-content>
+      <div class="stat-icon"><mat-icon>check_circle</mat-icon></div>
+      <div class="stat-info">
+        <h3>{{stats().completedPayments || 0}}</h3>
+        <p>{{'PAYMENTS.STATS.COMPLETED' | translate}}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="stat-card primary">
+    <mat-card-content>
+      <div class="stat-icon"><mat-icon>attach_money</mat-icon></div>
+      <div class="stat-info">
+        <h3>{{stats().totalAmount | number:'1.2-2'}} ج.م</h3>
+        <p>{{'PAYMENTS.STATS.TOTAL_AMOUNT' | translate}}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="stat-card warn">
+    <mat-card-content>
+      <div class="stat-icon"><mat-icon>pending</mat-icon></div>
+      <div class="stat-info">
+        <h3>{{stats().pendingPayments || 0}}</h3>
+        <p>{{'PAYMENTS.STATS.PENDING' | translate}}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

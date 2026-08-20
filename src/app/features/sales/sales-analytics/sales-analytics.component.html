@@ -1,0 +1,237 @@
+<div class="sales-analytics" [attr.dir]="currentLang() === 'ar' ? 'rtl' : 'ltr'">
+
+  <!-- 📰 Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <h2><mat-icon>analytics</mat-icon> {{ 'SALES.ANALYTICS_TITLE' | translate }}</h2>
+      <p>{{ 'SALES.ANALYTICS_SUBTITLE' | translate }}</p>
+    </div>
+    <div class="header-actions">
+      <button mat-button color="accent" (click)="onExport('excel')">
+        <mat-icon>table_chart</mat-icon> Excel
+      </button>
+      <button mat-button color="primary" (click)="onExport('pdf')">
+        <mat-icon>picture_as_pdf</mat-icon> PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- 🎛️ Filters -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <form class="filters-form" #filterForm="ngForm" (ngSubmit)="onFilterChange()">
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'COMMON.PERIOD' | translate }}</mat-label>
+          <mat-select [(ngModel)]="filters().period" name="period" (selectionChange)="onFilterChange()">
+            @for (p of periods; track p.value) {
+            <mat-option [value]="p.value">{{ p.label | translate }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'REPORTS.FROM' | translate }}</mat-label>
+          <input matInput [matDatepicker]="fromPicker" [(ngModel)]="filters().startDate" name="startDate"
+            (dateChange)="onFilterChange()">
+          <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'REPORTS.TO' | translate }}</mat-label>
+          <input matInput [matDatepicker]="toPicker" [(ngModel)]="filters().endDate" name="endDate"
+            (dateChange)="onFilterChange()">
+          <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toPicker></mat-datepicker>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="button" (click)="onRefresh()">
+          <mat-icon>refresh</mat-icon> {{ 'COMMON.REFRESH' | translate }}
+        </button>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- ⏳ Loading State -->
+  @if (state().loading) {
+  <mat-card class="loading-card">
+    <mat-card-content class="loading-state">
+      <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+      <p>{{ 'COMMON.LOADING' | translate }}</p>
+    </mat-card-content>
+  </mat-card>
+  }
+
+  <!-- ❌ Error State -->
+  @if (state().error) {
+  <mat-card class="error-card">
+    <mat-card-content class="error-state">
+      <mat-icon color="warn">error_outline</mat-icon>
+      <p>{{ state().error | translate }}</p>
+      <button mat-button color="primary" (click)="onRefresh()">
+        {{ 'COMMON.RETRY' | translate }}
+      </button>
+    </mat-card-content>
+  </mat-card>
+  }
+
+  <!-- 📊 Analytics Content -->
+  @if (hasData()) {
+  <div class="analytics-content">
+
+    <!-- 📈 Stats Cards -->
+    <div class="stats-grid">
+      @for (stat of statsCards; track stat.key) {
+      <mat-card class="stat-card" [class]="stat.class">
+        <mat-card-content>
+          <div class="stat-info">
+            <h3>{{ stat.label | translate }}</h3>
+            <p class="stat-value">{{ getStatValue(stat.key) }}</p>
+            @if (stat.showMargin && analytics()?.profitMargin !== undefined) {
+            <span class="stat-margin" [class]="getProfitClass(analytics()?.profitMargin)">
+              {{ analytics()?.profitMargin }}%
+            </span>
+            }
+          </div>
+          <mat-icon class="stat-icon">{{ stat.icon }}</mat-icon>
+        </mat-card-content>
+      </mat-card>
+      }
+    </div>
+
+    <!-- 📊 Charts Section -->
+    <div class="charts-grid">
+
+      <!-- Sales Trend Chart -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>trending_up</mat-icon>
+            {{ 'REPORTS.SALES_TREND' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (trendData() && trendData().length > 0) {
+          <div class="bar-chart">
+            @for (item of trendData(); track item.date) {
+            <div class="bar-item">
+              <div class="bar" [style.height.%]="calculateBarHeight(item.revenue)">
+                <span class="bar-label">{{ formatCurrency(item.revenue) }}</span>
+              </div>
+              <span class="bar-period">{{ item.label ?? item.date }}</span>
+            </div>
+            }
+          </div>
+          } @else {
+          <div class="empty-chart-state">
+            <mat-icon>show_chart</mat-icon>
+            <p>{{ 'REPORTS.NO_TREND_DATA' | translate }}</p>
+            <small>{{ 'REPORTS.NO_TREND_DATA_DESC' | translate }}</small>
+          </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Payment Methods -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title><mat-icon>payment</mat-icon> {{ 'REPORTS.PAYMENT_METHODS' | translate }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (analytics()?.paymentMethods?.length) {
+          <div class="payment-list">
+            @for (method of analytics()?.paymentMethods; track method.method) {
+            <div class="payment-item">
+              <div class="payment-details">
+                <span class="method-name">{{ method.method }}</span>
+                <span class="method-count">{{ method.count }} {{ 'SALES.TRANSACTIONS' | translate }}</span>
+              </div>
+              <div class="payment-stats">
+                <span class="method-amount">{{ formatCurrency(method.amount) }}</span>
+                <span class="method-percent">{{ method.percentage }}%</span>
+              </div>
+              <mat-progress-bar mode="determinate" [value]="method.percentage" color="primary"></mat-progress-bar>
+            </div>
+            }
+          </div>
+          } @else {
+          <p class="empty-state">{{ 'REPORTS.NO_PAYMENT_DATA' | translate }}</p>
+          }
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <!-- 📋 Data Tables -->
+    <div class="tables-grid">
+
+      <!-- Top Products -->
+      <mat-card class="table-card">
+        <mat-card-header>
+          <mat-card-title><mat-icon>emoji_events</mat-icon> {{ 'REPORTS.TOP_PRODUCTS' | translate }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (hasTopProducts()) {
+          <table mat-table [dataSource]="state().topProducts" class="data-table">
+            <ng-container matColumnDef="rank">
+              <th mat-header-cell *matHeaderCellDef> # </th>
+              <td mat-cell *matCellDef="let item; let i = index"> {{ i + 1 }} </td>
+            </ng-container>
+            <ng-container matColumnDef="product">
+              <th mat-header-cell *matHeaderCellDef> {{ 'COMMON.PRODUCT' | translate }} </th>
+              <td mat-cell *matCellDef="let item"> {{ item.productName }} </td>
+            </ng-container>
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef class="text-center"> {{ 'COMMON.QUANTITY' | translate }} </th>
+              <td mat-cell *matCellDef="let item" class="text-center"> {{ item.quantity | number:'1.0-0' }} </td>
+            </ng-container>
+            <ng-container matColumnDef="revenue">
+              <th mat-header-cell *matHeaderCellDef> {{ 'COMMON.REVENUE' | translate }} </th>
+              <td mat-cell *matCellDef="let item"> {{ formatCurrency(item.revenue) }} </td>
+            </ng-container>
+            <ng-container matColumnDef="percentage">
+              <th mat-header-cell *matHeaderCellDef class="text-center"> % </th>
+              <td mat-cell *matCellDef="let item" class="text-center">
+                <mat-chip class="percentage-chip">{{ item.percentage }}%</mat-chip>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="['rank', 'product', 'quantity', 'revenue', 'percentage']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['rank', 'product', 'quantity', 'revenue', 'percentage'];"></tr>
+          </table>
+          } @else {
+          <p class="empty-state">{{ 'REPORTS.NO_PRODUCTS_DATA' | translate }}</p>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Sales by Category -->
+      <mat-card class="table-card">
+        <mat-card-header>
+          <mat-card-title><mat-icon>category</mat-icon> {{ 'REPORTS.SALES_BY_CATEGORY' | translate }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (hasCategorySales()) {
+          <table mat-table [dataSource]="state().categorySales" class="data-table">
+            <ng-container matColumnDef="category">
+              <th mat-header-cell *matHeaderCellDef> {{ 'PRODUCTS.CATEGORY' | translate }} </th>
+              <td mat-cell *matCellDef="let item"> {{ item.categoryName }} </td>
+            </ng-container>
+            <ng-container matColumnDef="revenue">
+              <th mat-header-cell *matHeaderCellDef class="text-center"> {{ 'COMMON.REVENUE' | translate }} </th>
+              <td mat-cell *matCellDef="let item" class="text-center"> {{ formatCurrency(item.revenue) }} </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="['category', 'revenue']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['category', 'revenue'];"></tr>
+          </table>
+          } @else {
+          <p class="empty-state">{{ 'REPORTS.NO_CATEGORY_DATA' | translate }}</p>
+          }
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+  </div>
+  }
+</div>

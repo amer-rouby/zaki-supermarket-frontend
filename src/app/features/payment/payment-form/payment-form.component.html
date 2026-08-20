@@ -1,0 +1,69 @@
+<mat-card class="payment-form-card">
+  <mat-card-header>
+    <mat-card-title>{{'PAYMENT.TITLE' | translate}}</mat-card-title>
+    <mat-card-subtitle>{{'PAYMENT.SUBTITLE' | translate}}</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'PAYMENT.AMOUNT' | translate}}</mat-label>
+        <input matInput type="number" formControlName="amount" placeholder="0.00" step="0.01" min="0.01">
+        <mat-icon matPrefix>attach_money</mat-icon>
+        @if (amount?.invalid && amount?.touched) {
+        <mat-error>{{'PAYMENT.AMOUNT_REQUIRED' | translate}}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'PAYMENT.METHOD' | translate}}</mat-label>
+        <mat-select formControlName="paymentMethod">
+          @for (method of paymentMethods; track method) {
+          <mat-option [value]="method.value">
+            <mat-icon>{{method.icon}}</mat-icon>
+            {{method.label | translate}}
+          </mat-option>
+          }
+        </mat-select>
+        <mat-icon matPrefix>payment</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'PAYMENT.CUSTOMER_NAME' | translate}}</mat-label>
+        <input matInput type="text" formControlName="customerName">
+        <mat-icon matPrefix>person</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'PAYMENT.CUSTOMER_PHONE' | translate}}</mat-label>
+        <input matInput type="tel" formControlName="customerPhone" placeholder="01xxxxxxxxx">
+        <mat-icon matPrefix>phone</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'PAYMENT.CUSTOMER_EMAIL' | translate}}</mat-label>
+        <input matInput type="email" formControlName="customerEmail" placeholder="email@example.com">
+        <mat-icon matPrefix>email</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'PAYMENT.DESCRIPTION' | translate}}</mat-label>
+        <textarea matInput formControlName="description" rows="3"></textarea>
+        <mat-icon matPrefix>description</mat-icon>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="loading()" class="full-width">
+        @if (loading()) {
+        <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+        <ng-container>
+          <mat-icon>payment</mat-icon>
+          <span>{{'PAYMENT.PROCESS' | translate}}</span>
+        </ng-container>
+        }
+      </button>
+
+    </form>
+  </mat-card-content>
+</mat-card>

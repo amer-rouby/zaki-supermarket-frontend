@@ -1,0 +1,228 @@
+:host {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.auth-bg {
+  position: absolute;
+  inset: 0;
+}
+
+// Soft blurred gradient blobs, slowly drifting
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.35;
+  will-change: transform;
+}
+
+.blob-1 {
+  width: 420px;
+  height: 420px;
+  top: -120px;
+  inset-inline-start: -100px;
+  background: radial-gradient(circle, var(--color-primary-500, #6366f1), transparent 70%);
+  animation: float-blob-1 22s ease-in-out infinite;
+}
+
+.blob-2 {
+  width: 380px;
+  height: 380px;
+  bottom: -140px;
+  inset-inline-end: -80px;
+  background: radial-gradient(circle, var(--color-primary-700, #4338ca), transparent 70%);
+  animation: float-blob-2 26s ease-in-out infinite;
+}
+
+.blob-3 {
+  width: 300px;
+  height: 300px;
+  top: 40%;
+  inset-inline-start: 45%;
+  background: radial-gradient(circle, var(--color-primary-300, #a5b4fc), transparent 70%);
+  opacity: 0.2;
+  animation: float-blob-3 18s ease-in-out infinite;
+}
+
+@keyframes float-blob-1 {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(60px, 50px) scale(1.1);
+  }
+}
+
+@keyframes float-blob-2 {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(-50px, -40px) scale(1.08);
+  }
+}
+
+@keyframes float-blob-3 {
+
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+}
+
+// Faint dot-grid texture for depth
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--color-primary-300, #a5b4fc) 1px, transparent 1px);
+  background-size: 36px 36px;
+  opacity: 0.15;
+}
+
+// Floating store-themed icons, scattered and drifting
+.floating-icon {
+  position: absolute;
+  color: var(--color-primary-500, #6366f1);
+  opacity: 0.14;
+}
+
+.icon-0 {
+  top: 12%;
+  inset-inline-start: 10%;
+  font-size: 46px;
+  width: 46px;
+  height: 46px;
+  animation: drift-a 14s ease-in-out infinite;
+}
+
+.icon-1 {
+  top: 22%;
+  inset-inline-end: 14%;
+  font-size: 38px;
+  width: 38px;
+  height: 38px;
+  animation: drift-b 17s ease-in-out infinite;
+}
+
+.icon-2 {
+  bottom: 18%;
+  inset-inline-start: 16%;
+  font-size: 34px;
+  width: 34px;
+  height: 34px;
+  animation: drift-c 15s ease-in-out infinite;
+}
+
+.icon-3 {
+  bottom: 12%;
+  inset-inline-end: 10%;
+  font-size: 50px;
+  width: 50px;
+  height: 50px;
+  animation: drift-a 19s ease-in-out infinite reverse;
+}
+
+.icon-4 {
+  top: 48%;
+  inset-inline-start: 6%;
+  font-size: 30px;
+  width: 30px;
+  height: 30px;
+  animation: drift-b 13s ease-in-out infinite;
+}
+
+.icon-5 {
+  top: 60%;
+  inset-inline-end: 7%;
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  animation: drift-c 20s ease-in-out infinite reverse;
+}
+
+@keyframes drift-a {
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  50% {
+    transform: translate(16px, -22px) rotate(8deg);
+  }
+}
+
+@keyframes drift-b {
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  50% {
+    transform: translate(-18px, 18px) rotate(-6deg);
+  }
+}
+
+@keyframes drift-c {
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  50% {
+    transform: translate(14px, 20px) rotate(10deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .blob,
+  .floating-icon {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .floating-icon {
+    display: none;
+  }
+
+  .blob {
+    filter: blur(40px);
+  }
+}
+
+// Light backgrounds wash the low-opacity blobs/icons out almost completely;
+// boost contrast so the pattern stays visible against --color-slate-50.
+:host-context(body.light-theme) {
+  .blob {
+    opacity: 0.55;
+  }
+
+  .floating-icon {
+    color: var(--color-primary-600, #4f46e5);
+    opacity: 0.28;
+  }
+
+  .grid-overlay {
+    background-image: radial-gradient(var(--color-primary-400, #818cf8) 1.5px, transparent 1.5px);
+    opacity: 0.3;
+  }
+}

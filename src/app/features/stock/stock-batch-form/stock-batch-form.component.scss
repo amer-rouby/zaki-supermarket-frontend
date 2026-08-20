@@ -1,0 +1,103 @@
+.batch-form-container {
+  padding: 24px;
+  direction: inherit;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.batch-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+}
+
+.half-width {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e9ecef;
+}
+
+mat-form-field {
+  direction: inherit;
+
+  .mat-form-field-wrapper {
+    direction: inherit;
+  }
+
+  .mat-form-field-label-wrapper {
+    direction: inherit;
+  }
+
+  .mat-form-field-label {
+    direction: inherit;
+    text-align: start;
+  }
+
+  input,
+  select,
+  textarea {
+    direction: inherit;
+    text-align: start;
+  }
+
+  .mat-form-field-prefix,
+  .mat-form-field-suffix {
+    direction: inherit;
+  }
+}
+
+::ng-deep {
+  .batch-form-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
+}
+
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .batch-form-container {
+    padding: 16px;
+  }
+}

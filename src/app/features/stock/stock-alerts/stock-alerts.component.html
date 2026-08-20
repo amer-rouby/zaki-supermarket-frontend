@@ -1,0 +1,247 @@
+<div class="stock-alerts-container">
+  <app-page-header [title]="'STOCK_ALERTS.TITLE' | translate" [subtitle]="'STOCK_ALERTS.SUBTITLE' | translate"
+    icon="warning">
+  </app-page-header>
+
+  @if (stats()) {
+  <div class="stats-grid">
+    <mat-card class="stat-card critical">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>error</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{stats()?.outOfStockAlerts || 0}}</h3>
+          <p>{{'STOCK_ALERTS.STATS.OUT_OF_STOCK' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card warning">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>warning</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{stats()?.expiredAlerts || 0}}</h3>
+          <p>{{'STOCK_ALERTS.STATS.EXPIRED' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card info">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>schedule</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{stats()?.expiringSoonAlerts || 0}}</h3>
+          <p>{{'STOCK_ALERTS.STATS.EXPIRING_SOON' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card primary">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{stats()?.lowStockAlerts || 0}}</h3>
+          <p>{{'STOCK_ALERTS.STATS.LOW_STOCK' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card success">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>notifications_none</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{stats()?.unreadAlerts || 0}}</h3>
+          <p>{{'STOCK_ALERTS.STATS.UNREAD' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card default">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>list</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{stats()?.totalAlerts || 0}}</h3>
+          <p>{{'STOCK_ALERTS.STATS.TOTAL' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  }
+
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-grid">
+        <form [formGroup]="filterForm">
+          <mat-form-field appearance="outline">
+            <mat-label>{{'STOCK_ALERTS.FILTERS.TYPE' | translate}}</mat-label>
+            <mat-select formControlName="alertType" (selectionChange)="onFilterChange()">
+              <mat-option value="all">{{'STOCK_ALERTS.FILTERS.ALL_TYPES' | translate}}</mat-option>
+              <mat-option value="LOW_STOCK">{{'STOCK_ALERTS.TYPE.LOW_STOCK' | translate}}</mat-option>
+              <mat-option value="OUT_OF_STOCK">{{'STOCK_ALERTS.TYPE.OUT_OF_STOCK' | translate}}</mat-option>
+              <mat-option value="EXPIRING_SOON">{{'STOCK_ALERTS.TYPE.EXPIRING_SOON' | translate}}</mat-option>
+              <mat-option value="EXPIRED">{{'STOCK_ALERTS.TYPE.EXPIRED' | translate}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{'STOCK_ALERTS.FILTERS.STATUS' | translate}}</mat-label>
+            <mat-select formControlName="status" (selectionChange)="onFilterChange()">
+              <mat-option value="all">{{'STOCK_ALERTS.FILTERS.ALL_STATUS' | translate}}</mat-option>
+              <mat-option value="unread">{{'STOCK_ALERTS.STATUS.UNREAD' | translate}}</mat-option>
+              <mat-option value="read">{{'STOCK_ALERTS.STATUS.READ' | translate}}</mat-option>
+              <mat-option value="resolved">{{'STOCK_ALERTS.STATUS.RESOLVED' | translate}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
+
+        <button mat-raised-button color="primary" (click)="onMarkAllAsRead()" [disabled]="loading()">
+          <mat-icon>done_all</mat-icon>
+          <span>{{'STOCK_ALERTS.MARK_ALL_READ' | translate}}</span>
+        </button>
+
+        <button mat-button (click)="loadAlerts()" [disabled]="loading()">
+          <mat-icon>refresh</mat-icon>
+          <span>{{'COMMON.REFRESH' | translate}}</span>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  @if (loading() && !getFilteredAlertsCount()) {
+  <div class="loading-state">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>{{'COMMON.LOADING' | translate}}</p>
+  </div>
+  }
+
+  @if (getFilteredAlertsCount()) {
+  <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
+    <mat-card-header>
+      <mat-card-title>{{'STOCK_ALERTS.ALERTS_LIST' | translate}}</mat-card-title>
+      <mat-card-subtitle>{{getFilteredAlertsCount()}} {{'STOCK_ALERTS.COUNT' | translate}}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content [class.list-content-refreshing]="loading()">
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="getFilteredAlerts()" class="alerts-table">
+
+          <ng-container matColumnDef="alertType">
+            <th mat-header-cell *matHeaderCellDef> {{'STOCK_ALERTS.COLUMN.TYPE' | translate}} </th>
+            <td mat-cell *matCellDef="let alert">
+              <mat-chip [style.background]="getSeverityColor(alert.severity)" class="type-chip">
+                <mat-icon>
+                  @switch (alert.alertType) {
+                  @case ('LOW_STOCK') { inventory_2 }
+                  @case ('OUT_OF_STOCK') { remove_shopping_cart }
+                  @case ('EXPIRING_SOON') { schedule }
+                  @case ('EXPIRED') { error }
+                  }
+                </mat-icon>
+                {{getAlertTypeLabel(alert.alertType)}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="product">
+            <th mat-header-cell *matHeaderCellDef> {{'STOCK_ALERTS.COLUMN.PRODUCT' | translate}} </th>
+            <td mat-cell *matCellDef="let alert">
+              <div class="product-info">
+                <strong>{{alert.productName}}</strong>
+                @if (alert.batchNumber) {
+                <small>{{'STOCK_ALERTS.BATCH' | translate}}: {{alert.batchNumber}}</small>
+                }
+                @if (alert.currentStock !== undefined) {
+                <small>{{'STOCK_ALERTS.STOCK' | translate}}: {{alert.currentStock}}</small>
+                }
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="message">
+            <th mat-header-cell *matHeaderCellDef> {{'STOCK_ALERTS.COLUMN.MESSAGE' | translate}} </th>
+            <td mat-cell *matCellDef="let alert">
+              <span class="message-text">{{alert.message}}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="severity">
+            <th mat-header-cell *matHeaderCellDef> {{'STOCK_ALERTS.COLUMN.SEVERITY' | translate}} </th>
+            <td mat-cell *matCellDef="let alert">
+              <mat-chip [style.background]="getSeverityColor(alert.severity)" class="severity-chip">
+                {{'STOCK_ALERTS.SEVERITY.' + alert.severity | translate}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef> {{'STOCK_ALERTS.COLUMN.STATUS' | translate}} </th>
+            <td mat-cell *matCellDef="let alert">
+              <mat-chip [style.background]="getStatusColor(alert.status)" class="status-chip">
+                {{getStatusLabel(alert.status)}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef> {{'STOCK_ALERTS.COLUMN.DATE' | translate}} </th>
+            <td mat-cell *matCellDef="let alert">
+              <span class="text-muted">{{formatDate(alert.createdAt)}}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> {{'COMMON.ACTIONS' | translate}} </th>
+            <td mat-cell *matCellDef="let alert">
+              @if (alert.status === 'UNREAD') {
+              <button mat-icon-button color="primary" (click)="onMarkAsRead(alert.id)"
+                [matTooltip]="'STOCK_ALERTS.MARK_READ' | translate">
+                <mat-icon>mark_email_read</mat-icon>
+              </button>
+              }
+              @if (alert.status !== 'RESOLVED') {
+              <button mat-icon-button color="accent" (click)="onResolve(alert.id)"
+                [matTooltip]="'STOCK_ALERTS.RESOLVE' | translate">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              }
+              <button mat-icon-button color="warn" (click)="onDelete(alert.id)"
+                [matTooltip]="'COMMON.DELETE' | translate">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="alert-row"
+            [class.unread]="row.status === 'UNREAD'" [class.resolved]="row.status === 'RESOLVED'">
+          </tr>
+        </table>
+      </div>
+    </mat-card-content>
+
+    <mat-paginator [length]="getFilteredAlertsCount()" [pageSize]="pageSize()" [pageIndex]="pageIndex()"
+      [pageSizeOptions]="[5, 10, 25, 50]" [disabled]="loading()" (page)="onPageChange($event)" aria-label="Select page of alerts">
+    </mat-paginator>
+  </mat-card>
+  } @else if (!loading()) {
+  <div class="empty-state">
+    <mat-icon class="empty-icon">notifications_none</mat-icon>
+    <h3>{{'STOCK_ALERTS.NO_ALERTS' | translate}}</h3>
+    <p>{{'STOCK_ALERTS.NO_ALERTS_DESC' | translate}}</p>
+  </div>
+  }
+</div>

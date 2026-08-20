@@ -1,0 +1,105 @@
+/* الحاوية الرئيسية للديالوج */
+::ng-deep .mat-mdc-dialog-container {
+  .mdc-dialog__surface {
+    border-radius: 24px !important; // زوايا دائرية عصرية
+    padding: 8px;
+  }
+}
+
+.confirm-dialog-container {
+  padding: 16px;
+  text-align: center;
+  direction: rtl; // لضمان التوافق مع اللغة العربية
+
+  .dialog-header {
+    margin-bottom: 20px;
+
+    .icon-wrapper {
+      width: 80px;
+      height: 80px;
+      background: #fff5f5; // خلفية حمراء فاتحة جداً
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+
+      mat-icon {
+        font-size: 40px;
+        width: 40px;
+        height: 40px;
+        color: #ef4444; // لون تحذير احترافي
+        animation: pulse-ring 1.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+      }
+    }
+  }
+
+  .dialog-content {
+    h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 15px;
+      color: #64748b;
+      line-height: 1.6;
+      margin: 0;
+    }
+  }
+
+  .dialog-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 30px;
+    padding-bottom: 8px;
+
+    button {
+      height: 48px;
+      padding: 0 28px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 15px;
+      transition: all 0.3s ease;
+
+      &.confirm-btn {
+        background-color: #ef4444;
+        color: white;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+
+        &:hover {
+          background-color: #dc2626;
+          transform: translateY(-2px);
+        }
+      }
+
+      &.cancel-btn {
+        background-color: #f1f5f9;
+        color: #475569;
+
+        &:hover {
+          background-color: #e2e8f0;
+          color: #1e293b;
+        }
+      }
+    }
+  }
+}
+
+/* أنيميشن احترافي للحلقة حول الأيقونة */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

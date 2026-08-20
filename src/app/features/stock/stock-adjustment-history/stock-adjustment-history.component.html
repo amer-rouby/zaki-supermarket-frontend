@@ -1,0 +1,101 @@
+<div class="history-dialog">
+  <!-- Header -->
+  <div class="dialog-header">
+    <h2 mat-dialog-title>{{'STOCK.ADJUSTMENT_HISTORY' | translate}}</h2>
+    <button mat-icon-button (click)="dialogRef.close()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Batch Info -->
+  <div class="batch-info" mat-dialog-content>
+    <div class="info-row">
+      <span class="info-label">{{'PRODUCTS.NAME' | translate}}:</span>
+      <span class="info-value">{{data.batch.productName}}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">{{'STOCK.BATCH_NUMBER' | translate}}:</span>
+      <span class="info-value">{{data.batch.batchNumber}}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">{{'STOCK.CURRENT_QUANTITY' | translate}}:</span>
+      <span class="info-value">{{data.batch.quantityCurrent}}</span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+  <div class="loading-container">
+    <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+    <p>{{'COMMON.LOADING' | translate}}</p>
+  </div>
+  }
+
+  <!-- Timeline -->
+  @if (!loading() && history().length > 0) {
+  <div class="timeline-container" mat-dialog-content>
+    <div class="timeline">
+      @for (item of history(); track item.id) {
+      <div class="timeline-item" [class.type-add]="item.type === 'ADD'" [class.type-remove]="item.type === 'REMOVE'"
+        [class.type-correction]="item.type === 'CORRECTION'">
+
+        <div class="timeline-icon">
+          <mat-icon>{{getAdjustmentIcon(item.type)}}</mat-icon>
+        </div>
+
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <span class="timeline-type">{{getAdjustmentLabel(item.type)}}</span>
+            <span class="timeline-date">{{formatDate(item.adjustmentDate)}}</span>
+          </div>
+
+          <div class="quantity-change">
+            <span class="old-value">{{item.previousQuantity}}</span>
+            <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+            <span class="new-value">{{item.newQuantity}}</span>
+            <span class="diff-badge" [class.positive]="item.newQuantity > item.previousQuantity"
+              [class.negative]="item.newQuantity < item.previousQuantity">
+              {{item.newQuantity > item.previousQuantity ? '+' : ''}}{{item.newQuantity - item.previousQuantity}}
+            </span>
+          </div>
+
+          <div class="reason-section">
+            <strong>{{'STOCK.REASON' | translate}}:</strong>
+            <span>{{getReasonLabel(item.reason)}}</span>
+          </div>
+
+          @if (item.notes) {
+          <div class="notes-section">
+            <strong>{{'COMMON.NOTES' | translate}}:</strong>
+            <p>{{item.notes}}</p>
+          </div>
+          }
+
+          @if (item.adjustedByName) {
+          <div class="user-section">
+            <mat-icon>person</mat-icon>
+            <span>{{item.adjustedByName}}</span>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && history().length === 0) {
+  <div class="empty-container" mat-dialog-content>
+    <mat-icon>history</mat-icon>
+    <p>{{'STOCK.NO_ADJUSTMENTS' | translate}}</p>
+  </div>
+  }
+
+  <!-- Actions -->
+  <div mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button (click)="dialogRef.close()">
+      {{'COMMON.CLOSE' | translate}}
+    </button>
+  </div>
+</div>

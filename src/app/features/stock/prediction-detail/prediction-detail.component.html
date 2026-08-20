@@ -1,0 +1,148 @@
+<div class="prediction-detail-container">
+  @if (loading()) {
+  <div class="loading-state">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>{{'COMMON.LOADING' | translate}}</p>
+  </div>
+  } @else if (prediction()) {
+
+  <app-page-header [title]="'PREDICTIONS.VIEW_REPORT' | translate" [subtitle]="prediction()!.productName"
+    icon="assessment">
+    <div class="header-actions">
+      <button mat-button (click)="router.navigate(['/stock/predictions'])">
+        <mat-icon>arrow_back</mat-icon>
+        <span>{{'COMMON.BACK' | translate}}</span>
+      </button>
+    </div>
+  </app-page-header>
+
+  <mat-card class="overview-card">
+    <mat-card-header>
+      <mat-card-title>{{'PREDICTIONS.OVERVIEW' | translate}}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <mat-icon>inventory_2</mat-icon>
+          <div class="stat-info">
+            <span class="label">{{'PREDICTIONS.COLUMN.PREDICTED' | translate}}</span>
+            <span class="value">{{prediction()!.predictedQuantity}}</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <mat-icon>warehouse</mat-icon>
+          <div class="stat-info">
+            <span class="label">{{'PREDICTIONS.COLUMN.CURRENT' | translate}}</span>
+            <span class="value">{{prediction()!.currentStock}}</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <mat-icon>shopping_cart</mat-icon>
+          <div class="stat-info">
+            <span class="label">{{'PREDICTIONS.COLUMN.RECOMMENDED' | translate}}</span>
+            <span class="value">{{prediction()!.recommendedOrder}}</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <mat-icon>psychology</mat-icon>
+          <div class="stat-info">
+            <span class="label">{{'PREDICTIONS.COLUMN.CONFIDENCE' | translate}}</span>
+            <span class="value">{{(prediction()!.confidenceLevel * 100).toFixed(0)}}%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="trend-section">
+        <h3>{{'PREDICTIONS.COLUMN.TREND' | translate}}</h3>
+        <div class="trend-badge" [style.background]="getTrendColor(prediction()!.trend)">
+          <mat-icon>{{getTrendIcon(prediction()!.trend)}}</mat-icon>
+          <span>{{'PREDICTIONS.TREND.' + prediction()!.trend | translate}}</span>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-row">
+          <span class="label">{{'PREDICTIONS.COLUMN.DATE' | translate}}:</span>
+          <span class="value">{{formatDate(prediction()!.predictionDate)}}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">{{'PREDICTIONS.ALGORITHM' | translate}}:</span>
+          <span class="value">{{prediction()!.algorithmVersion}}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">{{'PREDICTIONS.RECOMMENDATION' | translate}}:</span>
+          <span class="value">{{prediction()!.recommendation}}</span>
+        </div>
+      </div>
+
+      @if (prediction()!.recommendedOrder > 0) {
+      <div class="action-section">
+        <button mat-raised-button color="primary" (click)="onCreatePurchaseOrder()">
+          <mat-icon>shopping_cart</mat-icon>
+          <span>{{'PREDICTIONS.CREATE_ORDER' | translate}}</span>
+        </button>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="history-card">
+    <mat-card-header>
+      <mat-card-title>{{'PREDICTIONS.SALES_HISTORY' | translate}}</mat-card-title>
+      <mat-card-subtitle>{{'PREDICTIONS.LAST_30_DAYS' | translate}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      @if (salesHistory().length) {
+      <table mat-table [dataSource]="salesHistory()" class="sales-table">
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.DATE' | translate}}</th>
+          <td mat-cell *matCellDef="let item">{{formatDate(item.date)}}</td>
+        </ng-container>
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef>{{'COMMON.QUANTITY' | translate}}</th>
+          <td mat-cell *matCellDef="let item">{{item.quantity}}</td>
+        </ng-container>
+        <ng-container matColumnDef="sales">
+          <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.SALES_VALUE' | translate}}</th>
+          <td mat-cell *matCellDef="let item">{{item.sales | currency:'EGP':'symbol':'1.2-2'}}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['date', 'quantity', 'sales']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['date', 'quantity', 'sales']"></tr>
+      </table>
+      } @else {
+      <div class="no-data">
+        <mat-icon>inbox</mat-icon>
+        <p>{{'PREDICTIONS.NO_SALES_DATA' | translate}}</p>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="analysis-card">
+    <mat-card-header>
+      <mat-card-title>{{'PREDICTIONS.ANALYSIS' | translate}}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="analysis-content">
+        <h4>{{'PREDICTIONS.FORECAST_METHOD' | translate}}</h4>
+        <p>{{'PREDICTIONS.METHOD_DESCRIPTION' | translate}}</p>
+        <h4>{{'PREDICTIONS.FACTORS' | translate}}</h4>
+        <ul>
+          <li>{{'PREDICTIONS.FACTOR_HISTORICAL' | translate}}</li>
+          <li>{{'PREDICTIONS.FACTOR_TREND' | translate}}</li>
+          <li>{{'PREDICTIONS.FACTOR_SEASONALITY' | translate}}</li>
+        </ul>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  } @else {
+  <div class="empty-state">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{'PREDICTIONS.NOT_FOUND' | translate}}</p>
+    <button mat-raised-button color="primary" routerLink="/stock/predictions">
+      {{'PREDICTIONS.BACK_TO_LIST' | translate}}
+    </button>
+  </div>
+  }
+</div>

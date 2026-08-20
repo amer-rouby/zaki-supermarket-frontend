@@ -1,0 +1,140 @@
+.adjustment-dialog {
+  width: 100%;
+  max-height: calc(100vh - 48px);
+  direction: inherit;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e9ecef;
+  direction: inherit;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  color: #667eea;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.dialog-content {
+  padding: 16px 18px 4px;
+  overflow-y: auto;
+}
+
+.batch-info {
+  background: #f8fafc;
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  direction: inherit;
+  display: grid;
+  gap: 10px;
+}
+
+.batch-info div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.batch-info span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.batch-info strong {
+  color: #0f172a;
+  font-size: 14px;
+  text-align: end;
+  overflow-wrap: anywhere;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+mat-form-field {
+  direction: inherit;
+
+  .mat-form-field-wrapper {
+    direction: inherit;
+  }
+
+  .mat-form-field-label-wrapper {
+    direction: inherit;
+  }
+
+  .mat-form-field-label {
+    direction: inherit;
+    text-align: start;
+  }
+
+  input,
+  select,
+  textarea {
+    direction: inherit;
+    text-align: start;
+  }
+
+  .mat-form-field-prefix,
+  .mat-form-field-suffix {
+    direction: inherit;
+  }
+}
+
+::ng-deep {
+  .adjustment-dialog {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 18px 16px;
+  border-top: 1px solid #e9ecef;
+  background: #fff;
+}
+
+@media (max-width: 600px) {
+  .adjustment-dialog {
+    max-height: calc(100vh - 24px);
+  }
+
+  .dialog-actions {
+    flex-direction: column;
+  }
+
+  .dialog-actions button {
+    width: 100%;
+  }
+}

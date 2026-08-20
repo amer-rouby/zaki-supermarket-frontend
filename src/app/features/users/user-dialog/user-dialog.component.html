@@ -1,0 +1,89 @@
+<div class="dialog-container">
+  <!-- Header -->
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      {{ data?.mode === 'edit' ? ('USERS.EDIT' | translate) : ('USERS.ADD_NEW' | translate) }}
+    </h2>
+    <button mat-icon-button mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" mat-dialog-content>
+    <!-- Username -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'USERS.USERNAME' | translate}} *</mat-label>
+      <input matInput formControlName="username" [placeholder]="'USERS.USERNAME' | translate">
+      @if (form.get('username')?.invalid && form.get('username')?.touched) {
+      <mat-error>{{'USERS.USERNAME_REQUIRED' | translate}}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Password -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'USERS.PASSWORD' | translate}} {{ data?.mode === 'edit' ? '' : '*' }}</mat-label>
+      <input matInput type="password" formControlName="password"
+        [placeholder]="data?.mode === 'edit' ? ('USERS.PASSWORD_HINT' | translate) : ('USERS.PASSWORD' | translate)">
+      @if (form.get('password')?.invalid && form.get('password')?.touched) {
+      <mat-error>{{'USERS.PASSWORD_REQUIRED' | translate}}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Full Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'USERS.FULL_NAME' | translate}} *</mat-label>
+      <input matInput formControlName="fullName" [placeholder]="'USERS.FULL_NAME' | translate">
+      @if (form.get('fullName')?.invalid && form.get('fullName')?.touched) {
+      <mat-error>{{'USERS.FULL_NAME_REQUIRED' | translate}}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'USERS.EMAIL' | translate}}</mat-label>
+      <input matInput type="email" formControlName="email" [placeholder]="'USERS.EMAIL' | translate">
+      @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+      <mat-error>{{'VALIDATION.EMAIL_INVALID' | translate}}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Phone -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'USERS.PHONE' | translate}}</mat-label>
+      <input matInput formControlName="phone" [placeholder]="'USERS.PHONE' | translate">
+    </mat-form-field>
+
+    <!-- Role -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'USERS.ROLE' | translate}} *</mat-label>
+      <mat-select formControlName="role">
+        @for (role of userRoles; track role.value) {
+        <mat-option [value]="role.value">{{role.label | translate}}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Active Toggle -->
+    <div class="toggle-field">
+      <mat-slide-toggle formControlName="isActive" color="primary">
+        {{'USERS.IS_ACTIVE' | translate}}
+      </mat-slide-toggle>
+    </div>
+  </form>
+
+  <!-- Actions -->
+  <div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>
+      {{'COMMON.CANCEL' | translate}}
+    </button>
+    <button mat-raised-button color="primary" [disabled]="form.invalid || loading()" (click)="onSubmit()">
+      @if (loading()) {
+      <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+      <mat-icon>{{ data?.mode === 'edit' ? 'save' : 'add' }}</mat-icon>
+      }
+      {{ data?.mode === 'edit' ? ('COMMON.SAVE' | translate) : ('COMMON.ADD' | translate) }}
+    </button>
+  </div>
+</div>

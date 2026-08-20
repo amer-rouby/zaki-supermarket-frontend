@@ -1,0 +1,319 @@
+.notifications-page {
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: var(--color-background);
+  min-height: 100vh;
+  direction: inherit;
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+    direction: inherit;
+  }
+}
+
+/* تخصيص التبويبات (Tabs) */
+::ng-deep .mat-mdc-tab-group {
+  margin-bottom: 24px;
+  direction: inherit;
+
+  .mat-mdc-tab-labels {
+    gap: 16px;
+  }
+
+  .badge {
+    margin-inline-start: 8px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--color-slate-200);
+    color: var(--color-text-secondary);
+
+    &.unread {
+      background: var(--color-primary-600);
+      color: white;
+    }
+  }
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Unread cards get a colored accent border + tinted background (which
+   priority color depends on the notification's priority); read cards drop
+   both and just sit as a plain, slightly muted surface - that contrast is
+   the actual "this is unread" signal, not the priority color by itself. */
+.notification-card {
+  border-radius: 20px !important;
+  border: 1px solid var(--color-border) !important;
+  border-inline-start: 4px solid var(--color-border) !important;
+  background-color: var(--color-surface) !important;
+  transition: all 0.25s ease;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm) !important;
+  direction: inherit;
+
+  .icon-box {
+    background: var(--color-slate-200);
+    color: var(--color-text-secondary);
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md) !important;
+  }
+
+  /* غير مقروء - لون حسب الأولوية */
+  &.urgent:not(.is-read) {
+    background-color: var(--color-danger-bg) !important;
+    border-color: var(--color-danger-border) !important;
+    border-inline-start-color: var(--color-danger) !important;
+
+    .icon-box {
+      background: var(--color-danger);
+      color: white;
+    }
+
+    .notification-title {
+      color: var(--color-text-primary);
+    }
+  }
+
+  &.high:not(.is-read) {
+    background-color: var(--color-warning-bg) !important;
+    border-color: var(--color-warning-border) !important;
+    border-inline-start-color: var(--color-warning) !important;
+
+    .icon-box {
+      background: var(--color-warning);
+      color: white;
+    }
+
+    .notification-title {
+      color: var(--color-text-primary);
+    }
+  }
+
+  &.medium:not(.is-read) {
+    background-color: var(--color-info-bg) !important;
+    border-color: var(--color-info-border) !important;
+    border-inline-start-color: var(--color-info) !important;
+
+    .icon-box {
+      background: var(--color-info);
+      color: white;
+    }
+
+    .notification-title {
+      color: var(--color-text-primary);
+    }
+  }
+
+  &.low:not(.is-read) {
+    background-color: var(--color-success-bg) !important;
+    border-color: var(--color-success-border) !important;
+    border-inline-start-color: var(--color-success) !important;
+
+    .icon-box {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .notification-title {
+      color: var(--color-text-primary);
+    }
+  }
+
+  /* حالة المقروء */
+  &.is-read {
+    background-color: var(--color-surface) !important;
+    border-color: var(--color-border) !important;
+    border-inline-start-color: var(--color-border) !important;
+    opacity: 0.75;
+
+    .icon-box {
+      background: var(--color-slate-200);
+      color: var(--color-text-secondary);
+    }
+
+    .notification-title {
+      color: var(--color-text-secondary);
+    }
+  }
+
+  .notification-content-wrapper {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    align-items: flex-start;
+    direction: inherit;
+  }
+
+  .icon-box {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  .text-section {
+    flex: 1;
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      direction: inherit;
+
+      .notification-title {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .time {
+        font-size: 12px;
+        color: var(--color-text-muted);
+      }
+    }
+
+    .message {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--color-text-secondary);
+      margin-bottom: 12px;
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    direction: ltr;
+  }
+}
+
+.pagination-container {
+  margin-top: 32px;
+  background: var(--color-surface);
+  border-radius: 12px;
+  overflow: hidden;
+  direction: inherit;
+
+  ::ng-deep {
+    .mat-mdc-paginator {
+      direction: inherit;
+    }
+
+    .mat-mdc-paginator-range-label {
+      margin-inline-start: 8px;
+    }
+
+    .mat-mdc-paginator-page-size-label {
+      margin-inline-end: 8px;
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+  text-align: center;
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    color: var(--color-text-secondary);
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+  color: var(--color-text-secondary);
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    color: var(--color-slate-300);
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .notifications-page {
+    padding: 16px;
+  }
+
+  .notification-content-wrapper {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .header-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .action-buttons {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+::ng-deep {
+  .notifications-page {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+
+      .mat-form-field-label {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
+}

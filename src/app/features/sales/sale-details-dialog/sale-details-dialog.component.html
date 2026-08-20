@@ -1,0 +1,125 @@
+<div class="dialog-container">
+  <div class="dialog-header no-print">
+    <h2>{{'SALES.INVOICE_DETAILS' | translate}}</h2>
+    <button mat-icon-button (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-content">
+
+    @if (storeSettings()) {
+    <div class="store-header">
+      <h3>{{storeSettings()!.storeName}}</h3>
+      @if (storeSettings()!.address) {
+      <p>📍 {{storeSettings()!.address}}</p>
+      }
+      @if (storeSettings()!.phone) {
+      <p>📞 {{storeSettings()!.phone}}</p>
+      }
+      @if (storeSettings()!.email) {
+      <p>✉️ {{storeSettings()!.email}}</p>
+      }
+      @if (storeSettings()!.taxNumber) {
+      <p>🧾 {{'SETTINGS.TAX_NUMBER' | translate}}: {{storeSettings()!.taxNumber}}</p>
+      }
+      @if (storeSettings()!.commercialRegister) {
+      <p>📋 {{'SETTINGS.COMMERCIAL_REGISTER' | translate}}: {{storeSettings()!.commercialRegister}}</p>
+      }
+    </div>
+    } @else {
+    <div class="store-header">
+      <h3>{{'STORE.DEFAULT_NAME' | translate}}</h3>
+    </div>
+    }
+
+    <div class="invoice-info">
+      <div class="info-item">
+        <span class="label">{{'SALES.INVOICE_NUMBER' | translate}}</span>
+        <span class="value">{{data.sale?.invoiceNumber || '-'}}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">{{'SALES.DATE' | translate}}</span>
+        <span class="value">{{formatDate(data.sale?.transactionDate)}}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">{{'SALES.PAYMENT_METHODS' | translate}}</span>
+        <span class="value">
+          <mat-chip>{{getPaymentMethodLabel(data.sale?.paymentMethod)}}</mat-chip>
+        </span>
+      </div>
+      @if (data.sale?.customerPhone) {
+      <div class="info-item">
+        <span class="label">{{'SALES.CUSTOMER_PHONE' | translate}}</span>
+        <span class="value">{{data.sale.customerPhone}}</span>
+      </div>
+      }
+    </div>
+
+    <h3>{{'SALES.ITEMS' | translate}}</h3>
+    @if (data.sale?.items && data.sale.items.length > 0) {
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>{{'SALES.PRODUCT' | translate}}</th>
+          <th>{{'SALES.QUANTITY' | translate}}</th>
+          <th>{{'SALES.UNIT_PRICE' | translate}}</th>
+          <th>{{'SALES.TOTAL_PRICE' | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of data.sale.items; track item.id; let i = $index) {
+        <tr>
+          <td>{{i + 1}}</td>
+          <td>{{item.productName || 'PRODUCTS.UNNAMED' | translate}}</td>
+          <td>{{item.quantity}}</td>
+          <td>{{formatCurrency(item.unitPrice)}}</td>
+          <td>{{formatCurrency(item.totalPrice)}}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    } @else {
+    <div class="empty-state">
+      <mat-icon>shopping_cart</mat-icon>
+      <p>{{'SALES.NO_ITEMS' | translate}}</p>
+    </div>
+    }
+
+    <div class="totals">
+      <div class="total-row">
+        <span>{{'SALES.SUBTOTAL' | translate}}</span>
+        <span>{{formatCurrency(data.sale?.subtotal || data.sale?.totalAmount || 0)}}</span>
+      </div>
+      @if (data.sale?.discountAmount && data.sale.discountAmount > 0) {
+      <div class="total-row discount">
+        <span>{{'SALES.DISCOUNT' | translate}}</span>
+        <span>-{{formatCurrency(data.sale.discountAmount)}}</span>
+      </div>
+      }
+      <div class="total-row final">
+        <span>{{'SALES.TOTAL' | translate}}</span>
+        <span>{{formatCurrency(data.sale?.totalAmount || 0)}}</span>
+      </div>
+    </div>
+
+    @if (data.sale?.notes) {
+    <div class="notes-section">
+      <h4>{{'SALES.NOTES' | translate}}</h4>
+      <p>{{data.sale.notes}}</p>
+    </div>
+    }
+
+  </div>
+
+  <div class="dialog-actions no-print">
+    <button mat-button color="primary" (click)="dialogRef.close()">
+      {{'COMMON.CLOSE' | translate}}
+    </button>
+    <button mat-raised-button color="accent" (click)="printInvoice()">
+      <mat-icon>print</mat-icon>
+      {{'COMMON.PRINT' | translate}}
+    </button>
+  </div>
+</div>

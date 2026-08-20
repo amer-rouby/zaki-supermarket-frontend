@@ -1,0 +1,200 @@
+.sales-history-container {
+  padding: 24px;
+  direction: inherit;
+
+  .search-field {
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    gap: 16px;
+
+    mat-progress-spinner {
+      margin-bottom: 8px;
+    }
+
+    p {
+      color: var(--color-text-secondary, #666);
+      font-size: 16px;
+      margin: 0;
+    }
+  }
+
+  .table-container {
+    overflow-x: auto;
+
+    .data-table {
+      width: 100%;
+      direction: inherit;
+
+      th {
+        font-weight: 600;
+        background: var(--color-slate-50, #f5f5f5);
+        color: var(--color-text-primary, #2d3748);
+        padding: 12px 16px;
+        font-size: 13px;
+        white-space: nowrap;
+        text-align: start;
+      }
+
+      td {
+        padding: 12px 16px;
+        font-size: 13px;
+        vertical-align: middle;
+        color: var(--color-text-secondary, #4a5568);
+        text-align: start;
+      }
+
+      tr:hover {
+        background: var(--color-slate-100, #f7fafc);
+      }
+
+      code {
+        background: var(--color-slate-100, #edf2f7);
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        color: var(--color-text-secondary, #4a5568);
+        direction: ltr;
+        display: inline-block;
+        font-family: 'Courier New', monospace;
+        text-align: left;
+      }
+
+      strong {
+        color: var(--color-primary-600, #667eea);
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      .items-chip {
+        height: 24px !important;
+        font-size: 10px !important;
+        padding: 0 8px !important;
+        line-height: 24px !important;
+
+        .mdc-evolution-chip__text {
+          font-size: 10px !important;
+        }
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 4px;
+        direction: ltr;
+
+        button {
+          width: 32px;
+          height: 32px;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+    }
+
+    mat-paginator {
+      margin-top: 16px;
+      border-top: 1px solid var(--color-border, #e2e8f0);
+      padding-top: 16px;
+      direction: inherit;
+
+      ::ng-deep {
+        .mat-mdc-paginator {
+          direction: inherit;
+        }
+
+        .mat-mdc-paginator-range-label {
+          margin-inline-start: 8px;
+        }
+
+        .mat-mdc-paginator-page-size-label {
+          margin-inline-end: 8px;
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    gap: 16px;
+
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: var(--color-slate-300, #cbd5e0);
+    }
+
+    p {
+      color: var(--color-text-secondary, #718096);
+      font-size: 16px;
+      margin: 0;
+    }
+
+    button {
+      margin-top: 8px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .sales-history-container {
+    padding: 16px;
+
+    .table-container .data-table {
+
+      th,
+      td {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+
+      .action-buttons button {
+        width: 28px;
+        height: 28px;
+      }
+    }
+  }
+}
+
+::ng-deep {
+  .error-snackbar {
+    background: #ef4444 !important;
+    color: white !important;
+  }
+
+  .sales-history-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
+}

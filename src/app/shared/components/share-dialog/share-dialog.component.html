@@ -1,0 +1,52 @@
+<div class="share-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      <mat-icon>share</mat-icon>
+      مشاركة {{data.entityName || data.entityType}}
+    </h2>
+    <button mat-icon-button (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content>
+    @if (loading) {
+    <div class="loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>جاري إنشاء رابط المشاركة...</p>
+    </div>
+    } @else if (shareLink) {
+    <div class="share-success">
+      <mat-icon class="success-icon">check_circle</mat-icon>
+      <h3>تم إنشاء رابط المشاركة بنجاح</h3>
+
+      <div class="link-container">
+        <input matInput [value]="shareLink.shareUrl" readonly class="share-link-input">
+        <button mat-raised-button color="primary" [cdkCopyToClipboard]="shareLink.shareUrl" (click)="onCopy()">
+          <mat-icon>content_copy</mat-icon>
+          نسخ الرابط
+        </button>
+      </div>
+
+      <div class="expiry-info">
+        <mat-icon>schedule</mat-icon>
+        <span>
+          الرابط صالح حتى: {{shareLink.expiresAt | date:'yyyy-MM-dd HH:mm'}}
+        </span>
+      </div>
+
+      <div class="warning">
+        <mat-icon>warning</mat-icon>
+        <p>
+          هذا الرابط مؤقت وسينتهي بعد التاريخ المحدد.
+          لا تشاركه مع أشخاص غير موثوقين.
+        </p>
+      </div>
+    </div>
+    }
+  </div>
+
+  <div mat-dialog-actions align="end" *ngIf="!loading && shareLink">
+    <button mat-button (click)="dialogRef.close()">إغلاق</button>
+  </div>
+</div>

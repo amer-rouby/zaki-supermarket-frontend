@@ -1,0 +1,87 @@
+<div class="register-container">
+  <app-auth-background />
+  <div class="register-wrapper">
+    <mat-card class="register-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>local_store</mat-icon>
+          <span>{{'APP.NAME' | translate}}</span>
+        </mat-card-title>
+        <mat-card-subtitle>{{'REGISTER.TITLE' | translate}}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form (ngSubmit)="onSubmit()">
+
+          @for (field of formFields; track field.key) {
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{field.label | translate}}</mat-label>
+              <!-- ✅ Use helper methods for type-safe access -->
+              <input matInput [type]="field.type || 'text'" [value]="getFieldValue(field.key)"
+                (input)="setFieldValue(field.key, $any($event.target).value)" [name]="field.key" required>
+              <mat-icon matPrefix>{{field.icon}}</mat-icon>
+              <mat-error *ngIf="!getFieldValue(field.key) && isSubmitted()">
+                {{'VALIDATION.REQUIRED' | translate}}
+              </mat-error>
+            </mat-form-field>
+          </div>
+          }
+
+          <!-- Confirm Password -->
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{'REGISTER.CONFIRM_PASSWORD' | translate}}</mat-label>
+              <input matInput type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required>
+              <mat-icon matPrefix>lock_outline</mat-icon>
+              <mat-error *ngIf="!confirmPassword() && isSubmitted()">
+                {{'VALIDATION.REQUIRED' | translate}}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Password Toggle (for visual only, actual binding is in formFields loop) -->
+          <div class="form-row password-toggle" style="display: none;">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{'AUTH.PASSWORD' | translate}}</mat-label>
+              <input matInput [type]="hidePassword() ? 'password' : 'text'" [value]="getFieldValue('password')"
+                (input)="setFieldValue('password', $any($event.target).value)" name="password_hidden" required>
+              <mat-icon matPrefix>lock</mat-icon>
+              <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button" tabindex="-1"
+                [attr.aria-label]="'Toggle password visibility'">
+                <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <!-- Submit Button -->
+          <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="loading()">
+            @if (loading()) {
+            <mat-icon class="spin-icon">refresh</mat-icon>
+            }
+            <span>{{loading() ? ('COMMON.LOADING' | translate) : ('REGISTER.SUBMIT' | translate)}}</span>
+          </button>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions class="center-actions">
+        <p>
+          {{'REGISTER.HAVE_ACCOUNT' | translate}}
+          <a routerLink="/auth/login">{{'AUTH.LOGIN' | translate}}</a>
+        </p>
+      </mat-card-actions>
+
+      <mat-divider></mat-divider>
+
+      <mat-card-actions class="language-actions">
+        <button mat-button (click)="changeLanguage('ar')" [class.active]="getCurrentLang() === 'ar'">
+          العربية
+        </button>
+        <span class="divider">|</span>
+        <button mat-button (click)="changeLanguage('en')" [class.active]="getCurrentLang() === 'en'">
+          English
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

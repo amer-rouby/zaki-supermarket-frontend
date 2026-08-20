@@ -1,0 +1,18 @@
+<div class="settings-container">
+  <app-page-header [title]="'SETTINGS.TITLE' | translate" [subtitle]="'SETTINGS.SUBTITLE' | translate" icon="settings">
+  </app-page-header>
+
+  <mat-card>
+    <mat-nav-list>
+      @for (item of filteredItems(); track item.route) {
+      <a mat-list-item [routerLink]="item.route" class="settings-item">
+        <mat-icon matListItemIcon>{{item.icon}}</mat-icon>
+        <span matListItemTitle>{{getLabel(item.labelKey)}}</span>
+        <mat-icon matListItemMeta>
+          {{getCurrentLang() === 'ar' ? 'chevron_left' : 'chevron_right'}}
+        </mat-icon>
+      </a>
+      }
+    </mat-nav-list>
+  </mat-card>
+</div>

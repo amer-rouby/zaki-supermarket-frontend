@@ -1,0 +1,66 @@
+<form class="adjustment-dialog" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="dialog-header">
+    <h2>{{'STOCK.ADJUST_STOCK' | translate}}</h2>
+    <button mat-icon-button type="button" (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-content">
+    <div class="batch-info">
+      <div>
+        <span>{{'PRODUCTS.NAME' | translate}}</span>
+        <strong>{{data.batch.productName}}</strong>
+      </div>
+      <div>
+        <span>{{'STOCK.BATCH_NUMBER' | translate}}</span>
+        <strong>{{data.batch.batchNumber}}</strong>
+      </div>
+      <div>
+        <span>{{'STOCK.CURRENT_QUANTITY' | translate}}</span>
+        <strong>{{data.batch.quantityCurrent}}</strong>
+      </div>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'STOCK.ADJUSTMENT_TYPE' | translate}}</mat-label>
+      <mat-select formControlName="type" required>
+        <mat-option value="ADD">{{'STOCK.ADD' | translate}}</mat-option>
+        <mat-option value="REMOVE">{{'STOCK.REMOVE' | translate}}</mat-option>
+        <mat-option value="CORRECTION">{{'STOCK.CORRECTION' | translate}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'STOCK.QUANTITY' | translate}}</mat-label>
+      <input matInput type="number" formControlName="quantity" required min="1">
+      <mat-icon matPrefix>shopping_cart</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'STOCK.REASON' | translate}}</mat-label>
+      <mat-select formControlName="reason" required>
+        <mat-option value="DAMAGED">{{'STOCK.DAMAGED' | translate}}</mat-option>
+        <mat-option value="EXPIRED">{{'STOCK.EXPIRED' | translate}}</mat-option>
+        <mat-option value="RETURNED">{{'STOCK.RETURNED' | translate}}</mat-option>
+        <mat-option value="COUNT_ERROR">{{'STOCK.COUNT_ERROR' | translate}}</mat-option>
+        <mat-option value="OTHER">{{'STOCK.OTHER' | translate}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'COMMON.NOTES' | translate}}</mat-label>
+      <textarea matInput formControlName="notes" rows="2"></textarea>
+    </mat-form-field>
+  </div>
+
+  <div class="dialog-actions">
+    <button mat-button type="button" (click)="dialogRef.close()">
+      {{'COMMON.CANCEL' | translate}}
+    </button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading">
+      <mat-icon>save</mat-icon>
+      {{'COMMON.SAVE' | translate}}
+    </button>
+  </div>
+</form>

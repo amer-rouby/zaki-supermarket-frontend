@@ -1,0 +1,216 @@
+<div class="stock-movements-container">
+  <app-page-header [title]="'STOCK_MOVEMENTS.TITLE' | translate" [subtitle]="'STOCK_MOVEMENTS.SUBTITLE' | translate"
+    icon="history">
+  </app-page-header>
+
+  <!-- Stats Cards -->
+  @if (stats()) {
+  <div class="stats-grid">
+    <mat-card class="stat-card success">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>add_shopping_cart</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{stats()?.totalStockIn || 0}}</h3>
+          <p>{{'STOCK_MOVEMENTS.STATS.STOCK_IN' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card danger">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>remove_shopping_cart</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{stats()?.totalStockOut || 0}}</h3>
+          <p>{{'STOCK_MOVEMENTS.STATS.STOCK_OUT' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card warning">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>tune</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{stats()?.totalAdjustments || 0}}</h3>
+          <p>{{'STOCK_MOVEMENTS.STATS.ADJUSTMENTS' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card info">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>history</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{stats()?.totalMovements || 0}}</h3>
+          <p>{{'STOCK_MOVEMENTS.STATS.TOTAL' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  }
+
+  <!-- Filters -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <form [formGroup]="filterForm">
+        <div class="filters-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{'STOCK_MOVEMENTS.FILTERS.START_DATE' | translate}}</mat-label>
+            <input matInput [matDatepicker]="startDatePicker" formControlName="startDate">
+            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #startDatePicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{'STOCK_MOVEMENTS.FILTERS.END_DATE' | translate}}</mat-label>
+            <input matInput [matDatepicker]="endDatePicker" formControlName="endDate">
+            <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #endDatePicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{'STOCK_MOVEMENTS.FILTERS.TYPE' | translate}}</mat-label>
+            <mat-select formControlName="movementType">
+              <mat-option value="all">{{'STOCK_MOVEMENTS.FILTERS.ALL_TYPES' | translate}}</mat-option>
+              <mat-option value="STOCK_IN">{{'STOCK_MOVEMENTS.TYPE.STOCK_IN' | translate}}</mat-option>
+              <mat-option value="STOCK_OUT">{{'STOCK_MOVEMENTS.TYPE.STOCK_OUT' | translate}}</mat-option>
+              <mat-option value="STOCK_ADJUSTMENT">{{'STOCK_MOVEMENTS.TYPE.STOCK_ADJUSTMENT' | translate}}</mat-option>
+              <mat-option value="TRANSFER_IN">{{'STOCK_MOVEMENTS.TYPE.TRANSFER_IN' | translate}}</mat-option>
+              <mat-option value="TRANSFER_OUT">{{'STOCK_MOVEMENTS.TYPE.TRANSFER_OUT' | translate}}</mat-option>
+              <mat-option value="EXPIRED">{{'STOCK_MOVEMENTS.TYPE.EXPIRED' | translate}}</mat-option>
+              <mat-option value="DISCARDED">{{'STOCK_MOVEMENTS.TYPE.DISCARDED' | translate}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="filter-actions">
+            <button mat-raised-button color="primary" (click)="onFilter()" [disabled]="loading()">
+              <mat-icon>filter_list</mat-icon>
+              <span>{{'COMMON.FILTER' | translate}}</span>
+            </button>
+            <button mat-button (click)="loadMovements()" [disabled]="loading()">
+              <mat-icon>refresh</mat-icon>
+              <span>{{'COMMON.REFRESH' | translate}}</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State (first load only, no data on screen yet) -->
+  @if (loading() && !movements().length) {
+  <div class="loading-state">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>{{'COMMON.LOADING' | translate}}</p>
+  </div>
+  }
+
+  <!-- Movements Table -->
+  @if (movements().length) {
+  <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
+    <mat-card-header>
+      <mat-card-title>{{'STOCK_MOVEMENTS.MOVEMENTS_LIST' | translate}}</mat-card-title>
+      <mat-card-subtitle>{{totalElements() || movements().length}} {{'STOCK_MOVEMENTS.COUNT' | translate}}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content [class.list-content-refreshing]="loading()">
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="movements()" class="movements-table">
+
+          <!-- Movement Type -->
+          <ng-container matColumnDef="movementType">
+            <th mat-header-cell *matHeaderCellDef> {{'STOCK_MOVEMENTS.COLUMN.TYPE' | translate}} </th>
+            <td mat-cell *matCellDef="let movement">
+              <mat-chip [style.background]="getMovementTypeColor(movement.movementType)" class="type-chip">
+                <mat-icon>{{getMovementTypeIcon(movement.movementType)}}</mat-icon>
+                {{getMovementTypeLabel(movement.movementType)}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Product -->
+          <ng-container matColumnDef="product">
+            <th mat-header-cell *matHeaderCellDef> {{'STOCK_MOVEMENTS.COLUMN.PRODUCT' | translate}} </th>
+            <td mat-cell *matCellDef="let movement">
+              <div class="product-info">
+                <strong>{{movement.productName}}</strong>
+                <small>{{'STOCK_MOVEMENTS.BATCH' | translate}}: {{movement.batchNumber}}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Quantity -->
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef> {{'STOCK_MOVEMENTS.COLUMN.QUANTITY' | translate}} </th>
+            <td mat-cell *matCellDef="let movement">
+              <span class="quantity">{{movement.quantity}}</span>
+            </td>
+          </ng-container>
+
+          <!-- Quantity Change -->
+          <ng-container matColumnDef="quantityChange">
+            <th mat-header-cell *matHeaderCellDef> {{'STOCK_MOVEMENTS.COLUMN.CHANGE' | translate}} </th>
+            <td mat-cell *matCellDef="let movement">
+              <span class="change" [class.positive]="movement.quantityAfter > movement.quantityBefore"
+                [class.negative]="movement.quantityAfter < movement.quantityBefore">
+                {{formatQuantityChange(movement.quantityBefore, movement.quantityAfter)}}
+              </span>
+              <small class="before-after">
+                {{movement.quantityBefore}} → {{movement.quantityAfter}}
+              </small>
+            </td>
+          </ng-container>
+
+          <!-- Reference -->
+          <ng-container matColumnDef="reference">
+            <th mat-header-cell *matHeaderCellDef> {{'STOCK_MOVEMENTS.COLUMN.REFERENCE' | translate}} </th>
+            <td mat-cell *matCellDef="let movement">
+              <span class="text-muted">{{movement.referenceNumber || '-'}}</span>
+            </td>
+          </ng-container>
+
+          <!-- Movement Date -->
+          <ng-container matColumnDef="movementDate">
+            <th mat-header-cell *matHeaderCellDef> {{'STOCK_MOVEMENTS.COLUMN.DATE' | translate}} </th>
+            <td mat-cell *matCellDef="let movement">
+              <span class="text-muted">{{formatDate(movement.movementDate)}}</span>
+            </td>
+          </ng-container>
+
+          <!-- User Name -->
+          <ng-container matColumnDef="userName">
+            <th mat-header-cell *matHeaderCellDef> {{'STOCK_MOVEMENTS.COLUMN.USER' | translate}} </th>
+            <td mat-cell *matCellDef="let movement">
+              <span class="text-muted">{{movement.userName}}</span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="movement-row"></tr>
+        </table>
+      </div>
+
+      <mat-paginator [length]="totalElements()" [pageIndex]="page()" [pageSize]="size()"
+        [pageSizeOptions]="[10, 20, 50, 100]" [disabled]="loading()" (page)="onPageChange($event)" showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+  } @else if (!loading()) {
+  <!-- Empty State -->
+  <div class="empty-state">
+    <mat-icon class="empty-icon">history</mat-icon>
+    <h3>{{'STOCK_MOVEMENTS.NO_MOVEMENTS' | translate}}</h3>
+    <p>{{'STOCK_MOVEMENTS.NO_MOVEMENTS_DESC' | translate}}</p>
+  </div>
+  }
+</div>

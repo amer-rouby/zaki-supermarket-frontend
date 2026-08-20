@@ -1,0 +1,88 @@
+.dialog-container {
+  min-width: 500px;
+  max-width: 90vw;
+  direction: inherit;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+mat-dialog-content {
+  direction: inherit;
+  padding: 24px;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  justify-content: flex-end;
+}
+
+mat-form-field {
+  direction: inherit;
+  .mat-form-field-wrapper {
+    direction: inherit;
+  }
+
+  .mat-form-field-label-wrapper {
+    direction: inherit;
+  }
+
+  .mat-form-field-label {
+    direction: inherit;
+    text-align: start;
+  }
+
+  input,
+  select,
+  textarea {
+    direction: inherit;
+    text-align: start;
+  }
+
+  .mat-form-field-prefix,
+  .mat-form-field-suffix {
+    direction: inherit;
+  }
+}
+
+::ng-deep {
+  .dialog-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
+}
+
+@media (max-width: 600px) {
+  .dialog-container {
+    min-width: 100%;
+    margin: 0 16px;
+  }
+
+  mat-dialog-actions {
+    flex-direction: column;
+  }
+
+  mat-dialog-actions button {
+    width: 100%;
+  }
+}

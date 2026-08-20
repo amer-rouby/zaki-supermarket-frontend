@@ -1,0 +1,140 @@
+<div class="purchase-detail-container">
+  @if (loading()) {
+  <div class="loading-state">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>{{'COMMON.LOADING' | translate}}</p>
+  </div>
+  } @else if (order()) {
+
+  <app-page-header [title]="'PURCHASES.DETAILS' | translate" [subtitle]="order()!.orderNumber" icon="receipt_long">
+
+    <div class="header-actions">
+      <button mat-button (click)="router.navigate(['/purchases'])">
+        <mat-icon>arrow_back</mat-icon>
+        <span>{{'COMMON.BACK' | translate}}</span>
+      </button>
+
+      @if (order()!.status === 'DRAFT') {
+      <button mat-button color="accent" (click)="onEdit()">
+        <mat-icon>edit</mat-icon>
+        <span>{{'PURCHASES.EDIT' | translate}}</span>
+      </button>
+      <button mat-button color="warn" (click)="onDelete()">
+        <mat-icon>delete</mat-icon>
+        <span>{{'COMMON.DELETE' | translate}}</span>
+      </button>
+      <button mat-raised-button color="primary" (click)="onApprove()">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{'PURCHASES.APPROVE' | translate}}</span>
+      </button>
+      }
+
+      @if (order()!.status === 'APPROVED') {
+      <button mat-raised-button color="accent" (click)="onReceive()">
+        <mat-icon>inventory</mat-icon>
+        <span>{{'PURCHASES.RECEIVE' | translate}}</span>
+      </button>
+      }
+
+      @if (order()!.status === 'APPROVED' || order()!.status === 'PENDING') {
+      <button
+        mat-raised-button
+        style="background: linear-gradient(135deg, #25d366, #128c7e); color: #fff;"
+        (click)="onSendWhatsApp()"
+      >
+        <mat-icon>chat</mat-icon>
+        <span>{{'PURCHASES.SEND_WHATSAPP' | translate}}</span>
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="emailSending()"
+        (click)="onSendEmail()"
+      >
+        @if (emailSending()) {
+        <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+        <mat-icon>mail</mat-icon>
+        }
+        <span>{{'PURCHASES.SEND_EMAIL' | translate}}</span>
+      </button>
+      }
+    </div>
+  </app-page-header>
+
+  <mat-card class="info-card">
+    <mat-card-content class="info-grid">
+      <div class="info-item">
+        <label>{{'PURCHASES.COLUMN.ORDER_NUMBER' | translate}}</label>
+        <span class="value">{{order()!.orderNumber}}</span>
+      </div>
+      <div class="info-item">
+        <label>{{'PURCHASES.COLUMN.SUPPLIER' | translate}}</label>
+        <span class="value">{{order()!.supplierName}}</span>
+      </div>
+      <div class="info-item">
+        <label>{{'PURCHASES.COLUMN.DATE' | translate}}</label>
+        <span class="value">{{formatDate(order()!.orderDate)}}</span>
+      </div>
+      <div class="info-item">
+        <label>{{'PURCHASES.EXPECTED_DELIVERY' | translate}}</label>
+        <span class="value">{{formatDate(order()!.expectedDeliveryDate)}}</span>
+      </div>
+      <div class="info-item">
+        <label>{{'PURCHASES.COLUMN.STATUS' | translate}}</label>
+        <mat-chip [style.background]="getStatusColor(order()!.status)">
+          {{'PURCHASES.STATUS.' + order()!.status | translate}}
+        </mat-chip>
+      </div>
+      <div class="info-item">
+        <label>{{'PURCHASES.COLUMN.PRIORITY' | translate}}</label>
+        <mat-chip [style.background]="getStatusColor(order()!.priority)">
+          {{'PURCHASES.PRIORITY.' + order()!.priority | translate}}
+        </mat-chip>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="items-card">
+    <mat-card-header>
+      <mat-card-title>{{'PURCHASES.ITEMS' | translate}}</mat-card-title>
+      <mat-card-subtitle>{{order()!.items.length}} {{'PURCHASES.ITEMS_COUNT' | translate}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="order()!.items" class="items-table">
+        <ng-container matColumnDef="product">
+          <th mat-header-cell *matHeaderCellDef>{{'PURCHASES.COLUMN.PRODUCT' | translate}}</th>
+          <td mat-cell *matCellDef="let item">{{item.productName}}</td>
+        </ng-container>
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef>{{'COMMON.QUANTITY' | translate}}</th>
+          <td mat-cell *matCellDef="let item">{{item.quantity}}</td>
+        </ng-container>
+        <ng-container matColumnDef="unitPrice">
+          <th mat-header-cell *matHeaderCellDef>{{'PURCHASES.UNIT_PRICE' | translate}}</th>
+          <td mat-cell *matCellDef="let item">{{item.unitPrice | currency:'EGP':'symbol':'1.2-2'}}</td>
+        </ng-container>
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef>{{'PURCHASES.TOTAL' | translate}}</th>
+          <td mat-cell *matCellDef="let item">{{(item.quantity * item.unitPrice) | currency:'EGP':'symbol':'1.2-2'}}
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['product', 'quantity', 'unitPrice', 'total']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['product', 'quantity', 'unitPrice', 'total']"></tr>
+      </table>
+
+      <div class="order-total">
+        <span>{{'PURCHASES.ORDER_TOTAL' | translate}}:</span>
+        <span class="amount">{{order()!.totalAmount | currency:'EGP':'symbol':'1.2-2'}}</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  } @else {
+  <div class="empty-state">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{'PURCHASES.NOT_FOUND' | translate}}</p>
+    <button mat-raised-button color="primary" routerLink="/purchases">{{'PURCHASES.BACK_TO_LIST' | translate}}</button>
+  </div>
+  }
+</div>

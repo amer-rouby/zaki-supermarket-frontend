@@ -1,0 +1,137 @@
+<div class="payment-history-container">
+  <app-page-header [title]="'PAYMENTS.HISTORY_TITLE' | translate" [subtitle]="'PAYMENTS.HISTORY_SUBTITLE' | translate"
+    icon="receipt_long">
+  </app-page-header>
+
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <form [formGroup]="filterForm" class="filters-form">
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PAYMENTS.FILTER_STATUS' | translate}}</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="">{{'PAYMENTS.ALL_STATUS' | translate}}</mat-option>
+            <mat-option value="COMPLETED">{{'PAYMENTS.COMPLETED' | translate}}</mat-option>
+            <mat-option value="PENDING">{{'PAYMENTS.PENDING' | translate}}</mat-option>
+            <mat-option value="PROCESSING">{{'PAYMENTS.PROCESSING' | translate}}</mat-option>
+            <mat-option value="FAILED">{{'PAYMENTS.FAILED' | translate}}</mat-option>
+            <mat-option value="CANCELLED">{{'PAYMENTS.CANCELLED' | translate}}</mat-option>
+            <mat-option value="REFUNDED">{{'PAYMENTS.REFUNDED' | translate}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PAYMENTS.FILTER_METHOD' | translate}}</mat-label>
+          <mat-select formControlName="paymentMethod">
+            <mat-option value="">{{'PAYMENTS.ALL_METHODS' | translate}}</mat-option>
+            <mat-option value="CASH">{{'PAYMENTS.CASH' | translate}}</mat-option>
+            <mat-option value="VISA">{{'PAYMENTS.VISA' | translate}}</mat-option>
+            <mat-option value="MASTERCARD">{{'PAYMENTS.MASTERCARD' | translate}}</mat-option>
+            <mat-option value="INSTAPAY">{{'PAYMENTS.INSTAPAY' | translate}}</mat-option>
+            <mat-option value="FAWRY">{{'PAYMENTS.FAWRY' | translate}}</mat-option>
+            <mat-option value="WALLET">{{'PAYMENTS.WALLET' | translate}}</mat-option>
+            <mat-option value="BANK_TRANSFER">{{'PAYMENTS.BANK_TRANSFER' | translate}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{'COMMON.SEARCH' | translate}}</mat-label>
+          <input matInput formControlName="search" placeholder="{{'PAYMENTS.SEARCH_PLACEHOLDER' | translate}}">
+          <mat-icon matPrefix>search</mat-icon>
+          @if (filterForm.get('search')?.value) {
+          <button matSuffix mat-icon-button aria-label="Clear" (click)="filterForm.get('search')?.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+          }
+        </mat-form-field>
+
+        <button mat-stroked-button color="primary" type="button" (click)="resetFilters()">
+          <mat-icon>refresh</mat-icon>
+          {{'COMMON.RESET' | translate}}
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
+    <mat-card-content [class.list-content-refreshing]="loading()">
+      <table mat-table [dataSource]="payments()" class="payments-table">
+        <ng-container matColumnDef="referenceNumber">
+          <th mat-header-cell *matHeaderCellDef>{{'PAYMENTS.REFERENCE' | translate}}</th>
+          <td mat-cell *matCellDef="let payment">
+            <div class="reference-cell">
+              <strong>{{payment.referenceNumber}}</strong>
+              <small>{{formatDate(payment.createdAt)}}</small>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>{{'PAYMENTS.AMOUNT' | translate}}</th>
+          <td mat-cell *matCellDef="let payment">
+            <span class="amount">{{formatAmount(payment.amount)}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="paymentMethod">
+          <th mat-header-cell *matHeaderCellDef>{{'PAYMENTS.METHOD' | translate}}</th>
+          <td mat-cell *matCellDef="let payment">
+            <div class="method-cell">
+              <mat-icon>{{getPaymentMethodIcon(payment.paymentMethod)}}</mat-icon>
+              <span>{{getPaymentMethodLabel(payment.paymentMethod)}}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>{{'PAYMENTS.STATUS' | translate}}</th>
+          <td mat-cell *matCellDef="let payment">
+            <mat-chip [style.background]="getStatusColor(payment.status)" class="status-chip">
+              {{getStatusLabel(payment.status)}}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
+          <td mat-cell *matCellDef="let payment">
+            <div class="action-buttons">
+              @if (canRefund(payment)) {
+              <button mat-icon-button color="warn" (click)="onRefund(payment)"
+                matTooltip="{{'PAYMENTS.REFUND' | translate}}">
+                <mat-icon>replay</mat-icon>
+              </button>
+              }
+              @if (canCancel(payment)) {
+              <button mat-icon-button color="warn" (click)="onCancel(payment)"
+                matTooltip="{{'PAYMENTS.CANCEL' | translate}}">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              }
+              <button mat-icon-button color="primary" (click)="viewReceipt(payment.referenceNumber)"
+                matTooltip="{{'PAYMENTS.VIEW_RECEIPT' | translate}}">
+                <mat-icon>receipt</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      @if (!loading() && payments().length === 0) {
+      <div class="empty-state">
+        <mat-icon>receipt_long</mat-icon>
+        <p>{{'PAYMENTS.NO_PAYMENTS' | translate}}</p>
+      </div>
+      }
+
+      <mat-paginator [length]="totalItems()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
+        [pageSizeOptions]="[10, 20, 50]" [disabled]="loading()" (page)="onPageChange($event)">
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,126 @@
+<div class="sales-history-container">
+  <app-page-header [title]="'SALES.HISTORY' | translate" [subtitle]="'SALES.HISTORY_SUBTITLE' | translate"
+    icon="receipt_long">
+    <button mat-raised-button color="primary" routerLink="/sales/pos">
+      <mat-icon>add</mat-icon>
+      {{'SALES.NEW_SALE' | translate}}
+    </button>
+  </app-page-header>
+
+  <mat-card>
+    <mat-card-content>
+
+      <!-- Search Field -->
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>{{'SALES.SEARCH_PLACEHOLDER' | translate}}</mat-label>
+        <input matInput [(ngModel)]="searchQuery" name="searchQuery" (keyup.enter)="onSearch()"
+          [placeholder]="'SALES.SEARCH_PLACEHOLDER' | translate">
+        <mat-icon matPrefix>search</mat-icon>
+        @if (searchQuery()) {
+        <button mat-icon-button matSuffix (click)="clearSearch()" type="button">
+          <mat-icon>close</mat-icon>
+        </button>
+        }
+      </mat-form-field>
+
+      <!-- Loading State (first load only, no data on screen yet) -->
+      @if (loading() && !sales().length) {
+      <div class="loading-state">
+        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+        <p>{{'COMMON.LOADING' | translate}}</p>
+      </div>
+      }
+
+      @if (loading() && sales().length) {
+      <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+      }
+
+      <!-- Table Container -->
+      @if (sales().length || !loading()) {
+      <div class="table-container" [class.list-content-refreshing]="loading()">
+        <table mat-table [dataSource]="sales()" class="data-table">
+
+          <!-- Invoice Number Column -->
+          <ng-container matColumnDef="invoiceNumber">
+            <th mat-header-cell *matHeaderCellDef>{{'SALES.INVOICE_NUMBER' | translate}}</th>
+            <td mat-cell *matCellDef="let sale">
+              <code>{{sale.invoiceNumber}}</code>
+            </td>
+          </ng-container>
+
+          <!-- Date Column -->
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>{{'SALES.DATE' | translate}}</th>
+            <td mat-cell *matCellDef="let sale">
+              {{formatDate(sale.transactionDate)}}
+            </td>
+          </ng-container>
+
+          <!-- Items Column -->
+          <ng-container matColumnDef="items">
+            <th mat-header-cell *matHeaderCellDef>{{'SALES.ITEMS' | translate}}</th>
+            <td mat-cell *matCellDef="let sale">
+              <mat-chip class="items-chip">{{sale.items?.length || 0}}</mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Total Column -->
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef>{{'SALES.TOTAL' | translate}}</th>
+            <td mat-cell *matCellDef="let sale">
+              <strong>{{formatCurrency(sale.totalAmount)}}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Payment Method Column -->
+          <ng-container matColumnDef="paymentMethod">
+            <th mat-header-cell *matHeaderCellDef>{{'SALES.PAYMENT_METHODS' | translate}}</th>
+            <td mat-cell *matCellDef="let sale">
+              <span>{{getPaymentMethodLabel(sale.paymentMethod)}}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
+            <td mat-cell *matCellDef="let sale">
+              <div class="action-buttons">
+                <button mat-icon-button color="primary" (click)="onViewSale(sale)"
+                  [matTooltip]="'COMMON.VIEW' | translate">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" (click)="onPrintSale(sale)"
+                  [matTooltip]="'COMMON.PRINT' | translate">
+                  <mat-icon>print</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- Empty State -->
+        @if (isEmpty()) {
+        <div class="empty-state">
+          <mat-icon>receipt_long</mat-icon>
+          <p>{{'SALES.NO_SALES' | translate}}</p>
+          <button mat-raised-button color="primary" routerLink="/sales/pos">
+            <mat-icon>add</mat-icon>
+            {{'SALES.ADD_FIRST_SALE' | translate}}
+          </button>
+        </div>
+        }
+
+        <!-- Paginator -->
+        @if (hasPagination()) {
+        <mat-paginator [length]="totalElements()" [pageSize]="size()" [pageSizeOptions]="[5, 10, 25]"
+          [disabled]="loading()" (page)="onPageChange($event)" showFirstLastButtons>
+        </mat-paginator>
+        }
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

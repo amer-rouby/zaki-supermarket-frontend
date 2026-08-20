@@ -1,0 +1,116 @@
+<div class="sidebar" [class.collapsed]="isCollapsed()">
+
+  <!-- Logo -->
+  <div class="sidebar-logo" routerLink="/dashboard">
+    <div class="logo-icon">
+      <mat-icon>local_store</mat-icon>
+    </div>
+
+    @if (!isCollapsed()) {
+    <div class="logo-text-stack">
+      <span class="store-name">
+        {{ storeDisplayName() || ('APP.NAME' | translate) }}
+      </span>
+    </div>
+    }
+  </div>
+
+  <!-- Menu -->
+  <mat-nav-list class="sidebar-menu">
+
+    @for (item of menuItems; track item.label; let i = $index) {
+
+    <!-- Normal Item -->
+    @if (!item.children && hasAccess(item.roles)) {
+
+    <a mat-list-item class="menu-item" [routerLink]="item.route" routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }" [matTooltip]="isCollapsed() ? (item.label | translate) : ''"
+      matTooltipPosition="right">
+      <span matListItemTitle class="menu-content-wrapper">
+        <mat-icon class="menu-icon">{{ item.icon }}</mat-icon>
+        @if (!isCollapsed()) {
+        <span class="menu-text">{{ item.label | translate }}</span>
+        }
+      </span>
+    </a>
+    }
+
+    <!-- Expansion -->
+    @if (item.children && hasAccess(item.roles)) {
+
+    @if (isCollapsed() && item.children.length > 0) {
+
+    <a mat-list-item class="menu-item" [routerLink]="item.children[0].route" routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }" [matTooltip]="item.label | translate"
+      matTooltipPosition="right">
+      <span matListItemTitle class="menu-content-wrapper">
+        <mat-icon class="menu-icon">{{ item.icon }}</mat-icon>
+      </span>
+    </a>
+
+    }
+
+    @if (!isCollapsed()) {
+
+    <mat-expansion-panel class="sidebar-expansion" hideToggle [expanded]="isExpanded(i)">
+
+      <mat-expansion-panel-header (click)="togglePanel(i)">
+
+        <mat-panel-title class="menu-item-panel">
+          <span class="menu-content-wrapper">
+            <mat-icon class="menu-icon">{{ item.icon }}</mat-icon>
+            @if (!isCollapsed()) {
+            <span class="menu-text">{{ item.label | translate }}</span>
+            }
+          </span>
+        </mat-panel-title>
+
+      </mat-expansion-panel-header>
+
+      <!-- Sub Menu -->
+      <mat-nav-list class="submenu">
+
+        @for (child of item.children; track child.label) {
+
+        @if (hasAccess(child.roles)) {
+
+        <a mat-list-item class="menu-item" [routerLink]="child.route" routerLinkActive="active"
+          [matTooltip]="isCollapsed() ? (child.label | translate) : ''" matTooltipPosition="right">
+
+          <span matListItemTitle class="menu-content-wrapper sub-item">
+            <mat-icon class="menu-icon">{{ child.icon }}</mat-icon>
+            @if (!isCollapsed()) {
+            <span class="menu-text">{{ child.label | translate }}</span>
+            }
+          </span>
+
+        </a>
+
+        }
+
+        }
+
+      </mat-nav-list>
+
+    </mat-expansion-panel>
+
+    }
+
+
+    }
+
+    }
+
+  </mat-nav-list>
+
+  <!-- Footer -->
+  @if (!isCollapsed()) {
+  <div class="sidebar-footer">
+    <div class="version-info">
+      <mat-icon>info</mat-icon>
+      <span>{{ 'APP.VERSION' | translate }}</span>
+    </div>
+  </div>
+  }
+
+</div>

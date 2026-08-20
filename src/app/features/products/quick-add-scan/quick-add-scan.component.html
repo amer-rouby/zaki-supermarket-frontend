@@ -1,0 +1,186 @@
+<div class="quick-add-container">
+  <app-page-header [title]="'PRODUCTS.QUICK_ADD_TITLE' | translate" [subtitle]="'PRODUCTS.QUICK_ADD_SUBTITLE' | translate"
+    icon="qr_code_scanner">
+    <button mat-stroked-button (click)="finishSession()">
+      <mat-icon>check</mat-icon>
+      <span>{{'PRODUCTS.QUICK_ADD_FINISH' | translate}}</span>
+    </button>
+  </app-page-header>
+
+  <div class="quick-add-layout">
+    <mat-card class="scan-card">
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="barcode-field">
+          <mat-label>{{'SALES.SCAN_BARCODE' | translate}}</mat-label>
+          <mat-icon matPrefix>qr_code_scanner</mat-icon>
+          <input #barcodeInput matInput [ngModel]="barcodeValue()" (ngModelChange)="barcodeValue.set($event)"
+            (keydown.enter)="onScan()" [placeholder]="'SALES.SCAN_BARCODE_HINT' | translate" autocomplete="off">
+        </mat-form-field>
+
+        @if (mode() === 'idle') {
+        <div class="idle-hint">
+          <mat-icon>arrow_upward</mat-icon>
+          <p>{{'PRODUCTS.QUICK_ADD_IDLE_HINT' | translate}}</p>
+        </div>
+        }
+
+        @if (mode() === 'existing' && matchedProduct(); as product) {
+        <div class="result-card existing">
+          <div class="result-header">
+            <mat-icon color="primary">check_circle</mat-icon>
+            <div>
+              <strong>{{product.name}}</strong>
+              <span class="muted">{{'PRODUCTS.STOCK' | translate}}: {{product.totalStock || 0}}</span>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'PRODUCTS.INITIAL_QUANTITY' | translate}}</mat-label>
+              <input matInput type="number" min="1" [ngModel]="restockQuantity()"
+                (ngModelChange)="restockQuantity.set($event)">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'PRODUCTS.EXPIRY_DATE' | translate}}</mat-label>
+              <input matInput [matDatepicker]="restockPicker" [ngModel]="restockExpiryDate()"
+                (ngModelChange)="restockExpiryDate.set($event)">
+              <mat-datepicker-toggle matIconSuffix [for]="restockPicker"></mat-datepicker-toggle>
+              <mat-datepicker #restockPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <div class="result-actions">
+            <button mat-button (click)="skipRestock()" [disabled]="saving()">
+              {{'PRODUCTS.QUICK_ADD_SKIP' | translate}}
+            </button>
+            <button mat-raised-button color="primary" (click)="saveRestock()" [disabled]="saving()">
+              @if (!saving()) {
+              <mat-icon>add</mat-icon>
+              } @else {
+              <mat-spinner diameter="18"></mat-spinner>
+              }
+              <span>{{'PRODUCTS.QUICK_ADD_SAVE_CONTINUE' | translate}}</span>
+            </button>
+          </div>
+        </div>
+        }
+
+        @if (mode() === 'new') {
+        <div class="result-card new">
+          <div class="result-header">
+            <mat-icon color="accent">fiber_new</mat-icon>
+            <strong>{{'PRODUCTS.QUICK_ADD_NEW_PRODUCT' | translate}}</strong>
+          </div>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{'PRODUCTS.NAME' | translate}} *</mat-label>
+              <input matInput [ngModel]="newName()" (ngModelChange)="newName.set($event)">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'PRODUCTS.CATEGORY' | translate}}</mat-label>
+              <input matInput [(ngModel)]="categorySearchText" [matAutocomplete]="categoryAuto"
+                [placeholder]="'CATEGORIES.SEARCH_PLACEHOLDER' | translate">
+              <mat-autocomplete #categoryAuto="matAutocomplete" (optionSelected)="onCategorySelected($event.option.value)">
+                @for (cat of filteredCategories(); track cat.id) {
+                <mat-option [value]="cat.name">{{cat.nameAr || cat.name}}</mat-option>
+                }
+              </mat-autocomplete>
+              @if (categorySearchText()) {
+              <button mat-icon-button matSuffix type="button" (click)="clearCategorySelection()">
+                <mat-icon>close</mat-icon>
+              </button>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'PRODUCTS.UNIT_TYPE' | translate}}</mat-label>
+              <mat-select [ngModel]="newUnitType()" (ngModelChange)="newUnitType.set($event)">
+                @for (unit of unitTypes; track unit.value) {
+                <mat-option [value]="unit.value">{{translateUnitType(unit.label)}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'PRODUCTS.BUY_PRICE' | translate}}</mat-label>
+              <input matInput type="number" min="0" step="0.01" [ngModel]="newBuyPrice()"
+                (ngModelChange)="newBuyPrice.set($event)">
+              <span matTextSuffix>{{getCurrencySuffix()}}</span>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'PRODUCTS.SELL_PRICE' | translate}} *</mat-label>
+              <input matInput type="number" min="0.01" step="0.01" [ngModel]="newSellPrice()"
+                (ngModelChange)="newSellPrice.set($event)">
+              <span matTextSuffix>{{getCurrencySuffix()}}</span>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'PRODUCTS.INITIAL_QUANTITY' | translate}}</mat-label>
+              <input matInput type="number" min="0" [ngModel]="newQuantity()"
+                (ngModelChange)="newQuantity.set($event)">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'PRODUCTS.EXPIRY_DATE' | translate}}</mat-label>
+              <input matInput [matDatepicker]="newExpiryPicker" [ngModel]="newExpiryDate()"
+                (ngModelChange)="newExpiryDate.set($event)">
+              <mat-datepicker-toggle matIconSuffix [for]="newExpiryPicker"></mat-datepicker-toggle>
+              <mat-datepicker #newExpiryPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <div class="result-actions">
+            <button mat-button (click)="cancelEntry()" [disabled]="saving()">
+              {{'COMMON.CANCEL' | translate}}
+            </button>
+            <button mat-raised-button color="primary" (click)="saveNewProduct()" [disabled]="saving()">
+              @if (!saving()) {
+              <mat-icon>save</mat-icon>
+              } @else {
+              <mat-spinner diameter="18"></mat-spinner>
+              }
+              <span>{{'PRODUCTS.QUICK_ADD_SAVE_CONTINUE' | translate}}</span>
+            </button>
+          </div>
+        </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="session-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>history</mat-icon>
+          {{'PRODUCTS.QUICK_ADD_SESSION_LOG' | translate}}
+          <span class="count-badge">{{sessionCount()}}</span>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (sessionLog().length === 0) {
+        <p class="muted">{{'PRODUCTS.QUICK_ADD_NO_ENTRIES' | translate}}</p>
+        } @else {
+        <div class="log-list">
+          @for (entry of sessionLog(); track entry.time + entry.barcode) {
+          <div class="log-item">
+            <mat-icon [color]="entry.kind === 'new' ? 'accent' : 'primary'">
+              {{entry.kind === 'new' ? 'fiber_new' : 'inventory'}}
+            </mat-icon>
+            <div class="log-details">
+              <strong>{{entry.name}}</strong>
+              <span class="muted">
+                {{entry.quantity ? ('+' + entry.quantity) : ('PRODUCTS.QUICK_ADD_NO_STOCK_ADDED' | translate)}}
+                &middot; {{entry.time}}
+              </span>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

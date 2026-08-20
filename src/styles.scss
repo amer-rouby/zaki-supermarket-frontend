@@ -1,0 +1,829 @@
+// My Smart Store - Main Styles
+// Complete and clean version
+
+// Sass Color Module
+@use 'sass:color';
+
+// Material Design Setup
+@use '@angular/material' as mat;
+@include mat.core();
+
+$theme: mat.define-theme((color: (theme-type: light,
+        primary: mat.$violet-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: (brand-family: 'Cairo, sans-serif',
+        plain-family: 'Cairo, sans-serif',
+      ),
+      density: (scale: 0)));
+
+@include mat.all-component-themes($theme);
+
+$dark-theme: mat.define-theme((color: (theme-type: dark,
+        primary: mat.$violet-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: (brand-family: 'Cairo, sans-serif',
+        plain-family: 'Cairo, sans-serif',
+      ),
+      density: (scale: 0)));
+
+// Re-emits only the color tokens (not typography/density, already set above)
+// scoped under the toggle class, so Material components re-theme for dark
+// mode without a second full theme application.
+.dark-theme {
+  @include mat.all-component-colors($dark-theme);
+}
+
+// Material 3's "raised" (elevated) button intentionally uses a pale tinted
+// surface instead of a solid fill - correct per M3 spec, but it makes every
+// primary submit/add/save button in the app look washed-out and low-emphasis.
+// Override raised buttons to render as solid filled buttons instead, so
+// primary actions actually read as primary.
+.mat-mdc-raised-button {
+  &.mat-primary {
+    background-color: #4f46e5 !important;
+    color: #fff !important;
+  }
+
+  &.mat-accent {
+    background-color: #6366f1 !important;
+    color: #fff !important;
+  }
+
+  &.mat-warn {
+    background-color: #ef4444 !important;
+    color: #fff !important;
+  }
+}
+
+// Font Import
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+
+// Global Base Styles
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Cairo', sans-serif;
+  background: var(--color-background, #f1f5f9);
+  transition: background-color 0.2s ease;
+}
+
+// ============================================================
+// Design tokens — Deep Slate Blue / Indigo enterprise theme
+// Exposed both as SCSS variables (compile-time, used below and
+// in component .scss files) and CSS custom properties (runtime,
+// used by components that already read var(--...), e.g. header).
+// ============================================================
+:root {
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+
+  --color-success: #10b981;
+  --color-success-bg: #ecfdf5;
+  --color-success-border: #a7f3d0;
+  --color-warning: #f59e0b;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fde68a;
+  --color-danger: #ef4444;
+  --color-danger-bg: #fef2f2;
+  --color-danger-border: #fecaca;
+  --color-info: #3b82f6;
+  --color-info-bg: #eff6ff;
+  --color-info-border: #bfdbfe;
+
+  --color-surface: #ffffff;
+  --color-background: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-muted: #94a3b8;
+
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+// ============================================================
+// Dark theme — same tokens, redefined. Any component reading
+// var(--color-*) re-themes automatically with no changes of its own.
+// Toggled by ThemeService via a `dark-theme` class on <body>.
+// ============================================================
+body.dark-theme {
+  --color-primary-50: #1e1b4b;
+  --color-primary-100: #312e81;
+  --color-primary-200: #3730a3;
+  --color-primary-500: #818cf8;
+  --color-primary-600: #6366f1;
+  --color-primary-700: #a5b4fc;
+  --color-primary-800: #c7d2fe;
+  --color-primary-900: #e0e7ff;
+
+  --color-slate-50: #1e293b;
+  --color-slate-100: #273549;
+  --color-slate-200: #334155;
+  --color-slate-300: #475569;
+  --color-slate-400: #64748b;
+  --color-slate-500: #94a3b8;
+  --color-slate-600: #cbd5e1;
+  --color-slate-700: #e2e8f0;
+  --color-slate-800: #f1f5f9;
+  --color-slate-900: #f8fafc;
+
+  --color-success-bg: rgba(16, 185, 129, 0.12);
+  --color-success-border: rgba(16, 185, 129, 0.35);
+  --color-warning-bg: rgba(245, 158, 11, 0.12);
+  --color-warning-border: rgba(245, 158, 11, 0.35);
+  --color-danger-bg: rgba(239, 68, 68, 0.12);
+  --color-danger-border: rgba(239, 68, 68, 0.35);
+  --color-info-bg: rgba(59, 130, 246, 0.12);
+  --color-info-border: rgba(59, 130, 246, 0.35);
+
+  --color-surface: #1e293b;
+  --color-background: #0f172a;
+  --color-border: #334155;
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45);
+
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+// ============================================================
+// Dark-mode safety net for screens not yet migrated to the design
+// system tokens. Many older components hardcode a near-white table
+// row hover (e.g. background: #f8f9fa) with no matching text-color
+// change, which reads fine in light mode but makes the text
+// invisible once dark mode is on. Same story for a hardcoded purple
+// gradient table header left over from before this palette existed.
+// This does not fix every hardcoded color on those screens, but it
+// stops the worst readability bugs everywhere at once, immediately.
+// ============================================================
+body.dark-theme {
+
+  table tr:hover,
+  .mat-mdc-row:hover,
+  tr.stock-row:hover {
+    background: var(--color-slate-100, #273549) !important;
+  }
+
+  table tr:hover td,
+  table tr:hover th,
+  .mat-mdc-row:hover .mat-mdc-cell,
+  tr.stock-row:hover td {
+    color: var(--color-text-primary, #f1f5f9) !important;
+  }
+
+  table th {
+    background: var(--color-slate-100, #273549) !important;
+    color: var(--color-text-secondary, #cbd5e1) !important;
+
+    mat-icon,
+    .mat-sort-header-arrow {
+      color: var(--color-text-secondary, #cbd5e1) !important;
+    }
+  }
+
+  table td {
+    color: var(--color-text-secondary, #cbd5e1);
+    border-bottom-color: var(--color-border, #334155) !important;
+  }
+
+  // Generic un-migrated card/container wrappers still hardcoding a
+  // light surface (mat-card itself is already theme-aware via
+  // Angular Material's own dark theme - this only catches the plain
+  // custom wrapper divs many older screens use instead).
+  .stock-card,
+  .search-container,
+  .empty-state h3 {
+    background: transparent;
+  }
+}
+
+// Sensible default icon color so icons that don't set their own color
+// explicitly still read with reasonable contrast in both themes,
+// instead of silently inheriting whatever text color happens to be
+// nearby. Any component-specific color (buttons, semantic icons,
+// active nav state, etc.) still wins - this is just a low-specificity
+// fallback, not an override.
+mat-icon {
+  color: var(--color-text-secondary, #64748b);
+}
+
+// Direction Support
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
+}
+
+// Color Variables — Deep Slate Blue / Indigo (kept as SCSS aliases of the
+// :root custom properties above so existing usages below keep working)
+$primary: #4f46e5;
+$primary-dark: #4338ca;
+$primary-light: #eef2ff;
+$accent: #6366f1;
+$success: #10b981;
+$warning: #f59e0b;
+$error: #ef4444;
+$info: #3b82f6;
+
+$gray-50: #f8fafc;
+$gray-100: #f1f5f9;
+$gray-200: #e2e8f0;
+$gray-300: #cbd5e1;
+$gray-400: #94a3b8;
+$gray-500: #64748b;
+$gray-600: #475569;
+$gray-700: #334155;
+$gray-800: #1e293b;
+$gray-900: #0f172a;
+
+$white: #ffffff;
+$background: #f1f5f9;
+
+// Spacing Variables
+$spacing-1: 4px;
+$spacing-2: 8px;
+$spacing-3: 12px;
+$spacing-4: 16px;
+$spacing-5: 20px;
+$spacing-6: 24px;
+$spacing-8: 32px;
+$spacing-10: 40px;
+$spacing-12: 48px;
+$spacing-16: 64px;
+$spacing-20: 80px;
+
+// Border Radius
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-full: 9999px;
+
+// Transitions
+$transition-fast: 150ms ease;
+$transition-normal: 250ms ease;
+
+// Shadows — soft, low-contrast (easy on the eyes for long shifts)
+$shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+$shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+$shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+$shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+
+// Utility Classes
+.full-width {
+  width: 100%;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.content {
+  padding: $spacing-6;
+  min-height: calc(100vh - 64px);
+}
+
+// Stats Grid
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $spacing-6;
+  margin: $spacing-6 0;
+}
+
+// Stat Card
+.stat-card {
+  background: var(--color-surface, #{$white});
+  border-radius: $radius-xl;
+  padding: $spacing-6;
+  box-shadow: $shadow-sm;
+  transition: transform $transition-normal, box-shadow $transition-normal;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+  }
+
+  mat-card-content {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+
+    .stat-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: $radius-lg;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      mat-icon {
+        color: $white;
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    .stat-info {
+      flex: 1;
+
+      h3 {
+        margin: 0 0 $spacing-1;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--color-text-primary, #{$gray-900});
+      }
+
+      p {
+        margin: 0 0 $spacing-1;
+        font-size: 14px;
+        color: var(--color-text-secondary, #{$gray-600});
+        font-weight: 500;
+      }
+
+      small {
+        margin: 0;
+        font-size: 12px;
+        color: var(--color-text-muted, #{$gray-500});
+      }
+    }
+  }
+}
+
+// Quick Actions
+.quick-actions {
+  margin-top: $spacing-8;
+
+  mat-card {
+    background: var(--color-surface, #{$white});
+    border-radius: $radius-xl;
+    box-shadow: $shadow-sm;
+
+    mat-card-header {
+      padding: $spacing-5 $spacing-6;
+      border-bottom: 1px solid var(--color-border, #{$gray-200});
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      mat-card-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--color-text-primary, #{$gray-800});
+        display: flex;
+        align-items: center;
+        gap: $spacing-2;
+
+        mat-icon {
+          color: $warning;
+        }
+      }
+    }
+
+    mat-card-content {
+      padding: $spacing-6;
+
+      .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: $spacing-3;
+
+        button {
+          height: 56px;
+          font-size: 15px;
+          font-weight: 600;
+          border-radius: $radius-lg;
+          transition: all $transition-fast;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: $spacing-2;
+
+          mat-icon {
+            font-size: 20px;
+          }
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: $shadow-md;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Table Styles
+.table-container {
+  background: var(--color-surface, #{$white});
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      background: var(--color-slate-50, #{$gray-50});
+      font-weight: 600;
+      color: var(--color-text-secondary, #{$gray-600});
+      padding: $spacing-4 $spacing-6;
+      border-bottom: 2px solid var(--color-border, #{$gray-200});
+      text-align: start;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: $spacing-4 $spacing-6;
+      font-size: 14px;
+      color: var(--color-text-secondary, #{$gray-700});
+      border-bottom: 1px solid var(--color-border, #{$gray-200});
+      text-align: start;
+    }
+
+    tr:hover {
+      background: var(--color-slate-50, #{$gray-50});
+    }
+
+    tr:hover td {
+      color: var(--color-text-primary, #{$gray-900});
+    }
+  }
+}
+
+// Helper Classes
+.product-name {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+
+  strong {
+    color: var(--color-text-primary, #{$gray-800});
+    font-weight: 600;
+  }
+
+  small {
+    color: var(--color-text-muted, #{$gray-500});
+    font-size: 12px;
+  }
+}
+
+.price {
+  font-weight: 700;
+  color: $primary;
+  font-size: 16px;
+}
+
+code {
+  background: $gray-200;
+  padding: $spacing-1 $spacing-3;
+  border-radius: $radius-md;
+  font-size: 13px;
+  color: $gray-600;
+  direction: ltr;
+  display: inline-block;
+  font-family: monospace;
+}
+
+.search-field {
+  margin-bottom: $spacing-6;
+}
+
+// Notification Icons
+.notification-icon-warning {
+  color: $warning !important;
+}
+
+.notification-icon-error {
+  color: $error !important;
+}
+
+.notification-icon-info {
+  color: $info !important;
+}
+
+.notification-icon-success {
+  color: $success !important;
+}
+
+// Page Header
+.page-header {
+  background: $white;
+  border-radius: $radius-xl;
+  padding: $spacing-6;
+  margin-bottom: $spacing-6;
+  box-shadow: $shadow-sm;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+
+    mat-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+      color: $primary;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: $gray-800;
+    }
+
+    p {
+      margin: $spacing-1 0 0 0;
+      color: $gray-500;
+      font-size: 14px;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: $spacing-3;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-4;
+
+    .header-actions {
+      width: 100%;
+
+      button {
+        flex: 1;
+      }
+    }
+  }
+}
+
+// Loading and Empty States
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-16 $spacing-6;
+  gap: $spacing-4;
+  text-align: center;
+  color: $gray-500;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: $gray-300;
+  }
+
+  p {
+    color: $gray-400;
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+// List refresh indicator - a thin progress bar pinned above content that's
+// already on screen while a page/filter change reloads it, instead of
+// unmounting the whole table (which read as the page reloading). Pair with
+// .list-content-refreshing on the content wrapper so it dims slightly and
+// ignores clicks mid-fetch, and disable the paginator while it's active.
+.list-refresh-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.list-content-refreshing {
+  opacity: 0.6;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+// Paginator Styles
+//
+// Every screen's own SCSS either left mat-paginator fully unstyled (blends in
+// fine) or invented its own one-off override - one screen even forced
+// `direction: ltr` on it inside an RTL page, which is what made it look
+// visually broken/misplaced. Labels are handled separately by
+// AppPaginatorIntl (app-paginator-intl.service.ts); this just gives every
+// paginator the same theme-aware look without fighting the page's own
+// direction, so per-component overrides are unnecessary going forward.
+mat-paginator {
+  background: transparent !important;
+  color: var(--color-text-secondary, #64748b);
+  border-top: 1px solid var(--color-border, #e2e8f0);
+
+  .mat-mdc-paginator-container {
+    min-height: 52px;
+    padding: 4px 8px;
+  }
+
+  .mat-mdc-paginator-range-label {
+    color: var(--color-text-secondary, #64748b);
+  }
+
+  .mat-mdc-paginator-page-size-label {
+    color: var(--color-text-secondary, #64748b);
+  }
+
+  .mat-mdc-icon-button {
+    color: var(--color-text-secondary, #64748b);
+
+    &:disabled {
+      color: var(--color-text-muted, #94a3b8);
+    }
+  }
+}
+
+// Snackbar Styles
+//
+// panelClass lands on the outer .mat-mdc-snack-bar-container - the actual
+// colored surface Material's MDC snackbar renders is a nested
+// .mdc-snackbar__surface, so a bare `background` on the panel class itself
+// never painted anything and every "success"/"error" toast silently fell
+// back to the theme's default gray/white surface. Style the real surface.
+@mixin snackbar-variant($color) {
+  .mdc-snackbar__surface {
+    background: linear-gradient(135deg, $color 0%, color.adjust($color, $lightness: -10%) 100%) !important;
+    box-shadow: 0 4px 12px rgba($color, 0.4);
+  }
+
+  .mdc-snackbar__label,
+  .mat-mdc-snack-bar-label {
+    color: $white !important;
+    font-weight: 500;
+  }
+
+  .mat-mdc-snack-bar-action,
+  .mat-simple-snackbar-action {
+    color: $white !important;
+    font-weight: 600;
+  }
+}
+
+.success-snackbar {
+  @include snackbar-variant($success);
+}
+
+.error-snackbar {
+  @include snackbar-variant($error);
+}
+
+.warning-snackbar {
+  @include snackbar-variant($warning);
+}
+
+// Responsive Styles
+@media (max-width: 768px) {
+  .content {
+    padding: $spacing-4;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions mat-card-content .actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card mat-card-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+}
+
+// RTL Icon Flip
+[dir="rtl"] {
+
+  .flip-rtl,
+  .mat-icon.arrow-back,
+  .mat-icon.chevron-right,
+  .mat-icon.navigate-next {
+    transform: scaleX(-1);
+  }
+}
+
+// Footer
+.main-footer,
+app-footer {
+  margin-top: auto !important;
+  flex-shrink: 0 !important;
+}
+
+// Material Overrides
+::ng-deep {
+  .mat-mdc-form-field {
+    direction: inherit;
+
+    .mat-mdc-form-field-infix,
+    .mat-mdc-form-field-label,
+    input,
+    select,
+    textarea {
+      direction: inherit;
+      text-align: start;
+    }
+  }
+
+  .mat-mdc-table {
+    direction: inherit;
+
+    th,
+    td {
+      text-align: start;
+    }
+  }
+
+  .mat-mdc-paginator {
+    direction: inherit;
+
+    .mat-mdc-paginator-range-label {
+      margin-inline-start: 8px;
+    }
+  }
+
+  .mat-mdc-menu-panel,
+  .mat-mdc-dialog-container {
+    direction: inherit;
+  }
+
+}
+
+// Placeholder Styles
+::placeholder {
+  direction: inherit;
+  text-align: start;
+  color: $gray-400;
+}
+
+// Scrollbar Styles
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $gray-100;
+  border-radius: $radius-full;
+}
+::-webkit-scrollbar-thumb {
+  background: $primary;
+  border-radius: $radius-full;
+
+  &:hover {
+    background: $accent;
+  }
+}

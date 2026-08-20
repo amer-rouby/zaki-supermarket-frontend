@@ -1,0 +1,271 @@
+.dialog-container {
+  padding: 24px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  direction: inherit;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--color-border);
+  flex-shrink: 0;
+
+  h2 {
+    margin: 0;
+    color: var(--color-primary-600);
+  }
+}
+
+.store-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+  flex-shrink: 0;
+
+  h3 {
+    margin: 0 0 12px;
+    font-size: 20px;
+  }
+
+  p {
+    margin: 6px 0;
+    font-size: 14px;
+    opacity: 0.95;
+  }
+}
+
+.invoice-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+  background: var(--color-slate-50);
+  padding: 16px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .label {
+    font-size: 12px;
+    color: var(--color-text-muted);
+  }
+
+  .value {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+}
+
+.dialog-content {
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(90vh - 250px);
+  padding-inline-end: 8px;
+  direction: inherit;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--color-slate-100);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-slate-400);
+    border-radius: 4px;
+
+    &:hover {
+      background: var(--color-slate-500);
+    }
+  }
+}
+
+h3 {
+  margin: 0 0 15px;
+  color: var(--color-text-primary);
+  font-size: 18px;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+  display: block;
+  overflow-x: auto;
+  direction: inherit;
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #667eea;
+  }
+
+  th,
+  td {
+    padding: 12px;
+    text-align: start;
+    border-bottom: 1px solid var(--color-border);
+    min-width: 100px;
+  }
+
+  th {
+    background: var(--color-primary-600);
+    color: white;
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) {
+    background: var(--color-slate-50);
+  }
+
+  tbody tr {
+    &:hover {
+      background: var(--color-slate-100);
+    }
+  }
+}
+
+.totals {
+  background: var(--color-slate-50);
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 20px;
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  direction: inherit;
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: var(--color-text-primary);
+
+    &.final {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--color-primary-600);
+      border-top: 2px solid var(--color-primary-600);
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+  color: var(--color-text-secondary);
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.notes-section {
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--color-slate-50);
+  border-radius: 8px;
+
+  h4 {
+    margin: 0 0 8px;
+    color: var(--color-text-primary);
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .dialog-container {
+    padding: 0;
+    max-height: none;
+  }
+
+  .dialog-content {
+    overflow: visible;
+    max-height: none;
+  }
+
+  body {
+    background: white;
+  }
+
+  .store-header {
+    background: white;
+    color: #333;
+    border: 2px solid #667eea;
+  }
+
+  .invoice-info,
+  .totals {
+    background: white;
+    border: 1px solid #e9ecef;
+  }
+}
+
+@media (max-width: 768px) {
+  .dialog-container {
+    padding: 16px;
+  }
+
+  .invoice-info {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dialog-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}

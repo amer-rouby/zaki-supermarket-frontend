@@ -1,0 +1,185 @@
+<div class="reports-container">
+  <app-page-header [title]="'REPORTS.EXPIRY_REPORTS' | translate" [subtitle]="'REPORTS.EXPIRY_DESC' | translate"
+    icon="event_busy">
+    <button mat-raised-button color="primary" (click)="exportPDF()">
+      <mat-icon>picture_as_pdf</mat-icon> PDF
+    </button>
+  </app-page-header>
+
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{'REPORTS.REPORT_TYPE' | translate}}</mat-label>
+          <mat-select [(ngModel)]="reportType">
+            <mat-option value="CURRENT">{{'REPORTS.CURRENT' | translate}}</mat-option>
+            <mat-option value="MONTHLY">{{'REPORTS.MONTHLY' | translate}}</mat-option>
+            <mat-option value="YEARLY">{{'REPORTS.YEARLY' | translate}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="generateReport()" [disabled]="reportLoading()">
+          @if (reportLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+          <mat-icon>refresh</mat-icon>
+          }
+          <span>{{reportLoading() ? ('COMMON.LOADING' | translate) : ('REPORTS.GENERATE' | translate)}}</span>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  @if (reportLoading()) {
+  <div class="loading-overlay">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>{{'COMMON.LOADING' | translate}}</p>
+  </div>
+  }
+
+  @if (reportError()) {
+  <mat-card class="error-card">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>{{reportError() | translate}}</p>
+    <button mat-raised-button color="primary" (click)="generateReport()">
+      {{'COMMON.RETRY' | translate}}
+    </button>
+  </mat-card>
+  }
+
+  @if (!reportLoading() && !reportError() && expiryData()) {
+
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%)">
+          <mat-icon>error</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{expiryData()!.urgentExpiring}}</h3>
+          <p>{{'REPORTS.URGENT_EXPIRY' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%)">
+          <mat-icon>warning</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{expiryData()!.warningExpiring}}</h3>
+          <p>{{'REPORTS.WARNING_EXPIRY' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%)">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{expiryData()!.okExpiring}}</h3>
+          <p>{{'REPORTS.OK_EXPIRY' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)">
+          <mat-icon>inventory</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{expiryData()!.totalExpiring}}</h3>
+          <p>{{'REPORTS.TOTAL_EXPIRING' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="charts-grid">
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>{{'REPORTS.EXPIRY_DISTRIBUTION' | translate}}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container">
+          <canvas baseChart [data]="doughnutChartData" [options]="doughnutChartOptions" [type]="'doughnut'">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>{{'REPORTS.EXPIRING_PRODUCTS' | translate}}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="expiryData()!.expiringProducts" class="data-table">
+
+        <ng-container matColumnDef="productName">
+          <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.NAME' | translate}}</th>
+          <td mat-cell *matCellDef="let row"><strong>{{row.productName}}</strong></td>
+        </ng-container>
+
+        <ng-container matColumnDef="batchNumber">
+          <th mat-header-cell *matHeaderCellDef>{{'STOCK.BATCH_NUMBER' | translate}}</th>
+          <td mat-cell *matCellDef="let row"><code>{{row.batchNumber}}</code></td>
+        </ng-container>
+
+        <ng-container matColumnDef="expiryDate">
+          <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.EXPIRY_DATE' | translate}}</th>
+          <td mat-cell *matCellDef="let row">{{row.expiryDate | date:'yyyy-MM-dd'}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="daysUntilExpiry">
+          <th mat-header-cell *matHeaderCellDef>{{'STOCK.DAYS_UNTIL_EXPIRY' | translate}}</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-chip [color]="getStatusColor(row.status)" class="small-chip">
+              {{row.daysUntilExpiry}} {{'STOCK.DAYS' | translate}}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="currentStock">
+          <th mat-header-cell *matHeaderCellDef>{{'STOCK.QUANTITY' | translate}}</th>
+          <td mat-cell *matCellDef="let row">{{row.currentStock}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>{{'COMMON.STATUS' | translate}}</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-chip [color]="getStatusColor(row.status)">
+              {{getStatusLabel(row.status)}}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      @if (!expiryData()!.expiringProducts.length) {
+      <div class="empty-state">
+        <mat-icon>check_circle</mat-icon>
+        <p>{{'REPORTS.NO_EXPIRING_PRODUCTS' | translate}}</p>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  } @else if (!reportLoading() && !expiryData() && !reportError()) {
+
+  <div class="empty-state">
+    <mat-icon>analytics</mat-icon>
+    <p>{{'REPORTS.SELECT_FILTERS' | translate}}</p>
+    <button mat-raised-button color="primary" (click)="generateReport()">
+      {{'REPORTS.GENERATE' | translate}}
+    </button>
+  </div>
+
+  }
+</div>

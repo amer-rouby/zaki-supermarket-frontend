@@ -1,0 +1,16 @@
+<div class="page-header">
+  <div class="header-content">
+    @if(icon){
+    <mat-icon>{{icon}}</mat-icon>
+    }
+    <div>
+      <h1>{{title}}</h1>
+      @if(subtitle){
+      <p>{{subtitle}}</p>
+      }
+    </div>
+  </div>
+  <div class="header-actions">
+    <ng-content></ng-content>
+  </div>
+</div>

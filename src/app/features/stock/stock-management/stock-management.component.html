@@ -1,0 +1,152 @@
+<div class="stock-container">
+  <app-page-header [title]="'STOCK.MANAGE' | translate" [subtitle]="'STOCK.MANAGE_SUBTITLE' | translate" icon="storage">
+    <button mat-raised-button color="primary" routerLink="/stock/add-batch">
+      <mat-icon>add</mat-icon>
+      <span>{{'STOCK.ADD_BATCH' | translate}}</span>
+    </button>
+  </app-page-header>
+
+  <mat-card class="stock-card">
+    <mat-card-content>
+      <div class="search-container">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>{{'STOCK.SEARCH_PLACEHOLDER' | translate}}</mat-label>
+          <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyFilter()"
+            [placeholder]="'STOCK.SEARCH_PLACEHOLDER' | translate">
+          <mat-icon matPrefix>search</mat-icon>
+          @if (searchQuery()) {
+          <button mat-icon-button matSuffix (click)="clearSearch()" type="button"
+            [matTooltip]="'COMMON.CLEAR' | translate">
+            <mat-icon>close</mat-icon>
+          </button>
+          }
+        </mat-form-field>
+      </div>
+
+      @if (loading()) {
+      <div class="loading-state">
+        <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+        <p>{{'COMMON.LOADING' | translate}}</p>
+      </div>
+      }
+
+      @if (!loading()) {
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 stock-table">
+
+          <ng-container matColumnDef="product">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <mat-icon>inventory_2</mat-icon>
+              {{'PRODUCTS.NAME' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <div class="product-cell">
+                <strong>{{element.productName}}</strong>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="batch">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <mat-icon>label</mat-icon>
+              {{'STOCK.BATCH_NUMBER' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <code class="batch-code">{{element.batchNumber}}</code>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <mat-icon>shopping_cart</mat-icon>
+              {{'SALES.QUANTITY' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip-set>
+                <mat-chip [color]="getQuantityChipColor(element.quantityCurrent)">
+                  {{element.quantityCurrent}}
+                </mat-chip>
+              </mat-chip-set>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="expiry">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <mat-icon>event</mat-icon>
+              {{'PRODUCTS.EXPIRY_DATE' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <span class="expiry-date" [class.expired]="element.status === 'EXPIRED'">
+                {{formatDate(element.expiryDate)}}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <mat-icon>info</mat-icon>
+              {{'PRODUCTS.STATUS' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip-set>
+                <mat-chip [color]="getStatusChipColor(element.status)">
+                  {{getStatusLabel(element.status)}}
+                </mat-chip>
+              </mat-chip-set>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-icon>settings</mat-icon>
+              {{'COMMON.ACTIONS' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <div class="action-buttons">
+                <button mat-icon-button color="primary" (click)="onEdit(element)"
+                  [matTooltip]="'COMMON.EDIT' | translate">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" (click)="onAdjust(element)"
+                  [matTooltip]="'STOCK.ADJUST' | translate">
+                  <mat-icon>adjust</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="onViewHistory(element)" [matTooltip]="'STOCK.VIEW_HISTORY' | translate">
+                  <mat-icon>history</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="onDelete(element)"
+                  [matTooltip]="'COMMON.DELETE' | translate">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="stock-row"
+            [class.expiring-soon]="row.isExpiringSoon">
+          </tr>
+
+        </table>
+
+        <mat-paginator [length]="totalElements()" [pageIndex]="currentPage()" [pageSize]="pageSize()"
+          [pageSizeOptions]="[5, 10, 20, 50]" [showFirstLastButtons]="true" (page)="onPageChange($event)"
+          aria-label="Select page">
+        </mat-paginator>
+
+        @if (dataSource.data.length === 0) {
+        <div class="empty-state">
+          <mat-icon>inventory_2</mat-icon>
+          <h3>{{'STOCK.NO_STOCK' | translate}}</h3>
+          <p>لا توجد دفعات مسجلة في المخزون</p>
+          <button mat-raised-button color="primary" routerLink="/stock/add-batch">
+            <mat-icon>add</mat-icon>
+            <span>{{'STOCK.ADD_FIRST_BATCH' | translate}}</span>
+          </button>
+        </div>
+        }
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

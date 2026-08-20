@@ -1,0 +1,128 @@
+<div class="expenses-container">
+  <!-- Page Header -->
+  <app-page-header [title]="'EXPENSES.TITLE' | translate" [subtitle]="'EXPENSES.SUBTITLE' | translate"
+    icon="receipt_long">
+    <button mat-raised-button color="primary" (click)="openAddExpenseDialog()">
+      <mat-icon>add</mat-icon> {{'EXPENSES.ADD_EXPENSE' | translate}}
+    </button>
+  </app-page-header>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <mat-card class="summary-card">
+      <mat-card-content>
+        <div class="summary-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%)">
+          <mat-icon>trending_down</mat-icon>
+        </div>
+        <div class="summary-info">
+          <h3>{{formatCurrency(totalExpenses())}}</h3>
+          <p>{{'EXPENSES.TOTAL_EXPENSES' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <mat-card-content>
+        <div class="summary-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+        <div class="summary-info">
+          <h3>{{expenses().length}}</h3>
+          <p>{{'EXPENSES.TOTAL_TRANSACTIONS' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+  <div class="loading-overlay">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>{{'COMMON.LOADING' | translate}}</p>
+  </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+  <mat-card class="error-card">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>{{error() | translate}}</p>
+    <button mat-raised-button color="primary" (click)="loadExpenses()">
+      {{'COMMON.RETRY' | translate}}
+    </button>
+  </mat-card>
+  }
+
+  <!-- Expenses Table -->
+  @if (!loading() && !error()) {
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>{{'EXPENSES.ALL_EXPENSES' | translate}}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="expenses()" class="data-table">
+
+        <!-- Category Column -->
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>{{'EXPENSES.CATEGORY' | translate}}</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-chip color="primary" class="small-chip">{{row.categoryAr}}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Title Column -->
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>{{'EXPENSES.TITLE' | translate}}</th>
+          <td mat-cell *matCellDef="let row"><strong>{{row.title}}</strong></td>
+        </ng-container>
+
+        <!-- Amount Column -->
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>{{'EXPENSES.AMOUNT' | translate}}</th>
+          <td mat-cell *matCellDef="let row">
+            <strong class="amount-text">{{formatCurrency(row.amount)}}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Expense Date Column -->
+        <ng-container matColumnDef="expenseDate">
+          <th mat-header-cell *matHeaderCellDef>{{'EXPENSES.DATE' | translate}}</th>
+          <td mat-cell *matCellDef="let row">{{formatDate(row.expenseDate)}}</td>
+        </ng-container>
+
+        <!-- Payment Method Column -->
+        <ng-container matColumnDef="paymentMethod">
+          <th mat-header-cell *matHeaderCellDef>{{'EXPENSES.PAYMENT_METHOD' | translate}}</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-chip class="small-chip">{{row.paymentMethod | translate}}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button color="warn" (click)="deleteExpense(row.id)"
+              matTooltip="{{'COMMON.DELETE' | translate}}">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      @if (expenses().length === 0) {
+      <div class="empty-state">
+        <mat-icon>receipt_long</mat-icon>
+        <p>{{'EXPENSES.NO_EXPENSES' | translate}}</p>
+        <button mat-raised-button color="primary" (click)="openAddExpenseDialog()">
+          <mat-icon>add</mat-icon> {{'EXPENSES.ADD_FIRST' | translate}}
+        </button>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+  }
+</div>

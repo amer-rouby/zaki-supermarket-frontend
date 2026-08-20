@@ -1,0 +1,157 @@
+<div class="users-container">
+  <!-- Header -->
+  <app-page-header [title]="'USERS.TITLE' | translate" [subtitle]="'USERS.MANAGE' | translate" icon="people">
+
+    <button mat-raised-button color="primary" (click)="onAdd()">
+      <mat-icon>add</mat-icon>
+      {{'USERS.ADD_NEW' | translate}}
+    </button>
+  </app-page-header>
+
+  <!-- Search & Filters -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-grid">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>{{'COMMON.SEARCH' | translate}}</mat-label>
+          <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()"
+            [placeholder]="'USERS.SEARCH_PLACEHOLDER' | translate">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="onSearch()" [disabled]="loading()">
+          <mat-icon>search</mat-icon>
+          {{'COMMON.SEARCH' | translate}}
+        </button>
+
+        <button mat-button (click)="loadUsers()" [disabled]="loading()">
+          <mat-icon>refresh</mat-icon>
+          {{'COMMON.REFRESH' | translate}}
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  @if (loading() && !users().length) {
+  <app-table-loading />
+  }
+
+  <!-- Users Table -->
+  @if (users().length) {
+  <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
+    <mat-card-header>
+      <mat-card-title>{{'USERS.ALL_USERS' | translate}}</mat-card-title>
+      <mat-card-subtitle>{{users().length}} {{'USERS.COUNT' | translate}}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content [class.list-content-refreshing]="loading()">
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="pagedUsers()" class="data-table" matSort>
+
+          <!-- Full Name -->
+          <ng-container matColumnDef="fullName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'USERS.FULL_NAME' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let user">
+              <div class="user-info">
+                <div class="avatar" [style.background]="getRoleColor(user.role)">
+                  {{user.fullName.charAt(0).toUpperCase()}}
+                </div>
+                <div>
+                  <strong>{{user.fullName}}</strong>
+                  <small class="text-muted">{{user.username}}</small>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Email -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'USERS.EMAIL' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let user">
+              <span class="text-muted">{{user.email || '-'}}</span>
+            </td>
+          </ng-container>
+
+          <!-- Role -->
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'USERS.ROLE' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let user">
+              <mat-chip [style.background]="getRoleColor(user.role)" class="role-chip">
+                {{getRoleLabel(user.role)}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Status -->
+          <ng-container matColumnDef="isActive">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'COMMON.STATUS' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let user">
+              <mat-slide-toggle [checked]="user.isActive" [color]="user.isActive ? 'primary' : 'warn'"
+                (change)="toggleActive(user)" [disabled]="loading()">
+                {{user.isActive ? ('COMMON.ACTIVE' | translate) : ('COMMON.INACTIVE' | translate)}}
+              </mat-slide-toggle>
+            </td>
+          </ng-container>
+
+          <!-- Last Login -->
+          <ng-container matColumnDef="lastLoginAt">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'USERS.LAST_LOGIN' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let user">
+              <span class="text-muted">{{formatDate(user.lastLoginAt)}}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>
+              {{'COMMON.ACTIONS' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let user">
+              <button mat-icon-button color="primary" (click)="onEdit(user)" [matTooltip]="'COMMON.EDIT' | translate">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="onDelete(user)" [matTooltip]="'COMMON.DELETE' | translate">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable-row"
+            [class.inactive]="!row.isActive">
+          </tr>
+        </table>
+      </div>
+
+      @if (hasPagination()) {
+      <mat-paginator [length]="users().length" [pageIndex]="page()" [pageSize]="size()"
+        [pageSizeOptions]="[5, 10, 25, 50]" [disabled]="loading()" (page)="onPageChange($event)" showFirstLastButtons>
+      </mat-paginator>
+      }
+    </mat-card-content>
+  </mat-card>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !users().length) {
+  <app-empty-state
+    icon="people_outline"
+    message="USERS.NO_USERS"
+    actionLabel="USERS.ADD_FIRST"
+    (action)="onAdd()" />
+  }
+</div>

@@ -1,0 +1,255 @@
+<div class="dashboard-container">
+  <app-page-header [title]="'DASHBOARD.TITLE' | translate" [subtitle]="'DASHBOARD.SUBTITLE' | translate"
+    icon="dashboard">
+  </app-page-header>
+
+  @if (loading()) {
+  <div class="dashboard-content">
+    <div class="stats-grid">
+      @for (i of [0,1,2,3]; track i) {
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-icon"></div>
+        <div class="skeleton-lines">
+          <div class="skeleton skeleton-line" style="width: 70%; height: 22px;"></div>
+          <div class="skeleton skeleton-line" style="width: 50%;"></div>
+        </div>
+      </div>
+      }
+    </div>
+    <div class="skeleton-block" style="height: 160px;"></div>
+    <div class="tables-grid">
+      <div class="skeleton-block" style="height: 280px;"></div>
+      <div class="skeleton-block" style="height: 280px;"></div>
+    </div>
+  </div>
+  }
+
+  @if (hasError()) {
+  <div class="error-state">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{error()}}</p>
+    <button mat-raised-button color="primary" (click)="refreshData()">
+      <mat-icon>refresh</mat-icon>
+      <span>{{'DASHBOARD.REFRESH' | translate}}</span>
+    </button>
+  </div>
+  }
+
+  @if (showStats() && stats()) {
+  <div class="dashboard-content">
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon tone-primary">
+            <mat-icon>attach_money</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{formatCurrency(stats()!.todayRevenue)}}</h3>
+            <p>{{'DASHBOARD.TODAY_SALES' | translate}}</p>
+            <small>{{stats()!.todayOrders}} {{'DASHBOARD.TOTAL_ORDERS' | translate}}</small>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon tone-info">
+            <mat-icon>inventory_2</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{stats()!.totalProducts}}</h3>
+            <p>{{'DASHBOARD.TOTAL_PRODUCTS' | translate}}</p>
+            <small>{{'PRODUCTS.TITLE' | translate}}</small>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon tone-warning">
+            <mat-icon>warning</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{stats()!.lowStockProducts}}</h3>
+            <p>{{'DASHBOARD.STOCK_ALERTS' | translate}}</p>
+            <small>{{'STOCK.LOW_STOCK_PRODUCTS' | translate}}</small>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon tone-success">
+            <mat-icon>account_balance_wallet</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{formatCurrency(stats()!.inventoryValue)}}</h3>
+            <p>{{'DASHBOARD.INVENTORY_VALUE' | translate}}</p>
+            <small>{{'STOCK.TOTAL_VALUE' | translate}}</small>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Quick Actions -->
+    <mat-card class="quick-actions-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>bolt</mat-icon>
+          {{'DASHBOARD.QUICK_ACTIONS' | translate}}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="actions-grid">
+          <button type="button" routerLink="/sales/pos" class="action-btn primary-action">
+            <mat-icon>point_of_sale</mat-icon>
+            <span>{{'DASHBOARD.NEW_SALE' | translate}}</span>
+            <span class="shortcut-badge">F2</span>
+          </button>
+          <button type="button" routerLink="/products/new" class="action-btn">
+            <mat-icon>add</mat-icon>
+            <span>{{'DASHBOARD.ADD_PRODUCT' | translate}}</span>
+          </button>
+          <button type="button" routerLink="/stock/alerts" class="action-btn">
+            <mat-icon>warning</mat-icon>
+            <span>{{'DASHBOARD.STOCK_ALERTS_BTN' | translate}}</span>
+          </button>
+          <button type="button" routerLink="/sales/history" class="action-btn">
+            <mat-icon>receipt_long</mat-icon>
+            <span>{{'DASHBOARD.SALES_HISTORY' | translate}}</span>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Tables Grid -->
+    <div class="tables-grid">
+
+      <!-- Top Products Table -->
+      <mat-card class="table-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>trending_up</mat-icon>
+            {{'DASHBOARD.TOP_PRODUCTS' | translate}}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (hasTopProducts()) {
+          <app-top-products-table [products]="stats()!.topProducts" />
+          } @else {
+          <app-empty-state icon="show_chart" message="DASHBOARD.NO_DATA" hint="SALES.NO_SALES" />
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Recent Sales Table -->
+      <mat-card class="table-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>receipt_long</mat-icon>
+            {{'DASHBOARD.RECENT_SALES' | translate}}
+          </mat-card-title>
+          <button mat-button color="primary" (click)="viewAllSales()">{{'DASHBOARD.VIEW_ALL' | translate}}</button>
+        </mat-card-header>
+        <mat-card-content>
+          @if (hasRecentSales()) {
+          <div class="table-wrapper">
+            <table mat-table [dataSource]="stats()!.recentSales" class="data-table">
+
+              <ng-container matColumnDef="invoiceNumber">
+                <th mat-header-cell *matHeaderCellDef>{{'SALES.INVOICE_NUMBER' | translate}}</th>
+                <td mat-cell *matCellDef="let element">
+                  <span class="invoice">{{element.invoiceNumber}}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="totalAmount">
+                <th mat-header-cell *matHeaderCellDef>{{'SALES.TOTAL' | translate}}</th>
+                <td mat-cell *matCellDef="let element">
+                  <span class="amount">{{formatCurrency(element.totalAmount)}}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="transactionDate">
+                <th mat-header-cell *matHeaderCellDef>{{'SALES.SALE_DATE' | translate}}</th>
+                <td mat-cell *matCellDef="let element">
+                  <span class="date">{{formatDate(element.transactionDate)}}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="paymentMethod">
+                <th mat-header-cell *matHeaderCellDef>{{'SALES.PAYMENT_METHODS' | translate}}</th>
+                <td mat-cell *matCellDef="let element">
+                  <mat-chip class="payment-chip" [color]="getPaymentChipColor(element.paymentMethod)">
+                    {{getPaymentMethodArabic(element.paymentMethod)}}
+                  </mat-chip>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="recentSalesColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: recentSalesColumns;"></tr>
+            </table>
+          </div>
+          } @else {
+          <app-empty-state icon="receipt_long" message="DASHBOARD.NO_DATA" hint="SALES.NO_SALES" />
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Alerts Section -->
+    @if (hasAlerts()) {
+    <mat-card class="alerts-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>notifications_active</mat-icon>
+          {{'DASHBOARD.ALERTS' | translate}}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="alerts-grid">
+
+          @if (stats()!.expiringBatches > 0) {
+          <div class="alert-item warning">
+            <mat-icon>warning</mat-icon>
+            <div class="alert-info">
+              <strong>{{'DASHBOARD.EXPIRING_SOON' | translate}}</strong>
+              <p>{{stats()!.expiringBatches}} {{'STOCK.DAYS_UNTIL_EXPIRY' | translate}}</p>
+            </div>
+            <button mat-button color="warn" size="small" routerLink="/stock/alerts">{{'COMMON.VIEW' | translate}}</button>
+          </div>
+          }
+
+          @if (stats()!.expiredBatches > 0) {
+          <div class="alert-item danger">
+            <mat-icon>error</mat-icon>
+            <div class="alert-info">
+              <strong>{{'DASHBOARD.EXPIRED' | translate}}</strong>
+              <p>{{stats()!.expiredBatches}} {{'PRODUCTS.EXPIRED' | translate}}</p>
+            </div>
+            <button mat-button color="warn" size="small" routerLink="/stock/alerts">{{'COMMON.VIEW' | translate}}</button>
+          </div>
+          }
+
+          @if (stats()!.outOfStockProducts > 0) {
+          <div class="alert-item info">
+            <mat-icon>inventory</mat-icon>
+            <div class="alert-info">
+              <strong>{{'DASHBOARD.OUT_OF_STOCK' | translate}}</strong>
+              <p>{{stats()!.outOfStockProducts}} {{'STOCK.OUT_OF_STOCK_PRODUCTS' | translate}}</p>
+            </div>
+            <button mat-button color="primary" size="small" routerLink="/stock/alerts">{{'COMMON.VIEW' | translate}}</button>
+          </div>
+          }
+
+        </div>
+      </mat-card-content>
+    </mat-card>
+    }
+
+  </div>
+  }
+</div>

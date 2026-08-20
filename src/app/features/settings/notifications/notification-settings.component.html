@@ -1,0 +1,180 @@
+<div class="notification-settings-container">
+  <app-page-header [title]="'SETTINGS.NOTIFICATIONS' | translate" [subtitle]="'NOTIFICATIONS.SUBTITLE' | translate"
+    icon="notifications">
+  </app-page-header>
+
+  @if (loading()) {
+  <div class="loading-state">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>{{'COMMON.LOADING' | translate}}</p>
+  </div>
+  }
+
+  @if (!loading()) {
+  <form [formGroup]="notificationForm" (ngSubmit)="onSave()">
+    <mat-card class="general-settings">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>settings</mat-icon>
+          {{'NOTIFICATIONS.GENERAL_SETTINGS' | translate}}
+        </mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="settings-grid">
+          <div class="setting-item">
+            <div class="setting-info">
+              <mat-icon>email</mat-icon>
+              <div>
+                <h4>{{'NOTIFICATIONS.EMAIL_NOTIFICATIONS' | translate}}</h4>
+                <p>{{'NOTIFICATIONS.DESC.EMAIL_NOTIFICATIONS' | translate}}</p>
+              </div>
+            </div>
+            <mat-slide-toggle formControlName="emailNotifications" color="primary"></mat-slide-toggle>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <mat-icon>sms</mat-icon>
+              <div>
+                <h4>{{'NOTIFICATIONS.SMS_NOTIFICATIONS' | translate}}</h4>
+                <p>{{'NOTIFICATIONS.DESC.SMS_NOTIFICATIONS' | translate}}</p>
+              </div>
+            </div>
+            <mat-slide-toggle formControlName="smsNotifications" color="primary"></mat-slide-toggle>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <mat-icon>notifications</mat-icon>
+              <div>
+                <h4>{{'NOTIFICATIONS.PUSH_NOTIFICATIONS' | translate}}</h4>
+                <p>{{'NOTIFICATIONS.DESC.PUSH_NOTIFICATIONS' | translate}}</p>
+              </div>
+            </div>
+            <mat-slide-toggle formControlName="pushNotifications" color="primary"></mat-slide-toggle>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <mat-icon>language</mat-icon>
+              <div>
+                <h4>{{'NOTIFICATIONS.LANGUAGE' | translate}}</h4>
+                <p>{{'NOTIFICATIONS.DESC.LANGUAGE' | translate}}</p>
+              </div>
+            </div>
+            <mat-form-field appearance="outline" class="language-select">
+              <mat-select formControlName="preferredLanguage">
+                <mat-option value="ar">العربية</mat-option>
+                <mat-option value="en">English</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <mat-icon>volume_up</mat-icon>
+              <div>
+                <h4>{{'NOTIFICATIONS.SOUND_ENABLED' | translate}}</h4>
+                <p>{{'NOTIFICATIONS.DESC.SOUND_ENABLED' | translate}}</p>
+              </div>
+            </div>
+            <mat-slide-toggle formControlName="soundEnabled" color="primary"></mat-slide-toggle>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <mat-icon>vibration</mat-icon>
+              <div>
+                <h4>{{'NOTIFICATIONS.VIBRATION_ENABLED' | translate}}</h4>
+                <p>{{'NOTIFICATIONS.DESC.VIBRATION_ENABLED' | translate}}</p>
+              </div>
+            </div>
+            <mat-slide-toggle formControlName="vibrationEnabled" color="primary"></mat-slide-toggle>
+          </div>
+        </div>
+
+        <div class="quiet-hours" formGroupName="quietHours">
+          <h4>
+            <mat-icon>bedtime</mat-icon>
+            {{'NOTIFICATIONS.QUIET_HOURS' | translate}}
+          </h4>
+          <p class="description">{{'NOTIFICATIONS.DESC.QUIET_HOURS' | translate}}</p>
+
+          <div class="quiet-hours-controls">
+            <mat-slide-toggle formControlName="enabled" color="primary">
+              {{'NOTIFICATIONS.ENABLE_QUIET_HOURS' | translate}}
+            </mat-slide-toggle>
+
+            @if (notificationForm.get('quietHours.enabled')?.value) {
+            <div class="time-inputs">
+              <mat-form-field appearance="outline">
+                <mat-label>{{'NOTIFICATIONS.START_TIME' | translate}}</mat-label>
+                <input matInput type="time" formControlName="startTime">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{'NOTIFICATIONS.END_TIME' | translate}}</mat-label>
+                <input matInput type="time" formControlName="endTime">
+              </mat-form-field>
+            </div>
+            }
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    @for (category of categories; track category.id) {
+    <mat-card class="category-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>{{category.icon}}</mat-icon>
+          {{category.title | translate}}
+        </mat-card-title>
+
+        <button mat-icon-button type="button" (click)="toggleAllSettings(category)"
+          [matTooltip]="'NOTIFICATIONS.TOGGLE_ALL' | translate">
+          <mat-icon>
+            {{getToggleAllIcon(category)}}
+          </mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="settings-list">
+          @for (setting of category.settings; track setting.key) {
+          <div class="setting-row" [class.disabled]="!setting.enabled">
+            <div class="setting-details">
+              <h5>{{setting.label | translate}}</h5>
+              <p class="description">{{setting.description | translate}}</p>
+            </div>
+
+            <div class="setting-controls">
+              <mat-slide-toggle [(ngModel)]="setting.enabled" [ngModelOptions]="{standalone: true}" color="primary">
+                {{'COMMON.ENABLED' | translate}}
+              </mat-slide-toggle>
+            </div>
+          </div>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+    }
+
+    <div class="form-actions">
+      <button mat-button type="button" (click)="onReset()" color="warn" [disabled]="saving()">
+        <mat-icon>refresh</mat-icon>
+        <span>{{'COMMON.RESET' | translate}}</span>
+      </button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
+        @if (saving()) {
+        <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+        <mat-icon>save</mat-icon>
+        }
+        <span>{{saving() ? ('COMMON.SAVING' | translate) : ('COMMON.SAVE' | translate)}}</span>
+      </button>
+    </div>
+  </form>
+  }
+</div>

@@ -1,0 +1,20 @@
+<div class="reports-container">
+  <app-page-header [title]="'REPORTS.TITLE' | translate" [subtitle]="'REPORTS.SUBTITLE' | translate" icon="assessment">
+  </app-page-header>
+
+  <mat-grid-list [cols]="cols()" rowHeight="220px" gutterSize="24px">
+    @for (card of reportCards(); track card.route) {
+    <mat-grid-tile>
+      <mat-card class="report-card" [routerLink]="card.route">
+        <mat-card-content>
+          <div class="icon-wrapper" [style.background]="card.color">
+            <mat-icon>{{card.icon}}</mat-icon>
+          </div>
+          <h3>{{card.titleKey | translate}}</h3>
+          <p class="subtitle">{{card.subtitleKey | translate}}</p>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+    }
+  </mat-grid-list>
+</div>

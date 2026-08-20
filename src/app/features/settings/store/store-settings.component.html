@@ -1,0 +1,170 @@
+<div class="settings-page">
+  <app-page-header [title]="'SETTINGS.STORE' | translate" [subtitle]="'SETTINGS.STORE_SUBTITLE' | translate"
+    icon="store">
+  </app-page-header>
+
+  <mat-card>
+    <mat-card-content>
+      @if (loading()) {
+      <div class="loading-state">
+        <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+        <p>{{'COMMON.LOADING' | translate}}</p>
+      </div>
+      }
+
+      @if (!loading()) {
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="settings-form">
+
+        <!-- Store Info Section -->
+        <div class="form-section">
+          <h3 class="section-title">{{'SETTINGS.STORE_INFO' | translate}}</h3>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.STORE_NAME' | translate}} *</mat-label>
+              <input matInput formControlName="storeName">
+              @if (form.get('storeName')?.invalid && form.get('storeName')?.touched) {
+              <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.STORE_PHONE' | translate}}</mat-label>
+              <input matInput formControlName="phone" type="tel">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{'SETTINGS.STORE_ADDRESS' | translate}}</mat-label>
+              <textarea matInput formControlName="address" rows="2"></textarea>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.STORE_EMAIL' | translate}}</mat-label>
+              <input matInput formControlName="email" type="email">
+              @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+              <mat-error>{{'VALIDATION.EMAIL_INVALID' | translate}}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Legal Info Section -->
+        <div class="form-section">
+          <h3 class="section-title">{{'SETTINGS.LEGAL_INFO' | translate}}</h3>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.STORE_LICENSE' | translate}}</mat-label>
+              <input matInput formControlName="licenseNumber">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.TAX_NUMBER' | translate}}</mat-label>
+              <input matInput formControlName="taxNumber">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.COMMERCIAL_REGISTER' | translate}}</mat-label>
+              <input matInput formControlName="commercialRegister">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Preferences Section -->
+        <div class="form-section">
+          <h3 class="section-title">{{'SETTINGS.PREFERENCES' | translate}}</h3>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.CURRENCY' | translate}}</mat-label>
+              <mat-select formControlName="currency">
+                @for (curr of currencies; track curr) {
+                <mat-option [value]="curr">{{curr}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.TIMEZONE' | translate}}</mat-label>
+              <mat-select formControlName="timezone">
+                @for (tz of timezones; track tz.value) {
+                <mat-option [value]="tz.value">{{tz.label}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.DATE_FORMAT' | translate}}</mat-label>
+              <mat-select formControlName="dateFormat">
+                @for (fmt of dateFormats; track fmt.value) {
+                <mat-option [value]="fmt.value">{{fmt.label}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.TIME_FORMAT' | translate}}</mat-label>
+              <mat-select formControlName="timeFormat">
+                @for (fmt of timeFormats; track fmt.value) {
+                <mat-option [value]="fmt.value">{{fmt.label}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Payment Methods Section -->
+        <div class="form-section">
+          <h3 class="section-title">{{'SETTINGS.PAYMENT_METHODS' | translate}}</h3>
+          <p class="section-hint">{{'SETTINGS.PAYMENT_METHODS_HINT' | translate}}</p>
+
+          <div class="checkbox-grid">
+            @for (method of allPaymentMethods; track method) {
+            <mat-checkbox [checked]="isPaymentMethodEnabled(method)" (change)="togglePaymentMethod(method)"
+              color="primary">
+              {{'PAYMENTS.' + method | translate}}
+            </mat-checkbox>
+            }
+          </div>
+        </div>
+
+        <!-- Notification Thresholds Section -->
+        <div class="form-section">
+          <h3 class="section-title">{{'SETTINGS.NOTIFICATION_THRESHOLDS' | translate}}</h3>
+          <p class="section-hint">{{'SETTINGS.NOTIFICATION_THRESHOLDS_HINT' | translate}}</p>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.LARGE_SALE_THRESHOLD' | translate}}</mat-label>
+              <input matInput type="number" min="0" formControlName="largeSaleThreshold">
+              <span matSuffix>{{form.value.currency}}</span>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.LARGE_EXPENSE_THRESHOLD' | translate}}</mat-label>
+              <input matInput type="number" min="0" formControlName="largeExpenseThreshold">
+              <span matSuffix>{{form.value.currency}}</span>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button mat-button type="button" (click)="onCancel()" color="warn" [disabled]="loading()">
+            <mat-icon>close</mat-icon>
+            <span>{{'COMMON.CANCEL' | translate}}</span>
+          </button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="loading() || form.invalid">
+            @if (loading()) {
+            <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+            <mat-icon>save</mat-icon>
+            }
+            <span>{{loading() ? ('COMMON.SAVING' | translate) : ('COMMON.SAVE' | translate)}}</span>
+          </button>
+        </div>
+      </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

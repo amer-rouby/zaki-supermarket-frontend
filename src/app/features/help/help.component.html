@@ -1,0 +1,201 @@
+<div class="help-container">
+  <app-page-header [title]="'HELP.TITLE' | translate" [subtitle]="'HELP.SUBTITLE' | translate" icon="help">
+  </app-page-header>
+
+  <!-- Search Bar -->
+  <mat-card class="search-card">
+    <mat-card-content>
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>{{'HELP.SEARCH' | translate}}</mat-label>
+        <input matInput [(ngModel)]="searchQuery" [placeholder]="'HELP.SEARCH_PLACEHOLDER' | translate">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tabs -->
+  <mat-tab-group [(selectedIndex)]="selectedTab" class="help-tabs">
+
+    <!-- FAQ Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>help_outline</mat-icon>
+        <span>{{'HELP.FAQ_TITLE' | translate}}</span>
+      </ng-template>
+
+      <div class="tab-content">
+        @for (item of getFilteredFaqs(); track item; let i = $index) {
+        <mat-card class="faq-card" [class.expanded]="expandedFaqIndex() === i">
+          <mat-card-header (click)="onFaqClick(i)">
+            <mat-card-title>
+              <mat-icon>{{getCategoryIcon(item.category)}}</mat-icon>
+              <span>{{item.question | translate}}</span>
+              <mat-icon class="expand-icon">
+                {{expandedFaqIndex() === i ? 'expand_less' : 'expand_more'}}
+              </mat-icon>
+            </mat-card-title>
+          </mat-card-header>
+
+          @if (expandedFaqIndex() === i) {
+          <mat-card-content>
+            <p>{{item.answer | translate}}</p>
+          </mat-card-content>
+          }
+        </mat-card>
+        } @empty {
+        <div class="empty-state">
+          <mat-icon>search_off</mat-icon>
+          <p>{{'HELP.NO_RESULTS' | translate}}</p>
+        </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- Guides Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>menu_book</mat-icon>
+        <span>{{'HELP.GUIDES_TITLE' | translate}}</span>
+      </ng-template>
+
+      <div class="tab-content">
+        @for (section of guides; track section) {
+        <mat-card class="guide-section">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>{{section.icon}}</mat-icon>
+              <span>{{section.title | translate}}</span>
+            </mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content>
+            @for (topic of section.topics; track topic) {
+            <div class="guide-topic">
+              <h4>{{topic.title | translate}}</h4>
+              <p>{{topic.content | translate}}</p>
+
+              @if (topic.steps) {
+              <div class="steps-list">
+                <h5>{{'HELP.STEPS' | translate}}:</h5>
+                <ol>
+                  @for (step of topic.steps; track step) {
+                  <li>{{step | translate}}</li>
+                  }
+                </ol>
+              </div>
+              }
+            </div>
+            }
+          </mat-card-content>
+        </mat-card>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- Keyboard Shortcuts Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>keyboard</mat-icon>
+        <span>{{'HELP.SHORTCUTS_TITLE' | translate}}</span>
+      </ng-template>
+
+      <div class="tab-content">
+        <mat-card class="shortcuts-card">
+          <mat-card-content>
+            <div class="shortcuts-grid">
+              @for (shortcut of keyboardShortcuts; track shortcut) {
+              <div class="shortcut-item">
+                <kbd>{{shortcut.key}}</kbd>
+                <span>{{shortcut.description | translate}}</span>
+              </div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Contact Support Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>support_agent</mat-icon>
+        <span>{{'HELP.CONTACT_TITLE' | translate}}</span>
+      </ng-template>
+
+      <div class="tab-content">
+        <mat-card class="contact-card">
+          <mat-card-header>
+            <mat-card-title>{{'HELP.CONTACT_SUBTITLE' | translate}}</mat-card-title>
+            <mat-card-subtitle>{{'HELP.CONTACT_DESC' | translate}}</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <form [formGroup]="contactForm" (ngSubmit)="onSubmitContact()">
+              <div class="form-grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>{{'HELP.FORM_NAME' | translate}}</mat-label>
+                  <input matInput formControlName="name">
+                  @if (contactForm.get('name')?.invalid && contactForm.get('name')?.touched) {
+                  <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>{{'HELP.FORM_EMAIL' | translate}}</mat-label>
+                  <input matInput formControlName="email" type="email">
+                  @if (contactForm.get('email')?.invalid && contactForm.get('email')?.touched) {
+                  <mat-error>{{'VALIDATION.EMAIL_INVALID' | translate}}</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{'HELP.FORM_SUBJECT' | translate}}</mat-label>
+                  <mat-select formControlName="subject">
+                    <mat-option value="technical">{{'HELP.SUBJECT_TECHNICAL' | translate}}</mat-option>
+                    <mat-option value="billing">{{'HELP.SUBJECT_BILLING' | translate}}</mat-option>
+                    <mat-option value="feature">{{'HELP.SUBJECT_FEATURE' | translate}}</mat-option>
+                    <mat-option value="other">{{'HELP.SUBJECT_OTHER' | translate}}</mat-option>
+                  </mat-select>
+                  @if (contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched) {
+                  <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{'HELP.FORM_MESSAGE' | translate}}</mat-label>
+                  <textarea matInput formControlName="message" rows="5"></textarea>
+                  @if (contactForm.get('message')?.invalid && contactForm.get('message')?.touched) {
+                  <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <div class="form-actions">
+                <button mat-raised-button color="primary" type="submit" [disabled]="contactForm.invalid">
+                  <mat-icon>send</mat-icon>
+                  <span>{{'HELP.SEND_MESSAGE' | translate}}</span>
+                </button>
+              </div>
+            </form>
+
+            <div class="contact-info">
+              <h4>{{'HELP.CONTACT_INFO' | translate}}</h4>
+              <div class="info-item">
+                <mat-icon>email</mat-icon>
+                <span>{{supportEmail}}</span>
+              </div>
+              <div class="info-item">
+                <mat-icon>phone</mat-icon>
+                <span>19000</span>
+              </div>
+              <div class="info-item">
+                <mat-icon>schedule</mat-icon>
+                <span>{{'HELP.SUPPORT_HOURS' | translate}}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

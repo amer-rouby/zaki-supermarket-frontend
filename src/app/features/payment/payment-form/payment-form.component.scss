@@ -1,0 +1,23 @@
+.payment-form-card {
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+button[type="submit"] {
+  margin-top: 20px;
+  padding: 12px;
+  font-size: 16px;
+
+  mat-spinner {
+    margin: 0 auto;
+  }
+}
+
+mat-icon {
+  color: #667eea;
+}

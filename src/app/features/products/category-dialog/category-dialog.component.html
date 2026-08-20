@@ -1,0 +1,67 @@
+<div class="dialog-container">
+  <!-- Header -->
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      {{ data?.category ? ('CATEGORIES.EDIT_TITLE' | translate) : ('CATEGORIES.ADD_TITLE' | translate) }}
+    </h2>
+    <button mat-icon-button mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" mat-dialog-content>
+    <div class="form-grid">
+      <!-- Name -->
+      <mat-form-field appearance="outline">
+        <mat-label>{{'CATEGORIES.NAME' | translate}} *</mat-label>
+        <input matInput formControlName="name" [placeholder]="'CATEGORIES.NAME_PLACEHOLDER' | translate">
+        @if (form.get('name')?.invalid && form.get('name')?.touched) {
+        <mat-error>{{'CATEGORIES.NAME_REQUIRED' | translate}}</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Icon -->
+      <mat-form-field appearance="outline">
+        <mat-label>{{'CATEGORIES.ICON' | translate}}</mat-label>
+        <input matInput formControlName="icon" [placeholder]="'CATEGORIES.ICON_PLACEHOLDER' | translate">
+        <mat-icon matSuffix>{{ form.get('icon')?.value || 'category' }}</mat-icon>
+      </mat-form-field>
+
+      <!-- Color -->
+      <mat-form-field appearance="outline">
+        <mat-label>{{'CATEGORIES.COLOR' | translate}}</mat-label>
+        <input matInput formControlName="color" type="color">
+      </mat-form-field>
+
+      <!-- Active Toggle -->
+      <div class="toggle-field">
+        <mat-slide-toggle formControlName="isActive" color="primary">
+          {{'CATEGORIES.IS_ACTIVE' | translate}}
+        </mat-slide-toggle>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'CATEGORIES.DESCRIPTION' | translate}}</mat-label>
+      <textarea matInput formControlName="description" rows="3"
+        [placeholder]="'CATEGORIES.DESC_PLACEHOLDER' | translate"></textarea>
+    </mat-form-field>
+  </form>
+
+  <!-- Actions -->
+  <div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>
+      {{'COMMON.CANCEL' | translate}}
+    </button>
+    <button mat-raised-button color="primary" [disabled]="form.invalid || loading()" (click)="onSubmit()">
+      @if (loading()) {
+      <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+      <mat-icon>{{ data?.category ? 'save' : 'add' }}</mat-icon>
+      }
+      {{ data?.category ? ('COMMON.SAVE' | translate) : ('COMMON.ADD' | translate) }}
+    </button>
+  </div>
+</div>

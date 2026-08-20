@@ -1,0 +1,174 @@
+<div class="product-list-container">
+  <app-page-header [title]="'PRODUCTS.TITLE' | translate" [subtitle]="'PRODUCTS.MANAGE_SUBTITLE' | translate"
+    icon="inventory_2">
+    <button mat-stroked-button color="primary" routerLink="/products/quick-add" class="quick-add-btn">
+      <mat-icon>qr_code_scanner</mat-icon>
+      <span>{{'PRODUCTS.QUICK_ADD_TITLE' | translate}}</span>
+    </button>
+    <button mat-raised-button color="primary" routerLink="/products/new" class="add-btn">
+      <mat-icon>add</mat-icon>
+      <span>{{'PRODUCTS.ADD_NEW' | translate}}</span>
+    </button>
+  </app-page-header>
+
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-grid">
+
+        <!-- Search -->
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>{{'PRODUCTS.SEARCH_PLACEHOLDER' | translate}}</mat-label>
+          <input matInput [(ngModel)]="searchQuery" (ngModelChange)="onSearchInput()"
+            [placeholder]="'PRODUCTS.SEARCH_PLACEHOLDER' | translate">
+          <mat-icon matPrefix>search</mat-icon>
+          @if (searchQuery()) {
+          <button mat-icon-button matSuffix (click)="clearSearch()">
+            <mat-icon>close</mat-icon>
+          </button>
+          }
+        </mat-form-field>
+
+        <!-- Category Filter (searchable - plain scroll list is unusable past ~100 categories) -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>{{'PRODUCTS.CATEGORY' | translate}}</mat-label>
+          <input matInput [(ngModel)]="categorySearchText" [matAutocomplete]="categoryAuto"
+            [placeholder]="'COMMON.ALL' | translate">
+          <mat-autocomplete #categoryAuto="matAutocomplete" (optionSelected)="onCategorySelected($event.option.value)">
+            <mat-option value="all">{{'COMMON.ALL' | translate}}</mat-option>
+            @for (cat of filteredCategoryOptions(); track cat.id) {
+            <mat-option [value]="cat.name">{{cat.nameAr || cat.name}}</mat-option>
+            }
+          </mat-autocomplete>
+          @if (categorySearchText()) {
+          <button mat-icon-button matSuffix (click)="clearCategoryFilter()">
+            <mat-icon>close</mat-icon>
+          </button>
+          } @else {
+          <mat-icon matSuffix>arrow_drop_down</mat-icon>
+          }
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
+    <mat-card-content [class.list-content-refreshing]="loading()">
+
+      <!-- Loading State (first load only, no data on screen yet) -->
+      @if (loading() && !products().length) {
+      <div class="loading-state">
+        <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+        <p>{{'COMMON.LOADING' | translate}}</p>
+      </div>
+      }
+
+      <!-- Products Table -->
+      @if (products().length || !loading()) {
+      <div class="table-container">
+        <table mat-table [dataSource]="products()" class="data-table">
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.NAME' | translate}}</th>
+            <td mat-cell *matCellDef="let product">
+              <div class="product-info">
+                <div class="product-name">
+                  <strong>{{product.name}}</strong>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Barcode Column -->
+          <ng-container matColumnDef="barcode">
+            <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.BARCODE' | translate}}</th>
+            <td mat-cell *matCellDef="let product">
+              <code *ngIf="product.barcode">{{product.barcode}}</code>
+              @if (!product.barcode) {
+              <span class="text-muted">-</span>
+              }
+            </td>
+          </ng-container>
+
+          <!-- Category Column -->
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.CATEGORY' | translate}}</th>
+            <td mat-cell *matCellDef="let product">
+              <mat-chip color="primary">{{translateCategory(product.category)}}</mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Stock Column -->
+          <ng-container matColumnDef="stock">
+            <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.STOCK' | translate}}</th>
+            <td mat-cell *matCellDef="let product">
+              <div class="stock-info">
+                <mat-chip [color]="getStockColor(product.totalStock)">
+                  {{product.totalStock || 0}}
+                </mat-chip>
+                <span class="stock-status" [class.low]="product.totalStock <= 10">
+                  {{getStockStatus(product.totalStock)}}
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Price Column -->
+          <ng-container matColumnDef="price">
+            <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.SELL_PRICE' | translate}}</th>
+            <td mat-cell *matCellDef="let product">
+              <span class="price">{{formatCurrency(product.sellPrice || 0)}}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
+            <td mat-cell *matCellDef="let product">
+              <div class="action-buttons">
+                <button mat-icon-button (click)="viewDetails(product)"
+                  [matTooltip]="'PRODUCTS.PRODUCT_DETAILS' | translate">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button color="primary" [routerLink]="['/products/edit', product.id]"
+                  [matTooltip]="'COMMON.EDIT' | translate">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="onDelete(product)"
+                  [matTooltip]="'COMMON.DELETE' | translate">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- Empty State -->
+        @if (isEmpty()) {
+        <div class="empty-state">
+          <mat-icon>inventory_2</mat-icon>
+          <h3>{{'PRODUCTS.NO_PRODUCTS' | translate}}</h3>
+          <p>{{'PRODUCTS.ADD_FIRST' | translate}}</p>
+          <button mat-raised-button color="primary" routerLink="/products/new">
+            <mat-icon>add</mat-icon>
+            {{'PRODUCTS.ADD_NEW' | translate}}
+          </button>
+        </div>
+        }
+
+        @if (hasPagination()) {
+        <mat-paginator [length]="totalElements()" [pageIndex]="page()" [pageSize]="size()"
+          [pageSizeOptions]="[5, 10, 25, 50]" [disabled]="loading()" (page)="onPageChange($event)" showFirstLastButtons>
+        </mat-paginator>
+        }
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

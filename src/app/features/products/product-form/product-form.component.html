@@ -1,0 +1,185 @@
+<div class="product-form-container">
+  <app-page-header [title]="pageTitle() | translate" [subtitle]="pageSubtitle() | translate" icon="inventory_2">
+  </app-page-header>
+
+  @if (loading() && isEditMode()) {
+  <mat-card>
+    <mat-card-content>
+      <div class="loading-state">
+        <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+        <p>{{'COMMON.LOADING' | translate}}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  }
+
+  @if (!loading() || !isEditMode()) {
+  <form (ngSubmit)="onSubmit()" class="product-form">
+
+    <!-- Basic Information -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>{{'PRODUCTS.SECTION_BASIC_INFO' | translate}}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PRODUCTS.NAME' | translate}} *</mat-label>
+          <input matInput [(ngModel)]="product().name" name="name" required
+            [placeholder]="'PRODUCTS.NAME_PLACEHOLDER' | translate">
+          <mat-icon matPrefix>inventory_2</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PRODUCTS.MANUFACTURER' | translate}}</mat-label>
+          <input matInput [(ngModel)]="extraFields().manufacturer" name="manufacturer"
+            [placeholder]="'PRODUCTS.MANUFACTURER_PLACEHOLDER' | translate">
+          <mat-icon matPrefix>factory</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PRODUCTS.BARCODE' | translate}}</mat-label>
+          <input #barcodeInput matInput [(ngModel)]="product().barcode" name="barcode"
+            [placeholder]="'PRODUCTS.BARCODE_PLACEHOLDER' | translate"
+            [matTooltip]="'PRODUCTS.BARCODE_SCAN_HINT' | translate"
+            (focus)="barcodeInput.select()">
+          <mat-icon matPrefix>qr_code_2</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="regenerateBarcode()"
+            [matTooltip]="'PRODUCTS.REGENERATE_BARCODE' | translate">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <!-- Category - dynamic from API, searchable since the list can grow large -->
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PRODUCTS.CATEGORY' | translate}}</mat-label>
+          @if (categoriesLoading()) {
+          <input matInput disabled [placeholder]="'COMMON.LOADING' | translate">
+          } @else if (categories().length) {
+          <input matInput [(ngModel)]="categorySearchText" name="categorySearch" [matAutocomplete]="categoryAuto"
+            [placeholder]="'CATEGORIES.SEARCH_PLACEHOLDER' | translate">
+          <mat-autocomplete #categoryAuto="matAutocomplete" (optionSelected)="onCategorySelected($event.option.value)">
+            @for (cat of filteredCategories(); track cat.id) {
+            <mat-option [value]="cat.name">{{cat.nameAr || cat.name}}</mat-option>
+            }
+          </mat-autocomplete>
+          @if (categorySearchText()) {
+          <button mat-icon-button matSuffix type="button" (click)="clearCategorySelection()">
+            <mat-icon>close</mat-icon>
+          </button>
+          }
+          } @else {
+          <input matInput disabled [placeholder]="'CATEGORIES.NO_CATEGORIES' | translate">
+          }
+          <mat-icon matPrefix>category</mat-icon>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Classification & Pricing -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>{{'PRODUCTS.SECTION_CLASSIFICATION' | translate}}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PRODUCTS.UNIT_TYPE' | translate}}</mat-label>
+          <mat-select [(ngModel)]="product().unitType" name="unitType">
+            @for (unit of unitTypes; track unit.value) {
+            <mat-option [value]="unit.value">{{translate.instant(unit.label)}}</mat-option>
+            }
+          </mat-select>
+          <mat-icon matPrefix>package</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PRODUCTS.MIN_STOCK_LEVEL' | translate}}</mat-label>
+          <input matInput type="number" min="0" [(ngModel)]="product().minStockLevel" name="minStockLevel">
+          <mat-icon matPrefix>warning</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PRODUCTS.BUY_PRICE' | translate}}</mat-label>
+          <input matInput type="number" min="0" step="0.01" [(ngModel)]="product().buyPrice" name="buyPrice">
+          <span matTextSuffix>{{getCurrencySuffix()}}</span>
+          <mat-icon matPrefix>payments</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PRODUCTS.SELL_PRICE' | translate}} *</mat-label>
+          <input matInput type="number" min="0.01" step="0.01" [(ngModel)]="product().sellPrice" name="sellPrice"
+            required>
+          <span matTextSuffix>{{getCurrencySuffix()}}</span>
+          <mat-icon matPrefix>attach_money</mat-icon>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Initial Stock - create mode only; editing stock happens via Stock Management -->
+    @if (!isEditMode()) {
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>{{'PRODUCTS.INITIAL_STOCK_SECTION' | translate}}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="form-grid">
+        <p class="section-hint">{{'PRODUCTS.INITIAL_STOCK_HINT' | translate}}</p>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PRODUCTS.INITIAL_QUANTITY' | translate}}</mat-label>
+          <input matInput type="number" min="0" [(ngModel)]="product().initialStock" name="initialStock">
+          <mat-icon matPrefix>inventory</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PRODUCTS.EXPIRY_DATE' | translate}}</mat-label>
+          <input matInput [matDatepicker]="expiryPicker" [(ngModel)]="product().expiryDate" name="expiryDate">
+          <mat-icon matPrefix>event</mat-icon>
+          <mat-datepicker-toggle matIconSuffix [for]="expiryPicker"></mat-datepicker-toggle>
+          <mat-datepicker #expiryPicker></mat-datepicker>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+    }
+
+    <!-- Additional Info - optional, collapsible -->
+    <mat-accordion class="form-section additional-info">
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{'PRODUCTS.SECTION_ADDITIONAL_INFO' | translate}}</mat-panel-title>
+          <mat-panel-description>{{'PRODUCTS.ADDITIONAL_INFO_HINT' | translate}}</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{'PRODUCTS.DESCRIPTION' | translate}}</mat-label>
+            <textarea matInput rows="2" [(ngModel)]="extraFields().description" name="description"
+              [placeholder]="'PRODUCTS.DESCRIPTION_PLACEHOLDER' | translate"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{'PRODUCTS.STORAGE_CONDITIONS' | translate}}</mat-label>
+            <textarea matInput rows="2" [(ngModel)]="extraFields().storageConditions" name="storageConditions"
+              [placeholder]="'PRODUCTS.STORAGE_CONDITIONS_PLACEHOLDER' | translate"></textarea>
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button mat-button type="button" (click)="onCancel()" color="warn" [disabled]="loading()">
+        <mat-icon>close</mat-icon>
+        <span>{{'COMMON.CANCEL' | translate}}</span>
+      </button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
+        @if (!loading()) {
+        <mat-icon>save</mat-icon>
+        } @else {
+        <mat-spinner diameter="20"></mat-spinner>
+        }
+        <span>{{loading() ? ('COMMON.SAVING' | translate) : (isEditMode() ? ('COMMON.UPDATE' | translate) :
+          ('COMMON.ADD' | translate))}}</span>
+      </button>
+    </div>
+  </form>
+  }
+</div>
