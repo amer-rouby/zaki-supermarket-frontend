@@ -79,21 +79,17 @@
               <input matInput [ngModel]="newName()" (ngModelChange)="newName.set($event)">
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>{{'PRODUCTS.CATEGORY' | translate}}</mat-label>
-              <input matInput [(ngModel)]="categorySearchText" [matAutocomplete]="categoryAuto"
-                [placeholder]="'CATEGORIES.SEARCH_PLACEHOLDER' | translate">
-              <mat-autocomplete #categoryAuto="matAutocomplete" (optionSelected)="onCategorySelected($event.option.value)">
-                @for (cat of filteredCategories(); track cat.id) {
-                <mat-option [value]="cat.name">{{cat.nameAr || cat.name}}</mat-option>
-                }
-              </mat-autocomplete>
-              @if (categorySearchText()) {
-              <button mat-icon-button matSuffix type="button" (click)="clearCategorySelection()">
-                <mat-icon>close</mat-icon>
-              </button>
-              }
-            </mat-form-field>
+            <app-searchable-select
+              [options]="categories()"
+              [valueFn]="categoryValueFn"
+              [labelFn]="categoryLabelFn"
+              [searchFn]="categorySearchFn"
+              [value]="newCategory()"
+              [label]="'PRODUCTS.CATEGORY' | translate"
+              [placeholder]="'CATEGORIES.SEARCH_PLACEHOLDER' | translate"
+              (selected)="onCategorySelected($event)"
+              (cleared)="clearCategorySelection()">
+            </app-searchable-select>
 
             <mat-form-field appearance="outline">
               <mat-label>{{'PRODUCTS.UNIT_TYPE' | translate}}</mat-label>

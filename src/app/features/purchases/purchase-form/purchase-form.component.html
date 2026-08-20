@@ -16,23 +16,17 @@
         <mat-card-title>{{'PURCHASES.SUPPLIER_INFO' | translate}}</mat-card-title>
       </mat-card-header>
       <mat-card-content class="form-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>{{'PURCHASES.COLUMN.SUPPLIER' | translate}} *</mat-label>
-          <input matInput [(ngModel)]="supplierSearchText" [ngModelOptions]="{standalone: true}"
-            [matAutocomplete]="supplierAuto" [placeholder]="'SUPPLIERS.SEARCH' | translate">
-          <mat-autocomplete #supplierAuto="matAutocomplete" (optionSelected)="onSupplierSelected($event.option.value)">
-            @for (supplier of filteredSuppliers(); track supplier.id) {
-            <mat-option [value]="supplier.id">{{supplier.name}}</mat-option>
-            } @empty {
-            <mat-option disabled>{{'SUPPLIERS.NO_SUPPLIERS' | translate}}</mat-option>
-            }
-          </mat-autocomplete>
-          @if (supplierSearchText()) {
-          <button mat-icon-button matSuffix type="button" (click)="clearSupplierSelection()">
-            <mat-icon>close</mat-icon>
-          </button>
-          }
-        </mat-form-field>
+        <app-searchable-select
+          [options]="suppliers()"
+          [valueFn]="supplierValueFn"
+          [labelFn]="supplierLabelFn"
+          [value]="form.get('supplierId')?.value"
+          [label]="(('PURCHASES.COLUMN.SUPPLIER' | translate) + ' *')"
+          [placeholder]="'SUPPLIERS.SEARCH' | translate"
+          [noResultsText]="'SUPPLIERS.NO_SUPPLIERS' | translate"
+          (selected)="onSupplierSelected($event)"
+          (cleared)="clearSupplierSelection()">
+        </app-searchable-select>
 
         <mat-form-field appearance="outline">
           <mat-label>{{'PURCHASES.COLUMN.DATE' | translate}} *</mat-label>

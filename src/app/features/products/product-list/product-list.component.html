@@ -29,24 +29,18 @@
         </mat-form-field>
 
         <!-- Category Filter (searchable - plain scroll list is unusable past ~100 categories) -->
-        <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>{{'PRODUCTS.CATEGORY' | translate}}</mat-label>
-          <input matInput [(ngModel)]="categorySearchText" [matAutocomplete]="categoryAuto"
-            [placeholder]="'COMMON.ALL' | translate">
-          <mat-autocomplete #categoryAuto="matAutocomplete" (optionSelected)="onCategorySelected($event.option.value)">
-            <mat-option value="all">{{'COMMON.ALL' | translate}}</mat-option>
-            @for (cat of filteredCategoryOptions(); track cat.id) {
-            <mat-option [value]="cat.name">{{cat.nameAr || cat.name}}</mat-option>
-            }
-          </mat-autocomplete>
-          @if (categorySearchText()) {
-          <button mat-icon-button matSuffix (click)="clearCategoryFilter()">
-            <mat-icon>close</mat-icon>
-          </button>
-          } @else {
-          <mat-icon matSuffix>arrow_drop_down</mat-icon>
-          }
-        </mat-form-field>
+        <app-searchable-select class="filter-field"
+          [options]="categoryOptions()"
+          [valueFn]="categoryValueFn"
+          [labelFn]="categoryLabelFn"
+          [searchFn]="categorySearchFn"
+          [value]="selectedCategory()"
+          [label]="'PRODUCTS.CATEGORY' | translate"
+          [placeholder]="'COMMON.ALL' | translate"
+          [prependOption]="{ value: 'all', label: ('COMMON.ALL' | translate) }"
+          (selected)="onCategorySelected($event)"
+          (cleared)="clearCategoryFilter()">
+        </app-searchable-select>
       </div>
     </mat-card-content>
   </mat-card>

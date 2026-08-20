@@ -10,6 +10,7 @@ import { Product } from '../../../core/models/product.model';
 import { StockBatch } from '../../../core/models/stock.model';
 import { StoreContextService } from '../../../core/services/store-context.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { SearchableSelectComponent } from '../../../shared/components/searchable-select/searchable-select.component';
 
 @Component({
   selector: 'app-stock-batch-form',
@@ -20,7 +21,8 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
     ReactiveFormsModule,
     TranslateModule,
     MaterialModule,
-    PageHeaderComponent
+    PageHeaderComponent,
+    SearchableSelectComponent
   ],
   templateUrl: './stock-batch-form.component.html',
   styleUrl: './stock-batch-form.component.scss'
@@ -44,15 +46,10 @@ export class StockBatchFormComponent implements OnInit {
     const prods = this.products();
     return Array.isArray(prods) ? prods : [];
   });
-  readonly productSearchText = signal('');
-  readonly filteredProducts = computed(() => {
-    const q = this.productSearchText().trim().toLowerCase();
-    const opts = this.productsList();
-    if (!q) return opts.slice(0, 20);
-    return opts
-      .filter(p => p.name.toLowerCase().includes(q) || p.barcode?.toLowerCase().includes(q))
-      .slice(0, 20);
-  });
+  readonly productValueFn = (p: Product) => p.id;
+  readonly productLabelFn = (p: Product) => `${p.name} (${p.barcode})`;
+  readonly productSearchFn = (p: Product, q: string) =>
+    p.name.toLowerCase().includes(q) || !!p.barcode?.toLowerCase().includes(q);
 
   batchForm: FormGroup = this.fb.group({});
 
@@ -94,10 +91,6 @@ export class StockBatchFormComponent implements OnInit {
         }
 
         this.products.set(productsList);
-        const currentId = this.batchForm.get('productId')?.value;
-        if (currentId) {
-          this.productSearchText.set(this.productDisplayName(currentId));
-        }
       },
       error: (error: unknown) => {
         console.error('Error loading products:', error);
@@ -107,19 +100,12 @@ export class StockBatchFormComponent implements OnInit {
     });
   }
 
-  private productDisplayName(productId: number): string {
-    const p = this.productsList().find(prod => prod.id === productId);
-    return p ? `${p.name} (${p.barcode})` : '';
-  }
-
-  onProductSelected(productId: number): void {
-    this.batchForm.patchValue({ productId });
-    this.productSearchText.set(this.productDisplayName(productId));
+  onProductSelected(product: Product): void {
+    this.batchForm.patchValue({ productId: product.id });
   }
 
   clearProductSelection(): void {
     this.batchForm.patchValue({ productId: '' });
-    this.productSearchText.set('');
   }
 
   private checkEditMode(): void {
@@ -159,9 +145,6 @@ export class StockBatchFormComponent implements OnInit {
           notes: batch.notes || '',
           status: batch.status || 'ACTIVE'
         });
-        if (batch.productId) {
-          this.productSearchText.set(this.productDisplayName(batch.productId));
-        }
 
         this.loading.set(false);
       },

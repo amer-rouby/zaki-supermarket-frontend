@@ -11,11 +11,12 @@ import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { SearchableSelectComponent } from '../../../shared/components/searchable-select/searchable-select.component';
 
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  imports: [FormsModule, MaterialModule, PageHeaderComponent],
+  imports: [FormsModule, MaterialModule, PageHeaderComponent, SearchableSelectComponent],
   templateUrl: './product-form.component.html',
   styleUrl: './product-form.component.scss'
 })
@@ -54,15 +55,10 @@ export class ProductFormComponent implements OnInit, AfterViewInit {
   readonly productId = signal<number | null>(null);
 
   readonly categories = signal<Category[]>([]);
-  readonly categorySearchText = signal('');
-  readonly filteredCategories = computed(() => {
-    const q = this.categorySearchText().trim().toLowerCase();
-    const opts = this.categories();
-    if (!q) return opts;
-    return opts.filter(c =>
-      (c.nameAr || '').toLowerCase().includes(q) || c.name.toLowerCase().includes(q)
-    );
-  });
+  readonly categoryValueFn = (c: Category) => c.name;
+  readonly categoryLabelFn = (c: Category) => c.nameAr || c.name;
+  readonly categorySearchFn = (c: Category, q: string) =>
+    (c.nameAr || '').toLowerCase().includes(q) || c.name.toLowerCase().includes(q);
 
   readonly unitTypes = [
     { value: 'PIECE', label: 'PRODUCTS.UNIT_PIECE' },
@@ -116,9 +112,6 @@ export class ProductFormComponent implements OnInit, AfterViewInit {
       next: (data) => {
         this.categories.set(data);
         this.categoriesLoading.set(false);
-        if (this.product().category) {
-          this.categorySearchText.set(this.categoryDisplayName(this.product().category!));
-        }
       },
       error: (error) => {
         this.categoriesLoading.set(false);
@@ -127,19 +120,12 @@ export class ProductFormComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private categoryDisplayName(catName: string): string {
-    const opt = this.categories().find(c => c.name === catName);
-    return opt ? (opt.nameAr || opt.name) : catName;
-  }
-
-  onCategorySelected(catName: string): void {
-    this.product.update(p => ({ ...p, category: catName }));
-    this.categorySearchText.set(this.categoryDisplayName(catName));
+  onCategorySelected(category: Category): void {
+    this.product.update(p => ({ ...p, category: category.name }));
   }
 
   clearCategorySelection(): void {
     this.product.update(p => ({ ...p, category: '' }));
-    this.categorySearchText.set('');
   }
 
   generateUniqueBarcode(): void {
@@ -165,9 +151,6 @@ export class ProductFormComponent implements OnInit, AfterViewInit {
           sellPrice: data.sellPrice || 0,
           buyPrice: data.buyPrice || 0
         });
-        if (data.category) {
-          this.categorySearchText.set(this.categoryDisplayName(data.category));
-        }
 
         const extra = data.extraAttributes || {};
         this.extraFields.set({
