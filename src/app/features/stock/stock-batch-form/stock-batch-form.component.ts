@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -25,6 +25,7 @@ import { SearchableSelectComponent } from '../../../shared/components/searchable
     SearchableSelectComponent
   ],
   templateUrl: './stock-batch-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './stock-batch-form.component.scss'
 })
 export class StockBatchFormComponent implements OnInit {

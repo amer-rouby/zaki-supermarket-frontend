@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -26,6 +26,7 @@ interface AlertStats {
   selector: 'app-stock-alerts', standalone: true,
   imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule, TableLoadingComponent, EmptyStateComponent],
   templateUrl: './stock-alerts.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './stock-alerts.component.scss'
 })
 export class StockAlertsComponent implements OnInit {

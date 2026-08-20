@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -26,6 +26,7 @@ const SEARCH_DEBOUNCE_MS = 350;
   standalone: true,
   imports: [RouterLink, MaterialModule, FormsModule, PageHeaderComponent, SearchableSelectComponent, TableLoadingComponent],
   templateUrl: './product-list.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './product-list.component.scss'
 })
 export class ProductListComponent implements OnInit, OnDestroy {

@@ -20,7 +20,7 @@
           [options]="suppliers()"
           [valueFn]="supplierValueFn"
           [labelFn]="supplierLabelFn"
-          [value]="form.get('supplierId')?.value"
+          [value]="$safeNavigationMigration(form.get('supplierId')?.value)"
           [label]="(('PURCHASES.COLUMN.SUPPLIER' | translate) + ' *')"
           [placeholder]="'SUPPLIERS.SEARCH' | translate"
           [noResultsText]="'SUPPLIERS.NO_SUPPLIERS' | translate"

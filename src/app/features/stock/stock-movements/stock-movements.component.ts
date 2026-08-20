@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
@@ -14,6 +14,7 @@ import { EmptyStateComponent } from '../../../shared/components/empty-state/empt
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule, TableLoadingComponent, EmptyStateComponent],
   templateUrl: './stock-movements.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './stock-movements.component.scss'
 })
 export class StockMovementsComponent implements OnInit {

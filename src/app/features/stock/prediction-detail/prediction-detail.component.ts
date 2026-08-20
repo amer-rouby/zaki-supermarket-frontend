@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
@@ -11,6 +11,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, RouterLink, CommonModule],
   templateUrl: './prediction-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './prediction-detail.component.scss'
 })
 export class PredictionDetailComponent implements OnInit {

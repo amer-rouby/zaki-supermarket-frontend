@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { PaymentService } from '../../../core/services/payment.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { MaterialModule } from '../../../shared/material.module';
@@ -10,6 +10,7 @@ import { MaterialModule } from '../../../shared/material.module';
     MaterialModule
   ],
   templateUrl: './payment-stats.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl:'./payment-stats.component.scss'
 })
 export class PaymentStatsComponent implements OnInit {

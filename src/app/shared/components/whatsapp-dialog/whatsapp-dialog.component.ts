@@ -1,4 +1,4 @@
-import { Component, Inject, inject, signal } from '@angular/core';
+import { Component, Inject, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,6 +27,7 @@ export interface WhatsAppDialogData {
     TranslateModule
   ],
   templateUrl: './whatsapp-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './whatsapp-dialog.component.scss'
 })
 export class WhatsAppDialogComponent {

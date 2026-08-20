@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MaterialModule } from '../../material.module';
@@ -27,6 +27,7 @@ interface MenuItem {
     MatExpansionModule
   ],
   templateUrl: './sidebar.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './sidebar.component.scss'
 })
 export class SidebarComponent {

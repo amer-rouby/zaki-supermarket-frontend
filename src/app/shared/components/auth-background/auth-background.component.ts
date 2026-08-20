@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { MaterialModule } from '../../material.module';
 
 @Component({
@@ -6,6 +6,7 @@ import { MaterialModule } from '../../material.module';
   standalone: true,
   imports: [MaterialModule],
   templateUrl: './auth-background.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './auth-background.component.scss'
 })
 export class AuthBackgroundComponent {

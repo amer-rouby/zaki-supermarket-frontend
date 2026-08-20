@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
   standalone: true,
   imports: [RouterOutlet],
   templateUrl:"./app.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.scss'
 })
 export class App implements OnInit {

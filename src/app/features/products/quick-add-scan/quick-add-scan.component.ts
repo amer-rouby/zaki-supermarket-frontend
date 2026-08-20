@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -34,6 +34,7 @@ function defaultExpiry(): Date {
   standalone: true,
   imports: [FormsModule, MaterialModule, PageHeaderComponent, SearchableSelectComponent],
   templateUrl: './quick-add-scan.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './quick-add-scan.component.scss'
 })
 export class QuickAddScanComponent implements OnInit, AfterViewInit {

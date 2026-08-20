@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { MaterialModule } from '../../material.module';
 
 @Component({
@@ -8,6 +8,7 @@ import { MaterialModule } from '../../material.module';
     MaterialModule
   ],
   templateUrl:"./page-header.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl:"./page-header.component.scss"
 })
 export class PageHeaderComponent {

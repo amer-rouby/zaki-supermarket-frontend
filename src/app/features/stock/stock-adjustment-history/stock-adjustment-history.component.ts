@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,6 +20,7 @@ import { AuthService } from '../../../core/services/auth.service';
     TranslateModule
   ],
   templateUrl: './stock-adjustment-history.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './stock-adjustment-history.component.scss'
 })
 export class StockAdjustmentHistoryComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -20,6 +20,7 @@ import { Subscription } from 'rxjs';
     MaterialModule
   ],
   templateUrl: "./add-expense-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./add-expense-dialog.component.scss"
 })
 export class AddExpenseDialogComponent implements OnInit, OnDestroy {

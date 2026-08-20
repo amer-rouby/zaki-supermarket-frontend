@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -34,6 +34,7 @@ interface ExpenseRow {
     PageHeaderComponent
   ],
   templateUrl: './expenses.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './expenses.component.scss'
 })
 export class ExpensesComponent implements OnInit {

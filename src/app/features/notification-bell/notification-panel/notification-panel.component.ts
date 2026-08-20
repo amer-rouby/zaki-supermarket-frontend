@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../../shared/material.module';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -14,6 +14,7 @@ import { NotificationService } from '../../../core/services/notification.service
     TranslateModule
   ],
   templateUrl: './notification-panel.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./notification-panel.component.scss']
 })
 export class NotificationPanelComponent {

@@ -22,7 +22,7 @@
           [valueFn]="productValueFn"
           [labelFn]="productLabelFn"
           [searchFn]="productSearchFn"
-          [value]="batchForm.get('productId')?.value"
+          [value]="$safeNavigationMigration(batchForm.get('productId')?.value)"
           [label]="(('PRODUCTS.NAME' | translate) + ' *')"
           [placeholder]="'PRODUCTS.SEARCH_PLACEHOLDER' | translate"
           [noResultsText]="'PRODUCTS.NO_PRODUCTS' | translate"

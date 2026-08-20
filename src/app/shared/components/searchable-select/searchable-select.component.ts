@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -32,6 +32,7 @@ export interface SearchableSelectPrependOption {
     MatButtonModule
   ],
   templateUrl: './searchable-select.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './searchable-select.component.scss'
 })
 export class SearchableSelectComponent<T = any> implements OnChanges {

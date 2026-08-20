@@ -1,4 +1,4 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,6 +12,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
   standalone: true,
   imports: [MatDialogModule, MaterialModule, RouterLink],
   templateUrl: './product-details-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './product-details-dialog.component.scss'
 })
 export class ProductDetailsDialogComponent {

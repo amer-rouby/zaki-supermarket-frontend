@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Inject, OnInit, inject } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MaterialModule } from '../../material.module';
 import { AudioService } from '../../../core/services/audio.service';
@@ -8,6 +8,7 @@ import { AudioService } from '../../../core/services/audio.service';
   standalone: true,
   imports: [MatDialogModule, MaterialModule],
   templateUrl: "./confirm-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: "./confirm-dialog.component.scss"
 })
 export class ConfirmDialogComponent implements OnInit, AfterViewInit {

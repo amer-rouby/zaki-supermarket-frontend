@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -18,6 +18,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
   standalone: true,
   imports: [CommonModule, FormsModule, TranslateModule, MaterialModule],
   templateUrl: './sales-analytics.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './sales-analytics.component.scss'
 })
 export class SalesAnalyticsComponent implements OnInit, OnDestroy {

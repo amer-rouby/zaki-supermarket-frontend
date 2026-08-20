@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, OnInit, AfterViewInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -17,6 +17,7 @@ import { TableLoadingComponent } from '../../../shared/components/table-loading/
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, RouterLink, MatTableModule, MatPaginatorModule, TableLoadingComponent],
   templateUrl: './purchase-orders.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './purchase-orders.component.scss'
 })
 export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy {

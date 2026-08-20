@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { MaterialModule } from '../../material.module';
@@ -46,6 +46,7 @@ import { SessionWarningData } from '../../../core/models/session-status.model';
       </mat-dialog-actions>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [`
     .warning-dialog {
       padding: 8px;

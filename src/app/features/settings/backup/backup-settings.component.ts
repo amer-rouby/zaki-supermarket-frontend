@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -13,6 +13,7 @@ import { Backup } from '../../../core/models/settings/Backup.model';
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule],
   templateUrl: './backup-settings.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './backup-settings.component.scss'
 })
 export class BackupSettingsComponent implements OnInit {

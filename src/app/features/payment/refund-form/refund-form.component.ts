@@ -1,4 +1,4 @@
-import { Component, inject, signal, input } from '@angular/core';
+import { Component, inject, signal, input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -12,6 +12,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
   standalone: true,
   imports: [ CommonModule, MaterialModule, ReactiveFormsModule, TranslateModule ],
   templateUrl: './refund-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl:'./refund-form.component.scss'
 })
 export class RefundFormComponent {

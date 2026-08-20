@@ -1,4 +1,4 @@
-import { Component, inject, Inject } from '@angular/core';
+import { Component, inject, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClipboardModule } from '@angular/cdk/clipboard';
@@ -19,6 +19,7 @@ interface ShareDialogData {
     ClipboardModule
   ],
   templateUrl:"./share-dialog.component.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl:"./share-dialog.component.scss"
 })
 export class ShareDialogComponent {

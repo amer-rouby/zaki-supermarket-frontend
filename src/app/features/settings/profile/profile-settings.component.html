@@ -59,7 +59,7 @@
             <h2>{{profile()?.fullName}}</h2>
             <p>{{getRoleLabel(profile()?.role || '')}}</p>
             <small class="text-muted">{{'PROFILE.LAST_LOGIN' | translate}}:
-              {{formatDate(profile()?.lastLoginAt)}}</small>
+              {{formatDate($safeNavigationMigration(profile()?.lastLoginAt))}}</small>
           </div>
         </div>
 

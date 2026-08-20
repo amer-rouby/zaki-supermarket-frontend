@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, OnDestroy, output } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy, output, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -25,6 +25,7 @@ import { NotificationPanelComponent } from '../../../features/notification-bell/
     NotificationPanelComponent
   ],
   templateUrl: './header.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent implements OnInit, OnDestroy {

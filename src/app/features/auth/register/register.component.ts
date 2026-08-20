@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -15,6 +15,7 @@ import { AuthBackgroundComponent } from '../../../shared/components/auth-backgro
   standalone: true,
   imports: [FormsModule, RouterLink, MaterialModule, AuthBackgroundComponent],
   templateUrl: './register.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './register.component.scss'
 })
 export class RegisterComponent {

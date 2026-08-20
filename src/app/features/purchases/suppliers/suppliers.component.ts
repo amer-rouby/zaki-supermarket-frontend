@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -25,6 +25,7 @@ import { TableLoadingComponent } from '../../../shared/components/table-loading/
     TableLoadingComponent
   ],
   templateUrl: './suppliers.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './suppliers.component.scss'
 })
 export class SuppliersComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
@@ -26,6 +26,7 @@ const SEARCH_DEBOUNCE_MS = 350;
     EmptyStateComponent,
   ],
   templateUrl: './product-categories.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './product-categories.component.scss'
 })
 export class ProductCategoriesComponent implements OnInit, OnDestroy {
