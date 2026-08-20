@@ -110,10 +110,13 @@ export class SalesHistoryComponent implements OnInit {
       this.loading.set(true);
       const storeId = this.getStoreId();
 
+      this.page.set(0);
       this.salesService.searchSales(storeId, query).subscribe({
         next: (response: any) => {
           const data = response.data || response;
-          this.sales.set(data.content || data.sales || []);
+          const results = data.content || data.sales || [];
+          this.sales.set(results);
+          this.totalElements.set(results.length);
           this.loading.set(false);
         },
         error: (err) => {

@@ -1,7 +1,7 @@
-import { Component, inject, signal, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -25,7 +25,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
   templateUrl: './suppliers.component.html',
   styleUrl: './suppliers.component.scss'
 })
-export class SuppliersComponent implements OnInit, AfterViewInit {
+export class SuppliersComponent implements OnInit {
   private readonly supplierService = inject(SupplierService);
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly translate = inject(TranslateService);
@@ -39,10 +39,12 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
   readonly editingSupplierId = signal<number | null>(null);
   readonly supplierForm: FormGroup;
 
+  readonly page = signal(0);
+  readonly size = signal(10);
+  readonly totalElements = signal(0);
+
   displayedColumns: string[] = ['name', 'contactPerson', 'phone', 'email', 'city', 'status', 'actions'];
   dataSource = new MatTableDataSource<Supplier>([]);
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor() {
     this.supplierForm = this.fb.group({
@@ -61,15 +63,18 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
     this.loadSuppliers();
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
+  onPageChange(event: PageEvent): void {
+    this.page.set(event.pageIndex);
+    this.size.set(event.pageSize);
+    this.loadSuppliers();
   }
 
   loadSuppliers(): void {
     this.loading.set(true);
-    this.supplierService.getSuppliers(0, 10).subscribe({
+    this.supplierService.getSuppliers(this.page(), this.size()).subscribe({
       next: (data) => {
         this.dataSource.data = data.content || [];
+        this.totalElements.set(data.totalElements || 0);
         this.loading.set(false);
       },
       error: (err) => {

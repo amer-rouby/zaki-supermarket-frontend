@@ -22,7 +22,7 @@
         <mat-icon>business</mat-icon>
         {{'SUPPLIERS.LIST' | translate}}
       </mat-card-title>
-      <mat-card-subtitle>{{dataSource.data.length}} {{'SUPPLIERS.COUNT' | translate}}</mat-card-subtitle>
+      <mat-card-subtitle>{{totalElements()}} {{'SUPPLIERS.COUNT' | translate}}</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content [class.list-content-refreshing]="loading()">
@@ -97,7 +97,9 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="supplier-row"></tr>
         </table>
 
-        <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons aria-label="Select page">
+        <mat-paginator [length]="totalElements()" [pageIndex]="page()" [pageSize]="size()"
+          [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons aria-label="Select page"
+          (page)="onPageChange($event)">
         </mat-paginator>
       </div>
     </mat-card-content>
