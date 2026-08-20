@@ -1,0 +1,58 @@
+<div class="zaki-features-settings-container">
+  <app-page-header [title]="'ZAKI_FEATURES.TITLE' | translate" [subtitle]="'ZAKI_FEATURES.SUBTITLE' | translate"
+    icon="auto_awesome">
+  </app-page-header>
+
+  @if (loading()) {
+  <div class="loading-state">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>{{'COMMON.LOADING' | translate}}</p>
+  </div>
+  }
+
+  @if (!loading()) {
+  <mat-card class="toggles-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>auto_awesome</mat-icon>
+        {{'ZAKI_FEATURES.TITLE' | translate}}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="settings-list">
+        @for (toggle of toggles; track toggle.key) {
+        <div class="setting-row" [class.disabled]="!toggle.enabled">
+          <div class="setting-details">
+            <mat-icon>{{toggle.icon}}</mat-icon>
+            <div>
+              <h5>{{toggle.label | translate}}</h5>
+              <p class="description">{{toggle.description | translate}}</p>
+            </div>
+          </div>
+
+          <mat-slide-toggle [(ngModel)]="toggle.enabled" [ngModelOptions]="{standalone: true}" color="primary">
+            {{'COMMON.ENABLED' | translate}}
+          </mat-slide-toggle>
+        </div>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="form-actions">
+    <button mat-button type="button" (click)="onReset()" color="warn" [disabled]="saving()">
+      <mat-icon>refresh</mat-icon>
+      <span>{{'COMMON.RESET' | translate}}</span>
+    </button>
+    <button mat-raised-button color="primary" type="button" (click)="onSave()" [disabled]="saving()">
+      @if (saving()) {
+      <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+      <mat-icon>save</mat-icon>
+      }
+      <span>{{saving() ? ('COMMON.SAVING' | translate) : ('COMMON.SAVE' | translate)}}</span>
+    </button>
+  </div>
+  }
+</div>
