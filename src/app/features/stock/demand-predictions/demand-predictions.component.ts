@@ -7,7 +7,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatMenuModule } from '@angular/material/menu';
 import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { ShareDialogComponent } from '../../../shared/components/share-dialog/share-dialog.component';
-import { DemandPredictionService, DemandPrediction, PredictionStats, UpdatePredictionDTO } from '../../../core/services/demand-prediction.service';
+import { DemandPredictionService, DemandPrediction, PredictionStats, UpdatePredictionDTO, ReorderRecommendation } from '../../../core/services/demand-prediction.service';
 import { EditPredictionDialogComponent } from '../edit-prediction-dialog/edit-prediction-dialog.component';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { TableLoadingComponent } from '../../../shared/components/table-loading/table-loading.component';
@@ -50,6 +50,13 @@ export class DemandPredictionsComponent implements OnInit {
     'currentStock', 'recommendedOrder', 'trend', 'risk', 'confidence', 'actions'
   ];
 
+  readonly reorderRecommendations = signal<ReorderRecommendation[]>([]);
+  readonly reorderLoading = signal(false);
+  readonly reorderLoaded = signal(false);
+  readonly reorderColumns = [
+    'productName', 'currentStock', 'recommendedQuantity', 'supplierName', 'priority', 'reason', 'actions'
+  ];
+
   ngOnInit(): void {
     this.loadPredictions();
     this.loadStats();
@@ -75,6 +82,47 @@ export class DemandPredictionsComponent implements OnInit {
       next: (data) => this.stats.set(data),
       error: () => { }
     });
+  }
+
+  onTabChange(index: number): void {
+    if (index === 1 && !this.reorderLoaded()) {
+      this.loadReorderRecommendations();
+    }
+  }
+
+  loadReorderRecommendations(): void {
+    this.reorderLoading.set(true);
+    this.predictionService.getReorderRecommendations().subscribe({
+      next: (data) => {
+        this.reorderRecommendations.set(data);
+        this.reorderLoaded.set(true);
+        this.reorderLoading.set(false);
+      },
+      error: () => {
+        this.reorderLoading.set(false);
+      }
+    });
+  }
+
+  onReviewRecommendation(rec: ReorderRecommendation): void {
+    this.router.navigate(['/purchases/new'], {
+      queryParams: {
+        productId: rec.productId,
+        quantity: rec.recommendedQuantity,
+        supplierId: rec.supplierId ?? undefined,
+        predictionId: rec.predictionId,
+        source: 'prediction'
+      }
+    });
+  }
+
+  getPriorityColor(priority: string): string {
+    const colors: Record<string, string> = {
+      'HIGH': '#ef4444',
+      'MEDIUM': '#f59e0b',
+      'LOW': '#10b981'
+    };
+    return colors[priority] || '#6b7280';
   }
 
   onPageChange(event: PageEvent): void {
@@ -135,34 +183,9 @@ export class DemandPredictionsComponent implements OnInit {
   }
 
   onQuickOrder(prediction: DemandPrediction): void {
-    if (!prediction?.predictionId) {
-      this.errorHandler.showError('PREDICTIONS.INVALID_PREDICTION');
-      return;
-    }
-
-    this.confirmDialog.open({
-      titleKey: 'PREDICTIONS.QUICK_ORDER',
-      messageKey: 'PREDICTIONS.CONFIRM_QUICK_ORDER',
-      messageParams: { product: prediction.productName },
-      confirmKey: 'COMMON.CONFIRM',
-      width: '400px',
-      color: 'accent'
-    }).subscribe(result => {
-      if (result) {
-        this.loading.set(true);
-        this.predictionService.createPurchaseFromPrediction(prediction.predictionId).subscribe({
-          next: () => {
-            this.loading.set(false);
-            this.errorHandler.showSuccess('PREDICTIONS.ORDER_CREATED', { params: { product: prediction.productName } });
-            this.loadPredictions();
-          },
-          error: () => {
-            this.loading.set(false);
-            this.errorHandler.showError('PREDICTIONS.ORDER_ERROR');
-          }
-        });
-      }
-    });
+    // Reuses the same review-and-confirm flow as "Create Purchase Order" -
+    // recommendations must never place an order without the user reviewing it first.
+    this.onCreatePurchaseOrder(prediction);
   }
 
   onEditPrediction(prediction: DemandPrediction): void {

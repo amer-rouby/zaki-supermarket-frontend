@@ -32,6 +32,21 @@ export interface SalesHistoryPoint {
   sales: number;
 }
 
+export interface ReorderRecommendation {
+  predictionId: number;
+  productId: number;
+  productName: string;
+  productCode?: string;
+  currentStock: number;
+  recommendedQuantity: number;
+  supplierId: number | null;
+  supplierName: string | null;
+  reason: string;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' | null;
+  daysUntilStockout: number | null;
+}
+
 export interface PredictionStats {
   averageAccuracy: number;
   totalPredictions: number;
@@ -121,17 +136,6 @@ export class DemandPredictionService {
     );
   }
 
-  createPurchaseFromPrediction(predictionId: number): Observable<unknown> {
-    return this.http
-      .post<ApiResponse<unknown>>(`${this.apiUrl}/${predictionId}/create-purchase`, {
-        storeId: this.store.getStoreId()
-      })
-      .pipe(
-        map((response) => response.data),
-        withHttpErrorFallback<unknown>('createPurchaseFromPrediction')
-      );
-  }
-
   getPredictionDetails(predictionId: number): Observable<DemandPrediction> {
     return this.http.get<ApiResponse<DemandPrediction>>(`${this.apiUrl}/${predictionId}`).pipe(
       map((response) => response.data),
@@ -171,6 +175,15 @@ export class DemandPredictionService {
     }).pipe(
       map((response) => response.data || []),
       withHttpErrorFallback<SalesHistoryPoint[]>('getProductSalesHistory', [])
+    );
+  }
+
+  getReorderRecommendations(): Observable<ReorderRecommendation[]> {
+    return this.http.get<ApiResponse<ReorderRecommendation[]>>(`${this.apiUrl}/reorder-recommendations`, {
+      params: this.store.storeParams()
+    }).pipe(
+      map((response) => response.data || []),
+      withHttpErrorFallback<ReorderRecommendation[]>('getReorderRecommendations', [])
     );
   }
 

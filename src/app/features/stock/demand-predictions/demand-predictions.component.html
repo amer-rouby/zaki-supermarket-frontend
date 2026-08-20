@@ -41,6 +41,9 @@
   </div>
   }
 
+  <mat-tab-group (selectedIndexChange)="onTabChange($event)">
+  <mat-tab [label]="'PREDICTIONS.UPCOMING' | translate">
+
   @if (loading() && !predictions().length) {
   <app-table-loading />
   } @else if (predictions().length) {
@@ -246,4 +249,97 @@
   <app-empty-state icon="psychology" title="PREDICTIONS.NO_PREDICTIONS" message="PREDICTIONS.NO_PREDICTIONS_DESC"
     actionLabel="PREDICTIONS.GENERATE_FIRST" (action)="onGeneratePredictions()" />
   }
+
+  </mat-tab>
+
+  <mat-tab [label]="'PREDICTIONS.REORDER_RECOMMENDATIONS' | translate">
+
+  @if (reorderLoading() && !reorderRecommendations().length) {
+  <app-table-loading />
+  } @else if (reorderRecommendations().length) {
+
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>add_shopping_cart</mat-icon>
+        {{'PREDICTIONS.REORDER_RECOMMENDATIONS' | translate}}
+      </mat-card-title>
+      <mat-card-subtitle>{{reorderRecommendations().length}} {{'PREDICTIONS.COUNT' | translate}}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="reorderRecommendations()" class="predictions-table">
+
+          <ng-container matColumnDef="productName">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.PRODUCT' | translate}}</th>
+            <td mat-cell *matCellDef="let rec">
+              <div class="product-info">
+                <strong>{{rec.productName}}</strong>
+                @if (rec.productCode) {
+                <small>{{rec.productCode}}</small>
+                }
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="currentStock">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.CURRENT' | translate}}</th>
+            <td mat-cell *matCellDef="let rec">{{rec.currentStock}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="recommendedQuantity">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.COLUMN.RECOMMENDED' | translate}}</th>
+            <td mat-cell *matCellDef="let rec">
+              <span class="recommended">{{rec.recommendedQuantity}}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="supplierName">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.SUPPLIER' | translate}}</th>
+            <td mat-cell *matCellDef="let rec">
+              {{rec.supplierName || ('PREDICTIONS.UNKNOWN_SUPPLIER' | translate)}}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="priority">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.PRIORITY' | translate}}</th>
+            <td mat-cell *matCellDef="let rec">
+              <div class="trend-badge" [style.background]="getPriorityColor(rec.priority)">
+                <span>{{'PREDICTIONS.PRIORITY_LEVEL.' + rec.priority | translate}}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="reason">
+            <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.REASON' | translate}}</th>
+            <td mat-cell *matCellDef="let rec">
+              <small>{{rec.reason}}</small>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
+            <td mat-cell *matCellDef="let rec">
+              <button mat-raised-button color="primary" (click)="onReviewRecommendation(rec)">
+                <mat-icon>rate_review</mat-icon>
+                <span>{{'PREDICTIONS.REVIEW' | translate}}</span>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="reorderColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: reorderColumns;" class="prediction-row"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  } @else if (!reorderLoading()) {
+  <app-empty-state icon="add_shopping_cart" title="PREDICTIONS.NO_RECOMMENDATIONS"
+    message="PREDICTIONS.NO_RECOMMENDATIONS_DESC" />
+  }
+
+  </mat-tab>
+  </mat-tab-group>
 </div>

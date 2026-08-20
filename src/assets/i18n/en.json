@@ -1435,7 +1435,20 @@
       "MEDIUM": "Medium",
       "HIGH": "High",
       "CRITICAL": "Critical"
-    }
+    },
+    "REORDER_RECOMMENDATIONS": "Reorder Recommendations",
+    "NO_RECOMMENDATIONS": "No reorder recommendations",
+    "NO_RECOMMENDATIONS_DESC": "Stock levels currently look sufficient for all products",
+    "SUPPLIER": "Supplier",
+    "UNKNOWN_SUPPLIER": "No supplier history",
+    "PRIORITY": "Priority",
+    "PRIORITY_LEVEL": {
+      "HIGH": "High",
+      "MEDIUM": "Medium",
+      "LOW": "Low"
+    },
+    "REASON": "Reason",
+    "REVIEW": "Review"
   },
   "NOTIFICATION_SETTINGS": {
     "TITLE": "Notification Settings",
