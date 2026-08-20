@@ -27,10 +27,7 @@
       </div>
 
       @if (loading() && dataSource.data.length === 0) {
-      <div class="loading-state">
-        <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
-        <p>{{'COMMON.LOADING' | translate}}</p>
-      </div>
+      <app-table-loading [diameter]="40" />
       }
 
       @if (dataSource.data.length > 0 || !loading()) {

@@ -42,10 +42,7 @@
   }
 
   @if (loading() && !predictions().length) {
-  <div class="loading-state">
-    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
-    <p>{{'COMMON.LOADING' | translate}}</p>
-  </div>
+  <app-table-loading />
   } @else if (predictions().length) {
 
   <mat-card class="table-card">
@@ -229,14 +226,7 @@
   </mat-card>
 
   } @else if (!loading()) {
-  <div class="empty-state">
-    <mat-icon class="empty-icon">psychology</mat-icon>
-    <h3>{{'PREDICTIONS.NO_PREDICTIONS' | translate}}</h3>
-    <p>{{'PREDICTIONS.NO_PREDICTIONS_DESC' | translate}}</p>
-    <button mat-raised-button color="primary" (click)="onGeneratePredictions()">
-      <mat-icon>auto_awesome</mat-icon>
-      <span>{{'PREDICTIONS.GENERATE_FIRST' | translate}}</span>
-    </button>
-  </div>
+  <app-empty-state icon="psychology" title="PREDICTIONS.NO_PREDICTIONS" message="PREDICTIONS.NO_PREDICTIONS_DESC"
+    actionLabel="PREDICTIONS.GENERATE_FIRST" (action)="onGeneratePredictions()" />
   }
 </div>

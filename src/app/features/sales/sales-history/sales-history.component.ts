@@ -10,6 +10,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { StoreSettingsService } from '../../../core/services/settings/store-settings.service';
 import { InvoicePrintService, PrintableSale } from '../../../core/services/invoice-print.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { TableLoadingComponent } from '../../../shared/components/table-loading/table-loading.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -19,7 +20,7 @@ import { StoreSettings } from '../../../core/models/settings/store-settings.mode
 @Component({
   selector: 'app-sales-history',
   standalone: true,
-  imports: [FormsModule, RouterLink, MaterialModule, PageHeaderComponent],
+  imports: [FormsModule, RouterLink, MaterialModule, PageHeaderComponent, TableLoadingComponent],
   templateUrl: './sales-history.component.html',
   styleUrl: './sales-history.component.scss'
 })

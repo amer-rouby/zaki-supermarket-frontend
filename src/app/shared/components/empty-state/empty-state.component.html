@@ -1,5 +1,8 @@
 <div class="empty-state">
   <mat-icon>{{ icon }}</mat-icon>
+  @if (title) {
+    <h3>{{ title | translate }}</h3>
+  }
   @if (message) {
     <p>{{ message | translate }}</p>
   }

@@ -6,11 +6,13 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { MaterialModule } from '../../../shared/material.module';
 import { StockMovementService } from '../../../core/services/stock-movement.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { TableLoadingComponent } from '../../../shared/components/table-loading/table-loading.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-stock-movements',
   standalone: true,
-  imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule],
+  imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule, TableLoadingComponent, EmptyStateComponent],
   templateUrl: './stock-movements.component.html',
   styleUrl: './stock-movements.component.scss'
 })

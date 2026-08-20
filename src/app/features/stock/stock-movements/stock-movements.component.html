@@ -106,10 +106,7 @@
 
   <!-- Loading State (first load only, no data on screen yet) -->
   @if (loading() && !movements().length) {
-  <div class="loading-state">
-    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
-    <p>{{'COMMON.LOADING' | translate}}</p>
-  </div>
+  <app-table-loading />
   }
 
   <!-- Movements Table -->
@@ -207,10 +204,6 @@
   </mat-card>
   } @else if (!loading()) {
   <!-- Empty State -->
-  <div class="empty-state">
-    <mat-icon class="empty-icon">history</mat-icon>
-    <h3>{{'STOCK_MOVEMENTS.NO_MOVEMENTS' | translate}}</h3>
-    <p>{{'STOCK_MOVEMENTS.NO_MOVEMENTS_DESC' | translate}}</p>
-  </div>
+  <app-empty-state icon="history" title="STOCK_MOVEMENTS.NO_MOVEMENTS" message="STOCK_MOVEMENTS.NO_MOVEMENTS_DESC" />
   }
 </div>

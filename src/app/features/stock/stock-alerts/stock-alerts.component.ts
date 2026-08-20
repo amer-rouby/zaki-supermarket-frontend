@@ -6,6 +6,8 @@ import { MaterialModule } from '../../../shared/material.module';
 import { StockAlertService } from '../../../core/services/stock-alert.service';
 import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { TableLoadingComponent } from '../../../shared/components/table-loading/table-loading.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 interface StockAlert {
   id: number; productId: number; productName: string; batchNumber?: string;
@@ -22,7 +24,7 @@ interface AlertStats {
 
 @Component({
   selector: 'app-stock-alerts', standalone: true,
-  imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule],
+  imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule, TableLoadingComponent, EmptyStateComponent],
   templateUrl: './stock-alerts.component.html',
   styleUrl: './stock-alerts.component.scss'
 })

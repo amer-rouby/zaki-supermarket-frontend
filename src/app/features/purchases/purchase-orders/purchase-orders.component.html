@@ -52,10 +52,7 @@
   }
 
   @if (loading() && !totalElements()) {
-  <div class="loading-state">
-    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
-    <p>{{'COMMON.LOADING' | translate}}</p>
-  </div>
+  <app-table-loading />
   } @else {
   <mat-card class="table-card">
     @if (loading()) {
