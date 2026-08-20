@@ -65,20 +65,19 @@
           @for (item of itemsControls; track $index) {
           <div [formGroupName]="$index" class="item-row">
 
-            <mat-form-field appearance="outline" class="product-field">
-              <mat-label>{{'PURCHASES.COLUMN.PRODUCT' | translate}} *</mat-label>
-              <input matInput [formControl]="productSearchControls[$index]" [matAutocomplete]="productAuto"
-                [placeholder]="'PRODUCTS.SEARCH_PLACEHOLDER' | translate">
-              <mat-icon matPrefix>search</mat-icon>
-              <mat-autocomplete #productAuto="matAutocomplete" [displayWith]="displayProductName"
-                (optionSelected)="onProductSelectedForRow($index, $event.option.value)">
-                @for (product of filteredProductsPerRow[$index] | async; track product.id) {
-                <mat-option [value]="product">{{product.name}}</mat-option>
-                } @empty {
-                <mat-option disabled>{{'PRODUCTS.NO_PRODUCTS' | translate}}</mat-option>
-                }
-              </mat-autocomplete>
-            </mat-form-field>
+            <app-searchable-select class="product-field"
+              [options]="products()"
+              [valueFn]="productValueFn"
+              [labelFn]="productLabelFn"
+              [searchFn]="productSearchFn"
+              [maxResults]="15"
+              [value]="item.get('productId')?.value"
+              [label]="(('PURCHASES.COLUMN.PRODUCT' | translate) + ' *')"
+              [placeholder]="'PRODUCTS.SEARCH_PLACEHOLDER' | translate"
+              [noResultsText]="'PRODUCTS.NO_PRODUCTS' | translate"
+              prefixIcon="search"
+              (selected)="onProductSelectedForRow($index, $event)">
+            </app-searchable-select>
 
             <mat-form-field appearance="outline">
               <mat-label>{{'COMMON.QUANTITY' | translate}} *</mat-label>

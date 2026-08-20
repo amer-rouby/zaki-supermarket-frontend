@@ -1,7 +1,6 @@
 import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators, FormArray, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, map, startWith } from 'rxjs';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { CommonModule } from '@angular/common';
@@ -47,15 +46,14 @@ export class PurchaseFormComponent implements OnInit {
   readonly supplierValueFn = (s: Supplier) => s.id;
   readonly supplierLabelFn = (s: Supplier) => s.name;
   readonly products = signal<Product[]>([]);
+  readonly productValueFn = (p: Product) => p.id;
+  readonly productLabelFn = (p: Product) => p.name;
+  readonly productSearchFn = (p: Product, q: string) =>
+    p.name.toLowerCase().includes(q) || !!p.barcode?.toLowerCase().includes(q);
   readonly form: FormGroup;
   readonly isEditMode = signal(false);
   readonly orderId = signal<number | null>(null);
   readonly todayDate = signal<string>(new Date().toISOString().split('T')[0]);
-
-  // One search box + filtered option list per item row, so each row's product
-  // picker can be searched independently instead of scrolling a ~500-item list.
-  readonly productSearchControls: FormControl[] = [];
-  readonly filteredProductsPerRow: Observable<Product[]>[] = [];
 
   constructor() {
     this.form = this.fb.group({
@@ -141,49 +139,10 @@ export class PurchaseFormComponent implements OnInit {
       unitPrice: [item?.unitPrice || 0, [Validators.required, Validators.min(0)]],
       notes: [item?.notes || '']
     }));
-
-    const searchControl = new FormControl(item?.productName || '');
-    this.productSearchControls.push(searchControl);
-    this.filteredProductsPerRow.push(
-      searchControl.valueChanges.pipe(
-        startWith(item?.productName || ''),
-        map(value => this._filterProductOptions(typeof value === 'string' ? value : ''))
-      )
-    );
   }
 
   removeItem(index: number): void {
     this.itemsFormArray.removeAt(index);
-    this.productSearchControls.splice(index, 1);
-    this.filteredProductsPerRow.splice(index, 1);
-  }
-
-  private _filterProductOptions(value: string): Product[] {
-    const all = this.products();
-    if (!value) return all.slice(0, 15);
-    const filterValue = value.toLowerCase();
-    return all
-      .filter(p =>
-        p.name.toLowerCase().includes(filterValue) ||
-        p.barcode?.toLowerCase().includes(filterValue)
-      )
-      .slice(0, 15);
-  }
-
-  displayProductName(product: Product | string): string {
-    if (!product) return '';
-    return typeof product === 'string' ? product : product.name;
-  }
-
-  onProductChange(index: number, productId: number): void {
-    const product = this.products().find(p => p.id === productId);
-    if (product) {
-      const itemGroup = this.itemsFormArray.at(index) as FormGroup;
-      itemGroup.patchValue({
-        productName: product.name,
-        unitPrice: product.buyPrice || 0
-      });
-    }
   }
 
   onProductSelectedForRow(index: number, product: Product): void {
@@ -193,7 +152,6 @@ export class PurchaseFormComponent implements OnInit {
       productName: product.name,
       unitPrice: product.buyPrice || 0
     });
-    this.productSearchControls[index]?.setValue(product.name, { emitEvent: false });
   }
 
   calculateItemTotal(itemValue: any): number {

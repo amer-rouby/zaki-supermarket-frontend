@@ -1,10 +1,10 @@
 import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, startWith } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { SearchableSelectComponent } from '../../../shared/components/searchable-select/searchable-select.component';
 import { ProductService } from '../../../core/services/product.service';
 import { SalesService } from '../../../core/services/sales.service';
 import { PaymentService } from '../../../core/services/payment.service';
@@ -40,7 +40,7 @@ interface SaleRequest {
 @Component({
   selector: 'app-sales-form',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, MaterialModule, PageHeaderComponent],
+  imports: [FormsModule, ReactiveFormsModule, MaterialModule, PageHeaderComponent, SearchableSelectComponent],
   templateUrl: './sales-form.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './sales-form.component.scss'
@@ -62,16 +62,16 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
 
   readonly displayedColumns = ['product', 'quantity', 'price', 'total', 'actions'];
   readonly cartItems = signal<CartItem[]>([]);
-  readonly productControl = new FormControl();
   readonly products = signal<Product[]>([]);
   readonly customerPhone = signal('');
   readonly paymentMethod = signal<PaymentMethod>(PaymentMethod.CASH);
   readonly discount = signal(0);
   readonly loading = signal(false);
 
-  private readonly allProducts = signal<Product[]>([]);
-  private readonly filteredProductsSubject = new BehaviorSubject<Product[]>([]);
-  readonly currentFilteredProducts$ = this.filteredProductsSubject.asObservable();
+  readonly productValueFn = (p: Product) => p.id;
+  readonly productLabelFn = (p: Product) => p.name;
+  readonly productSearchFn = (p: Product, q: string) =>
+    p.name.toLowerCase().includes(q) || !!p.barcode?.toLowerCase().includes(q);
 
   readonly subtotal = computed(() =>
     this.cartItems().reduce((sum, item) => sum + item.totalPrice, 0)
@@ -103,13 +103,7 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadProducts();
-    this.filteredProductsSubject.next(this.allProducts().slice(0, 10));
     this.loadEnabledPaymentMethods();
-
-    this.productControl.valueChanges.pipe(startWith('')).subscribe(value => {
-      const searchValue = typeof value === 'string' ? value : value?.name || '';
-      this.filteredProductsSubject.next(this._filterProducts(searchValue));
-    });
   }
 
   ngAfterViewInit(): void {
@@ -126,7 +120,7 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     this.focusBarcodeInput();
     if (!code) return;
 
-    const product = this.allProducts().find(p => p.barcode?.trim() === code);
+    const product = this.products().find(p => p.barcode?.trim() === code);
     if (!product) {
       this.errorHandler.showWarning('SALES.BARCODE_NOT_FOUND', { params: { code } });
       return;
@@ -152,46 +146,18 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private _filterProducts(value: string): Product[] {
-    if (!value) return this.allProducts().slice(0, 10);
-    const filterValue = value.toLowerCase();
-    return this.allProducts()
-      .filter(p =>
-        p.name.toLowerCase().includes(filterValue) ||
-        p.barcode?.toLowerCase().includes(filterValue)
-      )
-      .slice(0, 10);
-  }
-
   loadProducts(): void {
     this.productService.getProductsList().subscribe({
       next: (products) => {
-        const data = products.map((p) => ({ ...p, sellPrice: p.sellPrice || 0 }));
-        this.allProducts.set(data);
-        this.products.set(data);
-        this.filteredProductsSubject.next(data.slice(0, 10));
+        this.products.set(products.map((p) => ({ ...p, sellPrice: p.sellPrice || 0 })));
       },
       error: (err) => this.errorHandler.handleHttpError(err, 'PRODUCTS.LOAD_ERROR')
     });
   }
 
-  displayProduct(product: Product): string {
-    return product?.name || '';
-  }
-
   onProductSelected(product: Product): void {
     if (!product) return;
     this.addProductToCart(product);
-    setTimeout(() => this.productControl.setValue(''), 100);
-  }
-
-  onAddFirstProduct(): void {
-    const filtered = this.filteredProductsSubject.getValue();
-    if (filtered?.length > 0) this.onProductSelected(filtered[0]);
-  }
-
-  isAddButtonDisabled(): boolean {
-    return !this.filteredProductsSubject.getValue()?.length;
   }
 
   addProductToCart(product: Product): void {
@@ -253,7 +219,6 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     this.cartItems.set([]);
     this.discount.set(0);
     this.customerPhone.set('');
-    this.productControl.setValue('');
   }
 
   async onSubmit(): Promise<void> {
