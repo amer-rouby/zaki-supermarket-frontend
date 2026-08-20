@@ -15,7 +15,7 @@ import { MatSort } from '@angular/material/sort';
 import { CommonModule } from '@angular/common';
 import { StockAdjustmentDialogComponent } from '../stock-adjustment-dialog/stock-adjustment-dialog.component';
 import { StockAdjustmentHistoryComponent } from '../stock-adjustment-history/stock-adjustment-history.component';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { StoreContextService } from '../../../core/services/store-context.service';
 
 @Component({
@@ -38,6 +38,7 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   private readonly stockBatchService = inject(StockBatchService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly storeContext = inject(StoreContextService);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -172,18 +173,12 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   }
 
   onDelete(batch: StockBatch): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      messageKey: 'STOCK.DELETE_CONFIRM',
+      messageParams: { name: batch.batchNumber },
       width: '400px',
-      data: {
-        title: this.translate.instant('COMMON.CONFIRM'),
-        message: this.translate.instant('STOCK.DELETE_CONFIRM', { name: batch.batchNumber }),
-        confirmText: this.translate.instant('COMMON.YES'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'warn'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+      color: 'warn'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.stockBatchService.deleteBatch(batch.id, this.storeId).subscribe({
           next: () => {

@@ -4,10 +4,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { PurchaseOrderService } from '../../../core/services/purchase-order.service';
 import { PurchaseOrder } from '../../../core/models/purchase-order.model';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
@@ -22,7 +21,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
 })
 export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly purchaseService = inject(PurchaseOrderService);
-  private readonly dialog = inject(MatDialog);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
@@ -101,18 +100,14 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy
       return;
     }
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'PURCHASES.CONFIRM_DELETE',
+      messageKey: 'PURCHASES.CONFIRM_DELETE_MSG',
+      messageParams: { order: order.orderNumber },
+      confirmKey: 'COMMON.DELETE',
       width: '500px',
-      data: {
-        title: this.translate.instant('PURCHASES.CONFIRM_DELETE'),
-        message: this.translate.instant('PURCHASES.CONFIRM_DELETE_MSG', { order: order.orderNumber }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'warn'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+      color: 'warn'
+    }).subscribe(result => {
       if (result) {
         this.purchaseService.deleteOrder(order.id).subscribe({
           next: () => {
@@ -127,18 +122,14 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onApprove(order: PurchaseOrder): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'PURCHASES.CONFIRM_APPROVE',
+      messageKey: 'PURCHASES.CONFIRM_APPROVE_MSG',
+      messageParams: { order: order.orderNumber },
+      confirmKey: 'PURCHASES.APPROVE',
       width: '500px',
-      data: {
-        title: this.translate.instant('PURCHASES.CONFIRM_APPROVE'),
-        message: this.translate.instant('PURCHASES.CONFIRM_APPROVE_MSG', { order: order.orderNumber }),
-        confirmText: this.translate.instant('PURCHASES.APPROVE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'primary'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+      color: 'primary'
+    }).subscribe(result => {
       if (result) {
         this.purchaseService.approveOrder(order.id).subscribe({
           next: () => {
@@ -153,18 +144,14 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onReceive(order: PurchaseOrder): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'PURCHASES.CONFIRM_RECEIVE',
+      messageKey: 'PURCHASES.CONFIRM_RECEIVE_MSG',
+      messageParams: { order: order.orderNumber },
+      confirmKey: 'PURCHASES.RECEIVE',
       width: '400px',
-      data: {
-        title: this.translate.instant('PURCHASES.CONFIRM_RECEIVE'),
-        message: this.translate.instant('PURCHASES.CONFIRM_RECEIVE_MSG', { order: order.orderNumber }),
-        confirmText: this.translate.instant('PURCHASES.RECEIVE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'accent'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+      color: 'accent'
+    }).subscribe(result => {
       if (result) {
         this.purchaseService.receiveOrder(order.id).subscribe({
           next: () => {

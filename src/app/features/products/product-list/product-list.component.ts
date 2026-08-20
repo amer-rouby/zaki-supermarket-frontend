@@ -14,7 +14,7 @@ import { MaterialModule } from '../../../shared/material.module';
 import { FormsModule } from '@angular/forms';
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { ProductDetailsDialogComponent } from '../product-details-dialog/product-details-dialog.component';
 
 const SEARCH_DEBOUNCE_MS = 350;
@@ -35,6 +35,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
   private readonly currencyService = inject(CurrencyService);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   readonly products = signal<Product[]>([]);
   readonly loading = signal(false);
@@ -149,28 +150,19 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   onDelete(product: Product): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        title: this.translate.instant('COMMON.CONFIRM'),
-        message: this.translate.instant('PRODUCTS.DELETE_CONFIRM', { name: product.name }),
-        confirmText: this.translate.instant('COMMON.YES'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'warn'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
-      if (confirmed) {
-        this.productService.deleteProduct(product.id).subscribe({
-          next: () => {
-            this.fetchProducts();
-            this.showSuccess('PRODUCTS.DELETE_SUCCESS');
-          },
-          error: () => this.showError('COMMON.ERROR')
-        });
-      }
-    });
+    this.confirmDialog
+      .confirmDelete('PRODUCTS.DELETE_CONFIRM', { name: product.name })
+      .subscribe(confirmed => {
+        if (confirmed) {
+          this.productService.deleteProduct(product.id).subscribe({
+            next: () => {
+              this.fetchProducts();
+              this.showSuccess('PRODUCTS.DELETE_SUCCESS');
+            },
+            error: () => this.showError('COMMON.ERROR')
+          });
+        }
+      });
   }
 
   getStockColor(stock: number): 'primary' | 'accent' | 'warn' {

@@ -1,14 +1,13 @@
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { MaterialModule } from '../../shared/material.module';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { NotificationService } from '../../core/services/notification.service';
 import { NotificationModel } from '../../core/models/Notification.model';
 import { ErrorHandlerService } from '../../core/services/error-handler.service';
-import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-notifications',
@@ -20,8 +19,7 @@ import { MatDialog } from '@angular/material/dialog';
 export class NotificationsComponent implements OnInit {
   private readonly notificationService = inject(NotificationService);
   private readonly errorHandler = inject(ErrorHandlerService);
-  private readonly dialog = inject(MatDialog);
-  private readonly translate = inject(TranslateService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   readonly notifications = signal<NotificationModel[]>([]);
   readonly unreadNotifications = signal<NotificationModel[]>([]);
@@ -106,18 +104,12 @@ export class NotificationsComponent implements OnInit {
   }
 
   deleteNotification(id: number): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'NOTIFICATIONS.DELETE_CONFIRM_TITLE',
+      messageKey: 'NOTIFICATIONS.DELETE_CONFIRM_MESSAGE',
       width: '400px',
-      data: {
-        title: this.translate.instant('NOTIFICATIONS.DELETE_CONFIRM_TITLE'),
-        message: this.translate.instant('NOTIFICATIONS.DELETE_CONFIRM_MESSAGE'),
-        confirmText: this.translate.instant('COMMON.YES'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'warn'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+      color: 'warn'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.notificationService.deleteNotification(id).subscribe({
           next: () => {

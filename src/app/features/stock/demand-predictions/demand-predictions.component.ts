@@ -7,7 +7,7 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { MaterialModule } from '../../../shared/material.module';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatMenuModule } from '@angular/material/menu';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { ShareDialogComponent } from '../../../shared/components/share-dialog/share-dialog.component';
 import { DemandPredictionService, DemandPrediction, PredictionStats, UpdatePredictionDTO } from '../../../core/services/demand-prediction.service';
 import { EditPredictionDialogComponent } from '../edit-prediction-dialog/edit-prediction-dialog.component';
@@ -29,6 +29,7 @@ export class DemandPredictionsComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly predictionService = inject(DemandPredictionService);
   private readonly dialog = inject(MatDialog);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   readonly router = inject(Router);
   readonly loading = signal(false);
@@ -109,21 +110,14 @@ export class DemandPredictionsComponent implements OnInit {
       return;
     }
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'PREDICTIONS.CONFIRM_PURCHASE_TITLE',
+      messageKey: 'PREDICTIONS.CONFIRM_PURCHASE',
+      messageParams: { product: prediction.productName, quantity: prediction.recommendedOrder },
+      confirmKey: 'COMMON.CONFIRM',
       width: '400px',
-      data: {
-        title: this.translate.instant('PREDICTIONS.CONFIRM_PURCHASE_TITLE'),
-        message: this.translate.instant('PREDICTIONS.CONFIRM_PURCHASE', {
-          product: prediction.productName,
-          quantity: prediction.recommendedOrder
-        }),
-        confirmText: this.translate.instant('COMMON.CONFIRM'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'primary'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+      color: 'primary'
+    }).subscribe(result => {
       if (result) {
         this.router.navigate(['/purchases/new'], {
           queryParams: {
@@ -143,20 +137,14 @@ export class DemandPredictionsComponent implements OnInit {
       return;
     }
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'PREDICTIONS.QUICK_ORDER',
+      messageKey: 'PREDICTIONS.CONFIRM_QUICK_ORDER',
+      messageParams: { product: prediction.productName },
+      confirmKey: 'COMMON.CONFIRM',
       width: '400px',
-      data: {
-        title: this.translate.instant('PREDICTIONS.QUICK_ORDER'),
-        message: this.translate.instant('PREDICTIONS.CONFIRM_QUICK_ORDER', {
-          product: prediction.productName
-        }),
-        confirmText: this.translate.instant('COMMON.CONFIRM'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'accent'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+      color: 'accent'
+    }).subscribe(result => {
       if (result) {
         this.loading.set(true);
         this.predictionService.createPurchaseFromPrediction(prediction.predictionId).subscribe({
@@ -215,20 +203,14 @@ export class DemandPredictionsComponent implements OnInit {
       return;
     }
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    this.confirmDialog.open({
+      titleKey: 'PREDICTIONS.CONFIRM_DELETE_TITLE',
+      messageKey: 'PREDICTIONS.CONFIRM_DELETE',
+      messageParams: { product: prediction.productName },
+      confirmKey: 'COMMON.DELETE',
       width: '400px',
-      data: {
-        title: this.translate.instant('PREDICTIONS.CONFIRM_DELETE_TITLE'),
-        message: this.translate.instant('PREDICTIONS.CONFIRM_DELETE', {
-          product: prediction.productName
-        }),
-        confirmText: this.translate.instant('COMMON.DELETE'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'warn'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+      color: 'warn'
+    }).subscribe(confirmed => {
       if (confirmed) {
         this.loading.set(true);
         this.predictionService.deletePrediction(prediction.predictionId).subscribe({
