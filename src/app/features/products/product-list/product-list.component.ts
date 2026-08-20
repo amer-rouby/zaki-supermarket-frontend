@@ -1,7 +1,6 @@
 import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
@@ -15,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { ProductDetailsDialogComponent } from '../product-details-dialog/product-details-dialog.component';
 
 const SEARCH_DEBOUNCE_MS = 350;
@@ -29,13 +29,13 @@ const SEARCH_DEBOUNCE_MS = 350;
 export class ProductListComponent implements OnInit, OnDestroy {
   private readonly productService = inject(ProductService);
   private readonly categoryService = inject(CategoryService);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
   private readonly currencyService = inject(CurrencyService);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly products = signal<Product[]>([]);
   readonly loading = signal(false);
@@ -106,7 +106,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.loading.set(false);
-        this.showError('PRODUCTS.LOAD_ERROR');
+        this.errorHandler.showError('PRODUCTS.LOAD_ERROR');
       }
     });
   }
@@ -157,9 +157,9 @@ export class ProductListComponent implements OnInit, OnDestroy {
           this.productService.deleteProduct(product.id).subscribe({
             next: () => {
               this.fetchProducts();
-              this.showSuccess('PRODUCTS.DELETE_SUCCESS');
+              this.errorHandler.showSuccess('PRODUCTS.DELETE_SUCCESS');
             },
-            error: () => this.showError('COMMON.ERROR')
+            error: () => this.errorHandler.showError('COMMON.ERROR')
           });
         }
       });
@@ -193,19 +193,5 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   translateCategory(key: string): string {
     return this.translate.instant(key);
-  }
-
-  private showSuccess(key: string): void {
-    this.snackBar.open(this.translate.instant(key), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
-  }
-
-  private showError(key: string): void {
-    this.snackBar.open(this.translate.instant(key), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000,
-      panelClass: ['error-snackbar']
-    });
   }
 }

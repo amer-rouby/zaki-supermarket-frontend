@@ -444,6 +444,12 @@
     "DELETE_CONFIRM": "Are you sure you want to delete batch '{{name}}'?",
     "DELETE_SUCCESS": "Batch deleted successfully",
     "DELETE_ERROR": "Failed to delete batch",
+    "BATCH_LOAD_ERROR": "Failed to load products",
+    "BATCH_LOAD_FAILED_REDIRECT": "Failed to load batch data",
+    "BATCH_UPDATE_SUCCESS": "Batch updated successfully",
+    "BATCH_UPDATE_ERROR": "Failed to update batch",
+    "BATCH_ADD_SUCCESS": "Batch added successfully",
+    "BATCH_ADD_ERROR": "Failed to add batch",
     "STATUS": {
       "GOOD": "Good",
       "LOW": "Low",

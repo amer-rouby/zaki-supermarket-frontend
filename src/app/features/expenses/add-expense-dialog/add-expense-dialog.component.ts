@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaterialModule } from '../../../shared/material.module';
 import { ExpenseService } from '../../../core/services/expense.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -26,7 +25,6 @@ import { Subscription } from 'rxjs';
 export class AddExpenseDialogComponent implements OnInit, OnDestroy {
   private readonly expenseService = inject(ExpenseService);
   private readonly authService = inject(AuthService);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly errorHandler = inject(ErrorHandlerService);
   readonly dialogRef = inject(MatDialogRef<AddExpenseDialogComponent>);

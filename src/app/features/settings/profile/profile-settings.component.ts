@@ -1,6 +1,5 @@
 import { Component, inject, signal, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient, HttpEventType, HttpHeaders } from '@angular/common/http';
 import { catchError, finalize, map, throwError, first } from 'rxjs';
@@ -22,7 +21,6 @@ import { environment } from '../../../../environments/environment';
 })
 export class ProfileSettingsComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly profileService = inject(ProfileService);

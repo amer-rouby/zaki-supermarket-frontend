@@ -444,6 +444,12 @@
     "DELETE_CONFIRM": "هل أنت متأكد من حذف دفعة '{{name}}'؟",
     "DELETE_SUCCESS": "تم حذف الدفعة بنجاح",
     "DELETE_ERROR": "فشل في حذف الدفعة",
+    "BATCH_LOAD_ERROR": "فشل في تحميل المنتجات",
+    "BATCH_LOAD_FAILED_REDIRECT": "فشل في تحميل بيانات الدفعة",
+    "BATCH_UPDATE_SUCCESS": "تم تحديث الدفعة بنجاح",
+    "BATCH_UPDATE_ERROR": "فشل في تحديث الدفعة",
+    "BATCH_ADD_SUCCESS": "تمت إضافة الدفعة بنجاح",
+    "BATCH_ADD_ERROR": "فشل في إضافة الدفعة",
     "STATUS": {
       "GOOD": "جيد",
       "LOW": "منخفض",

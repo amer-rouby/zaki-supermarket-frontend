@@ -1,7 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
@@ -23,8 +21,6 @@ import { CurrencyService } from '../../../core/services/currency.service';
 export class PurchaseDetailComponent implements OnInit {
   private readonly purchaseService = inject(PurchaseOrderService);
   private readonly dialog = inject(MatDialog);
-  private readonly snackBar = inject(MatSnackBar);
-  private readonly translate = inject(TranslateService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly confirmDialog = inject(ConfirmDialogService);
   readonly router = inject(Router);
@@ -152,11 +148,10 @@ export class PurchaseDetailComponent implements OnInit {
       this.purchaseService.sendEmail(order.id).subscribe({
         next: (response) => {
           this.emailSending.set(false);
-          this.snackBar.open(
-            this.translate.instant('PURCHASES.SEND_EMAIL_SUCCESS', { email: response.recipientEmail }),
-            this.translate.instant('COMMON.CLOSE'),
-            { duration: 4000, panelClass: ['success-snackbar'] }
-          );
+          this.errorHandler.showSuccess('PURCHASES.SEND_EMAIL_SUCCESS', {
+            duration: 4000,
+            params: { email: response.recipientEmail }
+          });
         },
         error: (err) => {
           this.emailSending.set(false);

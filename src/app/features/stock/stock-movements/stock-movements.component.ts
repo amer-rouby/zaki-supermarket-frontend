@@ -1,11 +1,11 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageEvent } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { StockMovementService } from '../../../core/services/stock-movement.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-stock-movements',
@@ -16,9 +16,9 @@ import { StockMovementService } from '../../../core/services/stock-movement.serv
 })
 export class StockMovementsComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly stockMovementService = inject(StockMovementService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly loading = signal(false);
   readonly movements = signal<any[]>([]);
@@ -61,11 +61,7 @@ export class StockMovementsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading movements:', error);
-        this.snackBar.open(
-          this.translate.instant('STOCK_MOVEMENTS.LOAD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+        this.errorHandler.showError('STOCK_MOVEMENTS.LOAD_ERROR');
         this.loading.set(false);
       }
     });
@@ -144,11 +140,7 @@ export class StockMovementsComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error filtering movements:', error);
-          this.snackBar.open(
-            this.translate.instant('STOCK_MOVEMENTS.LOAD_ERROR'),
-            this.translate.instant('COMMON.CLOSE'),
-            { duration: 3000 }
-          );
+          this.errorHandler.showError('STOCK_MOVEMENTS.LOAD_ERROR');
           this.loading.set(false);
         }
       });

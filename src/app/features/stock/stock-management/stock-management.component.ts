@@ -2,7 +2,6 @@ import { Component, inject, signal, OnInit, ViewChild, AfterViewInit } from '@an
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
@@ -17,6 +16,7 @@ import { StockAdjustmentDialogComponent } from '../stock-adjustment-dialog/stock
 import { StockAdjustmentHistoryComponent } from '../stock-adjustment-history/stock-adjustment-history.component';
 import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { StoreContextService } from '../../../core/services/store-context.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-stock-management',
@@ -32,7 +32,6 @@ import { StoreContextService } from '../../../core/services/store-context.servic
   styleUrl: './stock-management.component.scss'
 })
 export class StockManagementComponent implements OnInit, AfterViewInit {
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
   private readonly stockBatchService = inject(StockBatchService);
@@ -40,6 +39,7 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   private readonly dialog = inject(MatDialog);
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly storeContext = inject(StoreContextService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -90,7 +90,7 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
         this.loading.set(false);
       },
       error: () => {
-        this.showError('STOCK.LOAD_ERROR');
+        this.errorHandler.showError('STOCK.LOAD_ERROR');
         this.loading.set(false);
       }
     });
@@ -182,11 +182,11 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
       if (confirmed) {
         this.stockBatchService.deleteBatch(batch.id, this.storeId).subscribe({
           next: () => {
-            this.showSuccess('STOCK.DELETE_SUCCESS');
+            this.errorHandler.showSuccess('STOCK.DELETE_SUCCESS');
             this.loadStockBatches();
           },
           error: () => {
-            this.showError('STOCK.DELETE_ERROR');
+            this.errorHandler.showError('STOCK.DELETE_ERROR');
           }
         });
       }
@@ -215,13 +215,4 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
     this.applyFilter();
   }
 
-  private showError(key: string): void {
-    const message = this.translate.instant(key);
-    this.snackBar.open(message, this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
-  }
-
-  private showSuccess(key: string): void {
-    const message = this.translate.instant(key);
-    this.snackBar.open(message, this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
-  }
 }

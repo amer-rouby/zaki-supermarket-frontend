@@ -2,7 +2,6 @@ import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, 
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { ProductService } from '../../../core/services/product.service';
 import { CategoryService } from '../../../core/services/category.service';
@@ -27,7 +26,6 @@ export class ProductFormComponent implements OnInit, AfterViewInit {
   private readonly categoryService = inject(CategoryService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly currencyService = inject(CurrencyService);
 

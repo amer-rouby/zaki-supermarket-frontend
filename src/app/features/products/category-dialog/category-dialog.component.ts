@@ -1,8 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateService } from '@ngx-translate/core';
 import { MaterialModule } from '../../../shared/material.module';
 import { CategoryService } from '../../../core/services/category.service';
 import { CategoryRequest } from '../../../core/models/category';
@@ -18,8 +16,6 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 export class CategoryDialogComponent {
   private readonly fb = inject(FormBuilder);
   private readonly dialogRef = inject(MatDialogRef<CategoryDialogComponent>);
-  private readonly snackBar = inject(MatSnackBar);
-  private readonly translate = inject(TranslateService);
   private readonly categoryService = inject(CategoryService);
   private readonly errorHandler = inject(ErrorHandlerService);
   readonly data = inject(MAT_DIALOG_DATA);

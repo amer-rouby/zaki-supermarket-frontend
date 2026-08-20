@@ -2,7 +2,6 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { BaseChartDirective } from 'ng2-charts';
@@ -30,7 +29,6 @@ import { PrintHelperService } from '../../../core/services/print-helper.service'
 export class ExpiryReportComponent implements OnInit {
   private readonly reportService = inject(ReportService);
   private readonly authService = inject(AuthService);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly exportService = inject(ExportService);
   private readonly errorHandler = inject(ErrorHandlerService);

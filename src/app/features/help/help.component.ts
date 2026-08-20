@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../shared/material.module';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
 
 interface FAQItem {
   question: string;
@@ -32,8 +32,8 @@ interface GuideTopic {
 })
 export class HelpComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly selectedTab = signal(0);
   readonly expandedFaqIndex = signal<number | null>(null);
@@ -253,11 +253,7 @@ export class HelpComponent {
   // instead of showing a fake "sent" confirmation that goes nowhere.
   onSubmitContact(): void {
     if (this.contactForm.invalid) {
-      this.snackBar.open(
-        this.translate.instant('HELP.CONTACT_FORM_ERROR'),
-        this.translate.instant('COMMON.CLOSE'),
-        { duration: 3000 }
-      );
+      this.errorHandler.showError('HELP.CONTACT_FORM_ERROR');
       return;
     }
 
@@ -270,11 +266,7 @@ export class HelpComponent {
       `?subject=${encodeURIComponent(mailSubject)}` +
       `&body=${encodeURIComponent(mailBody)}`;
 
-    this.snackBar.open(
-      this.translate.instant('HELP.CONTACT_FORM_OPENED_EMAIL'),
-      this.translate.instant('COMMON.CLOSE'),
-      { duration: 4000, panelClass: ['success-snackbar'] }
-    );
+    this.errorHandler.showSuccess('HELP.CONTACT_FORM_OPENED_EMAIL', { duration: 4000 });
 
     this.contactForm.reset();
   }

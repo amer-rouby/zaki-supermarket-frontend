@@ -1,7 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
@@ -30,8 +28,6 @@ interface NotificationSetting {
 })
 export class NotificationSettingsComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly snackBar = inject(MatSnackBar);
-  private readonly translate = inject(TranslateService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly notificationSettingsService = inject(NotificationSettingsService);
 
