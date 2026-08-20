@@ -7,7 +7,10 @@
   </app-page-header>
 
   <mat-card class="stock-card">
-    <mat-card-content>
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
+    <mat-card-content [class.list-content-refreshing]="loading()">
       <div class="search-container">
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>{{'STOCK.SEARCH_PLACEHOLDER' | translate}}</mat-label>
@@ -23,14 +26,14 @@
         </mat-form-field>
       </div>
 
-      @if (loading()) {
+      @if (loading() && dataSource.data.length === 0) {
       <div class="loading-state">
         <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
         <p>{{'COMMON.LOADING' | translate}}</p>
       </div>
       }
 
-      @if (!loading()) {
+      @if (dataSource.data.length > 0 || !loading()) {
       <div class="table-container">
         <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 stock-table">
 
