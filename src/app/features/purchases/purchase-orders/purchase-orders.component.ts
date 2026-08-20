@@ -1,7 +1,7 @@
-import { Component, inject, signal, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
@@ -34,8 +34,6 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy
 
   displayedColumns: string[] = ['orderNumber', 'supplier', 'orderDate', 'totalAmount', 'status', 'priority', 'actions'];
   dataSource = new MatTableDataSource<PurchaseOrder>([]);
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   ngOnInit(): void {
     this.loadStats();

@@ -9,7 +9,7 @@ import { LanguageService } from '../../../core/services/language.service';
 import { StockBatchService } from '../../../core/services/stock.service';
 import { StockBatch } from '../../../core/models/stock.model';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { CommonModule } from '@angular/common';
 import { StockAdjustmentDialogComponent } from '../stock-adjustment-dialog/stock-adjustment-dialog.component';
@@ -41,7 +41,6 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   private readonly storeContext = inject(StoreContextService);
   private readonly errorHandler = inject(ErrorHandlerService);
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   dataSource = new MatTableDataSource<StockBatch>([]);
@@ -66,7 +65,6 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
@@ -80,13 +78,6 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
 
         this.dataSource.data = batches;
         this.totalElements.set(total);
-
-        if (this.paginator) {
-          this.paginator.length = total;
-          this.paginator.pageIndex = this.currentPage();
-          this.paginator.pageSize = this.pageSize();
-        }
-
         this.loading.set(false);
       },
       error: () => {
