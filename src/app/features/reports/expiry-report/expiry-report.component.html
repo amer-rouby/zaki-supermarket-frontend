@@ -171,6 +171,61 @@
     </mat-card-content>
   </mat-card>
 
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>sell</mat-icon>
+        {{'REPORTS.PRICING.TITLE' | translate}}
+      </mat-card-title>
+      <mat-card-subtitle>{{'REPORTS.PRICING.SUBTITLE' | translate}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      @if (pricingLoading()) {
+      <div class="loading-overlay">
+        <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+      </div>
+      } @else if (pricingRecommendations().length) {
+      <table mat-table [dataSource]="pricingRecommendations()" class="data-table">
+
+        <ng-container matColumnDef="productName">
+          <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.NAME' | translate}}</th>
+          <td mat-cell *matCellDef="let row"><strong>{{row.productName}}</strong></td>
+        </ng-container>
+
+        <ng-container matColumnDef="currentStock">
+          <th mat-header-cell *matHeaderCellDef>{{'STOCK.QUANTITY' | translate}}</th>
+          <td mat-cell *matCellDef="let row">{{row.currentStock}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="reason">
+          <th mat-header-cell *matHeaderCellDef>{{'REPORTS.PRICING.REASON' | translate}}</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-chip [color]="getPriorityColor(row.priority)">{{getReasonLabel(row.reason)}}</mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="suggestedDiscountPercent">
+          <th mat-header-cell *matHeaderCellDef>{{'REPORTS.PRICING.SUGGESTED_DISCOUNT' | translate}}</th>
+          <td mat-cell *matCellDef="let row">{{row.suggestedDiscountPercent}}%</td>
+        </ng-container>
+
+        <ng-container matColumnDef="message">
+          <th mat-header-cell *matHeaderCellDef>{{'REPORTS.PRICING.DETAILS' | translate}}</th>
+          <td mat-cell *matCellDef="let row"><small>{{row.message}}</small></td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="pricingColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: pricingColumns;"></tr>
+      </table>
+      } @else {
+      <div class="empty-state">
+        <mat-icon>check_circle</mat-icon>
+        <p>{{'REPORTS.PRICING.NO_RECOMMENDATIONS' | translate}}</p>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
   } @else if (!reportLoading() && !expiryData() && !reportError()) {
 
   <div class="empty-state">
