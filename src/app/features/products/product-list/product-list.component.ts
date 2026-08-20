@@ -16,13 +16,14 @@ import { CurrencyService } from '../../../core/services/currency.service';
 import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { ProductDetailsDialogComponent } from '../product-details-dialog/product-details-dialog.component';
+import { SearchableSelectComponent } from '../../../shared/components/searchable-select/searchable-select.component';
 
 const SEARCH_DEBOUNCE_MS = 350;
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [RouterLink, MaterialModule, FormsModule, PageHeaderComponent],
+  imports: [RouterLink, MaterialModule, FormsModule, PageHeaderComponent, SearchableSelectComponent],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
@@ -42,15 +43,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
   readonly searchQuery = signal('');
   readonly selectedCategory = signal('all');
   readonly categoryOptions = signal<Category[]>([]);
-  readonly categorySearchText = signal('');
-  readonly filteredCategoryOptions = computed(() => {
-    const q = this.categorySearchText().trim().toLowerCase();
-    const opts = this.categoryOptions();
-    if (!q) return opts;
-    return opts.filter(c =>
-      (c.nameAr || '').toLowerCase().includes(q) || c.name.toLowerCase().includes(q)
-    );
-  });
+  readonly categoryValueFn = (c: Category) => c.name;
+  readonly categoryLabelFn = (c: Category) => c.nameAr || c.name;
+  readonly categorySearchFn = (c: Category, q: string) =>
+    (c.nameAr || '').toLowerCase().includes(q) || c.name.toLowerCase().includes(q);
   readonly page = signal(0);
   readonly size = signal(10);
   readonly totalElements = signal(0);
@@ -126,14 +122,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.fetchProducts();
   }
 
-  onCategorySelected(value: string): void {
-    this.selectedCategory.set(value);
-    if (value === 'all') {
-      this.categorySearchText.set('');
-    } else {
-      const opt = this.categoryOptions().find(c => c.name === value);
-      this.categorySearchText.set(opt?.nameAr || opt?.name || value);
-    }
+  onCategorySelected(selection: Category | string): void {
+    this.selectedCategory.set(typeof selection === 'string' ? selection : selection.name);
     this.filterByCategory();
   }
 

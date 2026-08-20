@@ -50,28 +50,20 @@
         </mat-form-field>
 
         <!-- Category - dynamic from API, searchable since the list can grow large -->
-        <mat-form-field appearance="outline">
-          <mat-label>{{'PRODUCTS.CATEGORY' | translate}}</mat-label>
-          @if (categoriesLoading()) {
-          <input matInput disabled [placeholder]="'COMMON.LOADING' | translate">
-          } @else if (categories().length) {
-          <input matInput [(ngModel)]="categorySearchText" name="categorySearch" [matAutocomplete]="categoryAuto"
-            [placeholder]="'CATEGORIES.SEARCH_PLACEHOLDER' | translate">
-          <mat-autocomplete #categoryAuto="matAutocomplete" (optionSelected)="onCategorySelected($event.option.value)">
-            @for (cat of filteredCategories(); track cat.id) {
-            <mat-option [value]="cat.name">{{cat.nameAr || cat.name}}</mat-option>
-            }
-          </mat-autocomplete>
-          @if (categorySearchText()) {
-          <button mat-icon-button matSuffix type="button" (click)="clearCategorySelection()">
-            <mat-icon>close</mat-icon>
-          </button>
-          }
-          } @else {
-          <input matInput disabled [placeholder]="'CATEGORIES.NO_CATEGORIES' | translate">
-          }
-          <mat-icon matPrefix>category</mat-icon>
-        </mat-form-field>
+        <app-searchable-select
+          [options]="categories()"
+          [valueFn]="categoryValueFn"
+          [labelFn]="categoryLabelFn"
+          [searchFn]="categorySearchFn"
+          [value]="product().category"
+          [label]="'PRODUCTS.CATEGORY' | translate"
+          [placeholder]="categoriesLoading() ? ('COMMON.LOADING' | translate) : ('CATEGORIES.SEARCH_PLACEHOLDER' | translate)"
+          [loading]="categoriesLoading()"
+          [emptyOptionsText]="'CATEGORIES.NO_CATEGORIES' | translate"
+          prefixIcon="category"
+          (selected)="onCategorySelected($event)"
+          (cleared)="clearCategorySelection()">
+        </app-searchable-select>
       </mat-card-content>
     </mat-card>
 

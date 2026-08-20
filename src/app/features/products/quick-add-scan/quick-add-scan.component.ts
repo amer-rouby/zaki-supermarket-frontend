@@ -13,6 +13,7 @@ import { LanguageService } from '../../../core/services/language.service';
 import { Product } from '../../../core/models/product.model';
 import { Category } from '../../../core/models/category';
 import { MaterialModule } from '../../../shared/material.module';
+import { SearchableSelectComponent } from '../../../shared/components/searchable-select/searchable-select.component';
 
 interface SessionEntry {
   barcode: string;
@@ -31,7 +32,7 @@ function defaultExpiry(): Date {
 @Component({
   selector: 'app-quick-add-scan',
   standalone: true,
-  imports: [FormsModule, MaterialModule, PageHeaderComponent],
+  imports: [FormsModule, MaterialModule, PageHeaderComponent, SearchableSelectComponent],
   templateUrl: './quick-add-scan.component.html',
   styleUrl: './quick-add-scan.component.scss'
 })
@@ -51,15 +52,10 @@ export class QuickAddScanComponent implements OnInit, AfterViewInit {
   readonly barcodeValue = signal('');
   readonly allProducts = signal<Product[]>([]);
   readonly categories = signal<Category[]>([]);
-  readonly categorySearchText = signal('');
-  readonly filteredCategories = computed(() => {
-    const q = this.categorySearchText().trim().toLowerCase();
-    const opts = this.categories();
-    if (!q) return opts;
-    return opts.filter(c =>
-      (c.nameAr || '').toLowerCase().includes(q) || c.name.toLowerCase().includes(q)
-    );
-  });
+  readonly categoryValueFn = (c: Category) => c.name;
+  readonly categoryLabelFn = (c: Category) => c.nameAr || c.name;
+  readonly categorySearchFn = (c: Category, q: string) =>
+    (c.nameAr || '').toLowerCase().includes(q) || c.name.toLowerCase().includes(q);
   readonly matchedProduct = signal<Product | null>(null);
   readonly mode = signal<'idle' | 'existing' | 'new'>('idle');
   readonly saving = signal(false);
@@ -137,7 +133,6 @@ export class QuickAddScanComponent implements OnInit, AfterViewInit {
       this.newSellPrice.set(null);
       this.newBuyPrice.set(null);
       this.newCategory.set('');
-      this.categorySearchText.set('');
       this.newQuantity.set(null);
       this.newExpiryDate.set(defaultExpiry());
     }
@@ -277,19 +272,12 @@ export class QuickAddScanComponent implements OnInit, AfterViewInit {
     return category.name;
   }
 
-  private categoryDisplayName(catName: string): string {
-    const opt = this.categories().find(c => c.name === catName);
-    return opt ? (opt.nameAr || opt.name) : catName;
-  }
-
-  onCategorySelected(catName: string): void {
-    this.newCategory.set(catName);
-    this.categorySearchText.set(this.categoryDisplayName(catName));
+  onCategorySelected(category: Category): void {
+    this.newCategory.set(category.name);
   }
 
   clearCategorySelection(): void {
     this.newCategory.set('');
-    this.categorySearchText.set('');
   }
 
   translateUnitType(key: string): string {

@@ -17,30 +17,19 @@
       <form [formGroup]="batchForm" (ngSubmit)="onSubmit()" class="batch-form">
 
         <!-- Product Selection - searchable since the product list can grow large -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{'PRODUCTS.NAME' | translate}} *</mat-label>
-          <input matInput [(ngModel)]="productSearchText" [ngModelOptions]="{standalone: true}"
-            [matAutocomplete]="productAuto" [placeholder]="'PRODUCTS.SEARCH_PLACEHOLDER' | translate">
-          <mat-autocomplete #productAuto="matAutocomplete" (optionSelected)="onProductSelected($event.option.value)">
-            @for (product of filteredProducts(); track product.id) {
-              <mat-option [value]="product.id">
-                {{product.name}} ({{product.barcode}})
-              </mat-option>
-            } @empty {
-              <mat-option disabled>
-                {{'PRODUCTS.NO_PRODUCTS' | translate}}
-              </mat-option>
-            }
-          </mat-autocomplete>
-          @if (productSearchText()) {
-          <button mat-icon-button matSuffix type="button" (click)="clearProductSelection()">
-            <mat-icon>close</mat-icon>
-          </button>
-          }
-          @if (batchForm.get('productId')?.invalid && batchForm.get('productId')?.touched) {
-            <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
-          }
-        </mat-form-field>
+        <app-searchable-select class="full-width"
+          [options]="productsList()"
+          [valueFn]="productValueFn"
+          [labelFn]="productLabelFn"
+          [searchFn]="productSearchFn"
+          [value]="batchForm.get('productId')?.value"
+          [label]="(('PRODUCTS.NAME' | translate) + ' *')"
+          [placeholder]="'PRODUCTS.SEARCH_PLACEHOLDER' | translate"
+          [noResultsText]="'PRODUCTS.NO_PRODUCTS' | translate"
+          [errorText]="(batchForm.get('productId')?.invalid && batchForm.get('productId')?.touched) ? ('VALIDATION.REQUIRED' | translate) : ''"
+          (selected)="onProductSelected($event)"
+          (cleared)="clearProductSelection()">
+        </app-searchable-select>
 
         <!-- Batch Number -->
         <mat-form-field appearance="outline" class="full-width">

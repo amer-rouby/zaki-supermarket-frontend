@@ -1,0 +1,35 @@
+<mat-form-field appearance="outline" class="searchable-select-field">
+  @if (label) {
+  <mat-label>{{ label }}</mat-label>
+  }
+  @if (prefixIcon) {
+  <mat-icon matPrefix>{{ prefixIcon }}</mat-icon>
+  }
+  <input matInput
+    [(ngModel)]="searchText"
+    (ngModelChange)="onSearchTextChange()"
+    [matAutocomplete]="auto"
+    [placeholder]="effectivePlaceholder"
+    [disabled]="effectiveDisabled">
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event)">
+    @if (prependOption) {
+    <mat-option [value]="prependOption.value">{{ prependOption.label }}</mat-option>
+    }
+    @for (opt of filteredOptions; track valueFn(opt)) {
+    <mat-option [value]="valueFn(opt)">{{ labelFn(opt) }}</mat-option>
+    }
+    @if (filteredOptions.length === 0 && noResultsText) {
+    <mat-option disabled>{{ noResultsText }}</mat-option>
+    }
+  </mat-autocomplete>
+  @if (searchText) {
+  <button mat-icon-button matSuffix type="button" (click)="onClear()" [disabled]="effectiveDisabled">
+    <mat-icon>close</mat-icon>
+  </button>
+  } @else {
+  <mat-icon matSuffix>arrow_drop_down</mat-icon>
+  }
+  @if (errorText) {
+  <mat-error>{{ errorText }}</mat-error>
+  }
+</mat-form-field>

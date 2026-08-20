@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, map, startWith } from 'rxjs';
@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { SearchableSelectComponent } from '../../../shared/components/searchable-select/searchable-select.component';
 
 import { PurchaseOrderService } from '../../../core/services/purchase-order.service';
 import { SupplierService } from '../../../core/services/supplier.service';
@@ -25,7 +26,8 @@ import { Product } from '../../../core/models/product.model';
     ReactiveFormsModule,
     CommonModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    SearchableSelectComponent
   ],
   templateUrl: './purchase-form.component.html',
   styleUrl: './purchase-form.component.scss'
@@ -41,13 +43,8 @@ export class PurchaseFormComponent implements OnInit {
 
   readonly loading = signal(false);
   readonly suppliers = signal<Supplier[]>([]);
-  readonly supplierSearchText = signal('');
-  readonly filteredSuppliers = computed(() => {
-    const q = this.supplierSearchText().trim().toLowerCase();
-    const opts = this.suppliers();
-    if (!q) return opts;
-    return opts.filter(s => s.name.toLowerCase().includes(q));
-  });
+  readonly supplierValueFn = (s: Supplier) => s.id;
+  readonly supplierLabelFn = (s: Supplier) => s.name;
   readonly products = signal<Product[]>([]);
   readonly form: FormGroup;
   readonly isEditMode = signal(false);
@@ -96,28 +93,17 @@ export class PurchaseFormComponent implements OnInit {
     this.supplierService.getAllSuppliers().subscribe({
       next: (data) => {
         this.suppliers.set(data || []);
-        const currentId = this.form.get('supplierId')?.value;
-        if (currentId) {
-          this.supplierSearchText.set(this.supplierDisplayName(currentId));
-        }
       },
       error: (err) => this.errorHandler.handleHttpError(err, 'SUPPLIERS.LOAD_ERROR')
     });
   }
 
-  private supplierDisplayName(supplierId: number): string {
-    const s = this.suppliers().find(sup => sup.id === supplierId);
-    return s?.name || '';
-  }
-
-  onSupplierSelected(supplierId: number): void {
-    this.form.patchValue({ supplierId });
-    this.supplierSearchText.set(this.supplierDisplayName(supplierId));
+  onSupplierSelected(supplier: Supplier): void {
+    this.form.patchValue({ supplierId: supplier.id });
   }
 
   clearSupplierSelection(): void {
     this.form.patchValue({ supplierId: null });
-    this.supplierSearchText.set('');
   }
 
   loadProducts(): void {
@@ -145,9 +131,6 @@ export class PurchaseFormComponent implements OnInit {
     this.purchaseService.getOrder(id).subscribe({
       next: (order) => {
         this.form.patchValue(order);
-        if (order.supplierId) {
-          this.supplierSearchText.set(this.supplierDisplayName(order.supplierId));
-        }
         this.itemsFormArray.clear();
         order.items?.forEach(item => this.addItem(item));
         this.loading.set(false);
