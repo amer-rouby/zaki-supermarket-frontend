@@ -10,11 +10,12 @@ import { PurchaseOrderService } from '../../../core/services/purchase-order.serv
 import { PurchaseOrder } from '../../../core/models/purchase-order.model';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { TableLoadingComponent } from '../../../shared/components/table-loading/table-loading.component';
 
 @Component({
   selector: 'app-purchase-orders',
   standalone: true,
-  imports: [MaterialModule, PageHeaderComponent, RouterLink, MatTableModule, MatPaginatorModule],
+  imports: [MaterialModule, PageHeaderComponent, RouterLink, MatTableModule, MatPaginatorModule, TableLoadingComponent],
   templateUrl: './purchase-orders.component.html',
   styleUrl: './purchase-orders.component.scss'
 })

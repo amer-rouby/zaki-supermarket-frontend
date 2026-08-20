@@ -17,6 +17,7 @@ import { StockAdjustmentHistoryComponent } from '../stock-adjustment-history/sto
 import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { StoreContextService } from '../../../core/services/store-context.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { TableLoadingComponent } from '../../../shared/components/table-loading/table-loading.component';
 
 @Component({
   selector: 'app-stock-management',
@@ -27,6 +28,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
     FormsModule,
     MaterialModule,
     PageHeaderComponent,
+    TableLoadingComponent,
   ],
   templateUrl: './stock-management.component.html',
   styleUrl: './stock-management.component.scss'

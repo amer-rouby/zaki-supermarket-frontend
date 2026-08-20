@@ -53,10 +53,7 @@
 
       <!-- Loading State (first load only, no data on screen yet) -->
       @if (loading() && !products().length) {
-      <div class="loading-state">
-        <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
-        <p>{{'COMMON.LOADING' | translate}}</p>
-      </div>
+      <app-table-loading />
       }
 
       <!-- Products Table -->

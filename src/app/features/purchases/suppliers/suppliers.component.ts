@@ -11,6 +11,7 @@ import { SupplierService } from '../../../core/services/supplier.service';
 import { Supplier } from '../../../core/models/purchase-order.model';
 import { SupplierRequest } from '../../../core/models/purchase-request.model';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { TableLoadingComponent } from '../../../shared/components/table-loading/table-loading.component';
 
 @Component({
   selector: 'app-suppliers',
@@ -20,7 +21,8 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
     PageHeaderComponent,
     MatTableModule,
     MatPaginatorModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TableLoadingComponent
   ],
   templateUrl: './suppliers.component.html',
   styleUrl: './suppliers.component.scss'

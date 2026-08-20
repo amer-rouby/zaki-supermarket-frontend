@@ -22,6 +22,7 @@ import { MaterialModule } from '../../../shared/material.module';
 import { RefundFormComponent } from '../refund-form/refund-form.component';
 import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -44,7 +45,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     MatSelectModule,
     MatTooltipModule,
     TranslateModule,
-    PageHeaderComponent
+    PageHeaderComponent,
+    EmptyStateComponent
   ],
   templateUrl: './payment-history.component.html',
   styleUrl: './payment-history.component.scss'

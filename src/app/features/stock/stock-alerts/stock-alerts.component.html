@@ -119,10 +119,7 @@
   </mat-card>
 
   @if (loading() && !getFilteredAlertsCount()) {
-  <div class="loading-state">
-    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
-    <p>{{'COMMON.LOADING' | translate}}</p>
-  </div>
+  <app-table-loading />
   }
 
   @if (getFilteredAlertsCount()) {
@@ -238,10 +235,6 @@
     </mat-paginator>
   </mat-card>
   } @else if (!loading()) {
-  <div class="empty-state">
-    <mat-icon class="empty-icon">notifications_none</mat-icon>
-    <h3>{{'STOCK_ALERTS.NO_ALERTS' | translate}}</h3>
-    <p>{{'STOCK_ALERTS.NO_ALERTS_DESC' | translate}}</p>
-  </div>
+  <app-empty-state icon="notifications_none" title="STOCK_ALERTS.NO_ALERTS" message="STOCK_ALERTS.NO_ALERTS_DESC" />
   }
 </div>

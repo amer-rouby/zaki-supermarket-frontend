@@ -12,6 +12,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
 import { Category, CategoryRequest } from '../../../core/models/category';
 import { CategoryDialogComponent } from '../category-dialog/category-dialog.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 const SEARCH_DEBOUNCE_MS = 350;
 
@@ -22,6 +23,7 @@ const SEARCH_DEBOUNCE_MS = 350;
     FormsModule,
     MaterialModule,
     PageHeaderComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './product-categories.component.html',
   styleUrl: './product-categories.component.scss'

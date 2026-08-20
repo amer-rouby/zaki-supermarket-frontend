@@ -25,10 +25,7 @@
 
       <!-- Loading State (first load only, no data on screen yet) -->
       @if (loading() && !sales().length) {
-      <div class="loading-state">
-        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-        <p>{{'COMMON.LOADING' | translate}}</p>
-      </div>
+      <app-table-loading />
       }
 
       @if (loading() && sales().length) {

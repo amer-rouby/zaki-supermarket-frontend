@@ -123,10 +123,7 @@
       </table>
 
       @if (!loading() && payments().length === 0) {
-      <div class="empty-state">
-        <mat-icon>receipt_long</mat-icon>
-        <p>{{'PAYMENTS.NO_PAYMENTS' | translate}}</p>
-      </div>
+      <app-empty-state icon="receipt_long" message="PAYMENTS.NO_PAYMENTS" />
       }
 
       <mat-paginator [length]="totalItems()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"

@@ -11,6 +11,7 @@ import { MaterialModule } from '../../material.module';
 })
 export class EmptyStateComponent {
   @Input() icon = 'inbox';
+  @Input() title = '';
   @Input() message = '';
   @Input() hint = '';
   @Input() actionLabel = '';

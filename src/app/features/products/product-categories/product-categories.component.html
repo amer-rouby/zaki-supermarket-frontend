@@ -134,12 +134,6 @@
 
   <!-- Empty State -->
   @if (!loading() && !categories().length) {
-  <div class="empty-state">
-    <mat-icon class="empty-icon">category</mat-icon>
-    <p>{{'CATEGORIES.NO_CATEGORIES' | translate}}</p>
-    <button mat-raised-button color="primary" (click)="onAdd()">
-      {{'CATEGORIES.ADD_FIRST' | translate}}
-    </button>
-  </div>
+  <app-empty-state icon="category" message="CATEGORIES.NO_CATEGORIES" actionLabel="CATEGORIES.ADD_FIRST" (action)="onAdd()" />
   }
 </div>

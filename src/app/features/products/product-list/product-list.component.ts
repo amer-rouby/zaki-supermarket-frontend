@@ -17,13 +17,14 @@ import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.se
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { ProductDetailsDialogComponent } from '../product-details-dialog/product-details-dialog.component';
 import { SearchableSelectComponent } from '../../../shared/components/searchable-select/searchable-select.component';
+import { TableLoadingComponent } from '../../../shared/components/table-loading/table-loading.component';
 
 const SEARCH_DEBOUNCE_MS = 350;
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [RouterLink, MaterialModule, FormsModule, PageHeaderComponent, SearchableSelectComponent],
+  imports: [RouterLink, MaterialModule, FormsModule, PageHeaderComponent, SearchableSelectComponent, TableLoadingComponent],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })

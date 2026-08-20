@@ -10,6 +10,8 @@ import { ShareDialogComponent } from '../../../shared/components/share-dialog/sh
 import { DemandPredictionService, DemandPrediction, PredictionStats, UpdatePredictionDTO } from '../../../core/services/demand-prediction.service';
 import { EditPredictionDialogComponent } from '../edit-prediction-dialog/edit-prediction-dialog.component';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { TableLoadingComponent } from '../../../shared/components/table-loading/table-loading.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-demand-predictions',
@@ -18,7 +20,9 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
     MaterialModule,
     PageHeaderComponent,
     MatPaginatorModule,
-    MatMenuModule
+    MatMenuModule,
+    TableLoadingComponent,
+    EmptyStateComponent
   ],
   templateUrl: './demand-predictions.component.html',
   styleUrl: './demand-predictions.component.scss'
