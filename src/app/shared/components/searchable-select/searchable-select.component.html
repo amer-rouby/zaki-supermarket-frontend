@@ -5,7 +5,7 @@
   @if (prefixIcon) {
   <mat-icon matPrefix>{{ prefixIcon }}</mat-icon>
   }
-  <input matInput
+  <input matInput #searchInput
     [(ngModel)]="searchText"
     (ngModelChange)="onSearchTextChange()"
     [matAutocomplete]="auto"
@@ -16,7 +16,13 @@
     <mat-option [value]="prependOption.value">{{ prependOption.label }}</mat-option>
     }
     @for (opt of filteredOptions; track valueFn(opt)) {
-    <mat-option [value]="valueFn(opt)">{{ labelFn(opt) }}</mat-option>
+    <mat-option [value]="valueFn(opt)">
+      @if (optionTemplate) {
+      <ng-container *ngTemplateOutlet="optionTemplate; context: { $implicit: opt }"></ng-container>
+      } @else {
+      {{ labelFn(opt) }}
+      }
+    </mat-option>
     }
     @if (filteredOptions.length === 0 && noResultsText) {
     <mat-option disabled>{{ noResultsText }}</mat-option>

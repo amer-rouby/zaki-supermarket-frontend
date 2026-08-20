@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ChangeDetectionStrategy, TemplateRef, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -51,9 +51,13 @@ export class SearchableSelectComponent<T = any> implements OnChanges {
   @Input() prefixIcon = '';
   @Input() emptyOptionsText = '';
   @Input() errorText = '';
+  @Input() optionTemplate?: TemplateRef<{ $implicit: T }>;
+  @Input() clearOnSelect = false;
 
   @Output() selected = new EventEmitter<T | any>();
   @Output() cleared = new EventEmitter<void>();
+
+  @ViewChild('searchInput') private searchInputRef?: ElementRef<HTMLInputElement>;
 
   searchText = '';
   filteredOptions: T[] = [];
@@ -87,16 +91,32 @@ export class SearchableSelectComponent<T = any> implements OnChanges {
     const selectedValue = event.option.value;
 
     if (this.prependOption && selectedValue === this.prependOption.value) {
-      this.searchText = '';
-      this.applyFilter();
+      this.resetToEmpty();
       this.selected.emit(selectedValue);
       return;
     }
 
     const item = this.options.find(o => this.valueFn(o) === selectedValue);
     if (item) {
-      this.searchText = this.labelFn(item);
+      if (this.clearOnSelect) {
+        this.resetToEmpty();
+      } else {
+        this.searchText = this.labelFn(item);
+      }
       this.selected.emit(item);
+    }
+  }
+
+  // mat-autocomplete (with no [displayWith]) writes the raw option value straight
+  // into the native input's DOM value after this handler runs. Since that bypasses
+  // Angular's own tracked value for [(ngModel)], setting searchText back to the
+  // same '' it logically already held doesn't trigger a DOM rewrite - so the native
+  // element is corrected directly here too, the same way Material corrupted it.
+  private resetToEmpty(): void {
+    this.searchText = '';
+    this.applyFilter();
+    if (this.searchInputRef) {
+      this.searchInputRef.nativeElement.value = '';
     }
   }
 

@@ -26,28 +26,30 @@
         </div>
 
         <div class="add-product-section">
-          <mat-form-field appearance="outline" class="product-select">
-            <mat-label>{{'PRODUCTS.SEARCH_PLACEHOLDER' | translate}}</mat-label>
-            <input matInput [formControl]="productControl" [matAutocomplete]="auto"
-              [placeholder]="'PRODUCTS.SEARCH_PLACEHOLDER' | translate">
-            <mat-icon matPrefix>search</mat-icon>
-            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayProduct"
-              (optionSelected)="onProductSelected($event.option.value)">
-              @for (product of currentFilteredProducts$ | async; track product.id) {
-              <mat-option [value]="product">
-                <div class="product-option">
-                  <span class="product-name">{{product.name}}</span>
-                  @if (product.sellPrice) {
-                  <span class="product-price">{{formatCurrency(product.sellPrice)}}</span>
-                  }
-                  @if (product.totalStock !== undefined) {
-                  <span class="product-stock">({{getStockLabel(product.totalStock)}})</span>
-                  }
-                </div>
-              </mat-option>
+          <app-searchable-select class="product-select"
+            [options]="products()"
+            [valueFn]="productValueFn"
+            [labelFn]="productLabelFn"
+            [searchFn]="productSearchFn"
+            [maxResults]="10"
+            [clearOnSelect]="true"
+            [optionTemplate]="productOptionTpl"
+            [label]="'PRODUCTS.SEARCH_PLACEHOLDER' | translate"
+            [placeholder]="'PRODUCTS.SEARCH_PLACEHOLDER' | translate"
+            prefixIcon="search"
+            (selected)="onProductSelected($event)">
+          </app-searchable-select>
+          <ng-template #productOptionTpl let-product>
+            <div class="product-option">
+              <span class="product-name">{{product.name}}</span>
+              @if (product.sellPrice) {
+              <span class="product-price">{{formatCurrency(product.sellPrice)}}</span>
               }
-            </mat-autocomplete>
-          </mat-form-field>
+              @if (product.totalStock !== undefined) {
+              <span class="product-stock">({{getStockLabel(product.totalStock)}})</span>
+              }
+            </div>
+          </ng-template>
         </div>
 
         <div class="cart-table-container">
