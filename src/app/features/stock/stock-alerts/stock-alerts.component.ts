@@ -1,6 +1,7 @@
-import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
+import { Subject, takeUntil } from 'rxjs';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { StockAlertService } from '../../../core/services/stock-alert.service';
@@ -9,6 +10,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 import { TableLoadingComponent } from '../../../shared/components/table-loading/table-loading.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { AlertStats, StockAlert } from '../../../core/models/stock-alert.model';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-stock-alerts', standalone: true,
@@ -17,12 +19,14 @@ import { AlertStats, StockAlert } from '../../../core/models/stock-alert.model';
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './stock-alerts.component.scss'
 })
-export class StockAlertsComponent implements OnInit {
+export class StockAlertsComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly translate = inject(TranslateService);
   private readonly stockAlertService = inject(StockAlertService);
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly destroy$ = new Subject<void>();
 
   readonly loading = signal(false);
   readonly alerts = signal<StockAlert[]>([]);
@@ -36,7 +40,24 @@ export class StockAlertsComponent implements OnInit {
   readonly displayedColumns = ['alertType', 'product', 'message', 'severity', 'status', 'createdAt', 'actions'];
   readonly filterForm: FormGroup = this.fb.group({ alertType: ['all'], status: ['all'] });
 
-  ngOnInit(): void { this.loadAlerts(); this.loadStats(); }
+  ngOnInit(): void {
+    this.loadAlerts();
+    this.loadStats();
+
+    this.notificationService.stockChanged$.pipe(takeUntil(this.destroy$)).subscribe((event) => {
+      this.alerts.update(alerts => alerts.map(a =>
+        a.productId === event.batch.productId
+          ? { ...a, currentStock: event.batch.quantityCurrent }
+          : a
+      ));
+      this.loadStats();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   loadAlerts(): void {
     this.loading.set(true);
