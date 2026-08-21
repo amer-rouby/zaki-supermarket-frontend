@@ -29,6 +29,9 @@ export interface SaleRequest {
   discountAmount?: number;
   paymentMethod?: string;
   customerPhone?: string;
+  // Set only when syncing a sale that was queued while offline - lets the
+  // server recognize a retried sync as the same sale instead of duplicating it.
+  clientReferenceId?: string;
 }
 
 export interface SaleItemRequest {

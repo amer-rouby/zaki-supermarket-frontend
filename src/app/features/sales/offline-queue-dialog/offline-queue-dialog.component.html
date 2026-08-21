@@ -1,0 +1,53 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2>{{'SALES.OFFLINE_QUEUE.TITLE' | translate}}</h2>
+    <button mat-icon-button (click)="onClose()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-content">
+    @if (offlineQueueService.queue().length === 0) {
+    <div class="empty-state">
+      <mat-icon>cloud_done</mat-icon>
+      <p>{{'SALES.OFFLINE_QUEUE.EMPTY' | translate}}</p>
+    </div>
+    } @else {
+    <div class="queue-list">
+      @for (entry of offlineQueueService.queue(); track entry.clientReferenceId) {
+      <div class="queue-item" [class.conflict]="entry.status === 'CONFLICT'">
+        <div class="queue-item-main">
+          <div class="queue-item-info">
+            <span class="items-count">{{'SALES.OFFLINE_QUEUE.ITEMS_COUNT' | translate:{count: entry.request.items.length} }}</span>
+            <span class="queued-at">{{formatDate(entry.queuedAt)}}</span>
+          </div>
+          <span class="total-amount">{{formatCurrency(itemTotal(entry))}}</span>
+          @if (entry.status === 'CONFLICT') {
+          <mat-chip color="warn" highlighted>{{'SALES.OFFLINE_QUEUE.CONFLICT' | translate}}</mat-chip>
+          } @else {
+          <mat-chip color="accent" highlighted>{{'SALES.OFFLINE_QUEUE.QUEUED' | translate}}</mat-chip>
+          }
+        </div>
+        @if (entry.status === 'CONFLICT') {
+        <div class="conflict-details">
+          <p class="conflict-message">{{entry.errorMessage}}</p>
+          <button mat-stroked-button color="warn" (click)="discard(entry.clientReferenceId)">
+            <mat-icon>delete</mat-icon>
+            {{'SALES.OFFLINE_QUEUE.DISCARD' | translate}}
+          </button>
+        </div>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+
+  <div class="dialog-actions">
+    <button mat-button (click)="onClose()">{{'COMMON.CLOSE' | translate}}</button>
+    <button mat-raised-button color="primary" [disabled]="!isOnline()" (click)="syncNow()">
+      <mat-icon>sync</mat-icon>
+      {{'SALES.OFFLINE_QUEUE.SYNC_NOW' | translate}}
+    </button>
+  </div>
+</div>

@@ -3,6 +3,23 @@
     icon="point_of_sale">
   </app-page-header>
 
+  @if (offlineModeEnabled()) {
+  <div class="offline-status-bar">
+    @if (!isOnline()) {
+    <mat-chip color="warn" highlighted>
+      <mat-icon matChipAvatar>cloud_off</mat-icon>
+      {{'SALES.OFFLINE_MODE' | translate}}
+    </mat-chip>
+    }
+    @if (offlineQueueCount() > 0) {
+    <button mat-stroked-button (click)="openOfflineQueue()">
+      <mat-icon>cloud_queue</mat-icon>
+      {{'SALES.OFFLINE_QUEUE.BADGE' | translate:{count: offlineQueueCount()} }}
+    </button>
+    }
+  </div>
+  }
+
   <div class="sales-content">
 
     <mat-card class="products-card">
