@@ -94,7 +94,8 @@ export class SidebarComponent {
         { icon: 'trending_up', label: 'NAV.REPORTS_SALES', route: '/reports/sales' },
         { icon: 'pie_chart', label: 'NAV.REPORTS_STOCK', route: '/reports/stock' },
         { icon: 'account_balance', label: 'NAV.REPORTS_FINANCIAL', route: '/reports/financial' },
-        { icon: 'event_busy', label: 'NAV.REPORTS_EXPIRY', route: '/reports/expiry' }
+        { icon: 'event_busy', label: 'NAV.REPORTS_EXPIRY', route: '/reports/expiry' },
+        { icon: 'gpp_maybe', label: 'NAV.REPORTS_ANOMALIES', route: '/reports/anomalies' }
       ],
       roles: ['ADMIN', 'MANAGER']
     },
