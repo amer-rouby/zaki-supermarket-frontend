@@ -134,7 +134,7 @@
               @if (prediction.riskLevel) {
               <div class="trend-badge" [style.background]="getRiskColor(prediction.riskLevel)">
                 <span>{{'PREDICTIONS.RISK.' + prediction.riskLevel | translate}}</span>
-                @if (prediction.daysUntilStockout !== null) {
+                @if (prediction.daysUntilStockout != null) {
                 <span>&nbsp;· {{prediction.daysUntilStockout}} {{'PREDICTIONS.DAYS_LEFT' | translate}}</span>
                 }
               </div>
