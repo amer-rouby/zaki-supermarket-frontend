@@ -125,6 +125,68 @@
       </mat-card-content>
     </mat-card>
 
+    <!-- Zaki Insights -->
+    @if (insights()) {
+    <mat-card class="zaki-insights-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>auto_awesome</mat-icon>
+          {{'DASHBOARD.ZAKI_INSIGHTS.TITLE' | translate}}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="zaki-insights-grid">
+          <div class="zaki-insight-item">
+            <mat-icon [style.color]="(insights()!.salesDeltaPercent ?? 0) >= 0 ? '#10b981' : '#ef4444'">
+              {{(insights()!.salesDeltaPercent ?? 0) >= 0 ? 'trending_up' : 'trending_down'}}
+            </mat-icon>
+            <div class="zaki-insight-info">
+              <h4>
+                {{formatCurrency(insights()!.todayRevenue)}}
+                @if (insights()!.salesDeltaPercent !== null) {
+                <small [class.positive]="insights()!.salesDeltaPercent! >= 0" [class.negative]="insights()!.salesDeltaPercent! < 0">
+                  ({{insights()!.salesDeltaPercent! >= 0 ? '+' : ''}}{{insights()!.salesDeltaPercent! | number:'1.0-1'}}%)
+                </small>
+                }
+              </h4>
+              <p>{{'DASHBOARD.ZAKI_INSIGHTS.SALES_VS_AVERAGE' | translate}}</p>
+            </div>
+          </div>
+
+          @if (insights()!.highRiskStockoutCount !== null) {
+          <div class="zaki-insight-item">
+            <mat-icon style="color: #ef4444">psychology</mat-icon>
+            <div class="zaki-insight-info">
+              <h4>{{insights()!.highRiskStockoutCount}}</h4>
+              <p>{{'DASHBOARD.ZAKI_INSIGHTS.HIGH_RISK_STOCKOUT' | translate}}</p>
+            </div>
+          </div>
+          }
+
+          @if (insights()!.reorderRecommendationsCount !== null) {
+          <div class="zaki-insight-item">
+            <mat-icon style="color: #f59e0b">add_shopping_cart</mat-icon>
+            <div class="zaki-insight-info">
+              <h4>{{insights()!.reorderRecommendationsCount}}</h4>
+              <p>{{'DASHBOARD.ZAKI_INSIGHTS.REORDER_RECOMMENDATIONS' | translate}}</p>
+            </div>
+          </div>
+          }
+
+          @if (insights()!.pricingRecommendationsCount !== null) {
+          <div class="zaki-insight-item">
+            <mat-icon style="color: #8b5cf6">sell</mat-icon>
+            <div class="zaki-insight-info">
+              <h4>{{insights()!.pricingRecommendationsCount}}</h4>
+              <p>{{'DASHBOARD.ZAKI_INSIGHTS.PRICING_RECOMMENDATIONS' | translate}}</p>
+            </div>
+          </div>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+    }
+
     <!-- Tables Grid -->
     <div class="tables-grid">
 

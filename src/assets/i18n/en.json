@@ -91,6 +91,13 @@
     "TOP_PRODUCTS": "Best Selling Products",
     "RECENT_SALES": "Recent Sales",
     "VIEW_ALL": "View All",
+    "ZAKI_INSIGHTS": {
+      "TITLE": "Zaki Insights",
+      "SALES_VS_AVERAGE": "Today's sales vs 30-day average",
+      "HIGH_RISK_STOCKOUT": "Products at high stockout risk",
+      "REORDER_RECOMMENDATIONS": "Recommended reorders",
+      "PRICING_RECOMMENDATIONS": "Pricing recommendations"
+    },
     "NO_DATA": "No data available",
     "ALERTS": "Alerts",
     "EXPIRING_SOON": "Expiring Soon",
