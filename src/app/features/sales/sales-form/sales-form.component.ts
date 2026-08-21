@@ -1,6 +1,7 @@
-import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -19,6 +20,8 @@ import { StoreSettingsService } from '../../../core/services/settings/store-sett
 import { CustomerService } from '../../../core/services/customer.service';
 import { Customer } from '../../../core/models/customer.model';
 import { ZakiFeatureSettingsService } from '../../../core/services/settings/zaki-feature-settings.service';
+import { OfflineSalesQueueService } from '../../../core/services/offline-sales-queue.service';
+import { OfflineQueueDialogComponent } from '../offline-queue-dialog/offline-queue-dialog.component';
 
 interface CartItem {
   product: Product;
@@ -39,6 +42,7 @@ interface SaleRequest {
   customerPhone: string;
   customerId: number | null;
   totalAmount: number;
+  clientReferenceId?: string;
 }
 
 @Component({
@@ -49,7 +53,7 @@ interface SaleRequest {
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './sales-form.component.scss'
 })
-export class SalesFormComponent implements OnInit, AfterViewInit {
+export class SalesFormComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly productService = inject(ProductService);
   private readonly salesService = inject(SalesService);
   private readonly paymentService = inject(PaymentService);
@@ -62,6 +66,14 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly customerService = inject(CustomerService);
   private readonly zakiFeatureSettingsService = inject(ZakiFeatureSettingsService);
+  private readonly offlineQueueService = inject(OfflineSalesQueueService);
+  private readonly dialog = inject(MatDialog);
+
+  readonly offlineModeEnabled = computed(() => this.zakiFeatureSettingsService.flags().offlineModeEnabled);
+  readonly isOnline = signal(navigator.onLine);
+  readonly offlineQueueCount = computed(() => this.offlineQueueService.queue().length);
+  private readonly onlineListener = () => this.isOnline.set(true);
+  private readonly offlineListener = () => this.isOnline.set(false);
 
   @ViewChild('barcodeInput') barcodeInputRef?: ElementRef<HTMLInputElement>;
   @ViewChild('productSearchable') productSearchableRef?: SearchableSelectComponent<Product>;
@@ -134,6 +146,21 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     if (this.customerCreditEnabled()) {
       this.loadCustomers();
     }
+    window.addEventListener('online', this.onlineListener);
+    window.addEventListener('offline', this.offlineListener);
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('online', this.onlineListener);
+    window.removeEventListener('offline', this.offlineListener);
+  }
+
+  openOfflineQueue(): void {
+    this.dialog.open(OfflineQueueDialogComponent, {
+      width: '480px',
+      maxWidth: 'calc(100vw - 32px)',
+      maxHeight: 'calc(100vh - 48px)'
+    });
   }
 
   private loadCustomers(): void {
@@ -300,8 +327,23 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   async onSubmit(): Promise<void> {
     if (!this.validateSale()) return;
 
+    // Offline sales can't reach a payment gateway or get a real-time credit
+    // check, so only CASH is queueable - the cashier is told to switch
+    // methods rather than the app silently queuing something it can't honor.
+    const offline = this.offlineModeEnabled() && !this.isOnline();
+    if (offline && this.paymentMethod() !== PaymentMethod.CASH) {
+      this.errorHandler.showWarning('SALES.OFFLINE_CASH_ONLY');
+      return;
+    }
+
     this.loading.set(true);
     const saleRequest = this.mapCartToSaleRequest();
+
+    if (offline) {
+      await this.queueSaleOffline(saleRequest);
+      this.loading.set(false);
+      return;
+    }
 
     try {
       // CREDIT is a deferred-payment method, not a gateway one - it's settled
@@ -323,11 +365,33 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
       const saleResponse = await this.createSale(saleRequest);
       this.handleSaleSuccess(saleResponse);
     } catch (error: any) {
-      console.error('Sale submission error:', error);
-      this.errorHandler.showError(error.message || 'SALES.CREATE_ERROR');
+      if (this.offlineModeEnabled() && error?.status === 0 && this.paymentMethod() === PaymentMethod.CASH) {
+        // Network dropped between clicking submit and the response coming
+        // back - queue it instead of losing a sale the cashier already rang up.
+        await this.queueSaleOffline(saleRequest);
+      } else {
+        console.error('Sale submission error:', error);
+        this.errorHandler.showError(error.message || 'SALES.CREATE_ERROR');
+      }
     } finally {
       this.loading.set(false);
     }
+  }
+
+  private async queueSaleOffline(saleRequest: SaleRequest): Promise<void> {
+    await this.offlineQueueService.enqueue(saleRequest);
+    await this.handleQueuedSuccess();
+  }
+
+  private async handleQueuedSuccess(): Promise<void> {
+    await Swal.fire({
+      icon: 'info',
+      title: this.translate.instant('SALES.QUEUED_TITLE'),
+      text: this.translate.instant('SALES.QUEUED_MESSAGE'),
+      confirmButtonText: this.translate.instant('COMMON.CONTINUE'),
+      confirmButtonColor: '#667eea'
+    });
+    this.finalizeSale();
   }
 
   private async handlePendingPayment(paymentResponse: PaymentResponse): Promise<void> {

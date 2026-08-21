@@ -3,11 +3,13 @@ import {
   ApplicationConfig,
   provideZoneChangeDetection,
   provideAppInitializer,
+  isDevMode,
   inject
 } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withInterceptors, HttpClient, withXhr } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideServiceWorker } from '@angular/service-worker';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { TranslateLoader, TranslateService, provideTranslateService } from '@ngx-translate/core';
 import { Observable, firstValueFrom } from 'rxjs';
@@ -72,6 +74,10 @@ export const appConfig: ApplicationConfig = {
         formFieldAppearance: 'outline'
       }
     },
-    { provide: MatPaginatorIntl, useClass: AppPaginatorIntl }
+    { provide: MatPaginatorIntl, useClass: AppPaginatorIntl },
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ]
 };

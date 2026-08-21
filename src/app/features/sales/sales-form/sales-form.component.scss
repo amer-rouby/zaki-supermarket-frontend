@@ -1,3 +1,10 @@
+.offline-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
 .sales-form-container {
   padding: 24px;
   direction: inherit;

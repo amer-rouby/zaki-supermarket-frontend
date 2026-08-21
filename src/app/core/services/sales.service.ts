@@ -159,7 +159,14 @@ export class SalesService {
     return this.http.post<ApiResponse<SaleResponse>>(`${this.baseUrl}/sales?storeId=${storeId}`, { ...request, storeId })
       .pipe(
         map(response => response.data),
-        catchError(error => throwError(() => new Error(error?.error?.message || 'Failed to create sale')))
+        catchError(error => {
+          // Preserve the HTTP status (0 = no response reached the server at
+          // all, e.g. offline) so callers can tell a network failure apart
+          // from a real server-side rejection.
+          const wrapped: Error & { status?: number } = new Error(error?.error?.message || 'Failed to create sale');
+          wrapped.status = error?.status;
+          return throwError(() => wrapped);
+        })
       );
   }
 

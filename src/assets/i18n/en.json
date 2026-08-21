@@ -355,6 +355,20 @@
     "COPY_SUCCESS": "Copied successfully!",
     "CREATE_SUCCESS": "Sale created successfully",
     "CREATE_ERROR": "Failed to create sale",
+    "OFFLINE_MODE": "Offline - sales will be queued",
+    "OFFLINE_CASH_ONLY": "Only cash sales can be made while offline",
+    "QUEUED_TITLE": "Sale Queued",
+    "QUEUED_MESSAGE": "No internet connection - this sale has been saved and will sync automatically once you're back online.",
+    "OFFLINE_QUEUE": {
+      "TITLE": "Offline Sales Queue",
+      "EMPTY": "No queued sales",
+      "ITEMS_COUNT": "{{count}} item(s)",
+      "QUEUED": "Queued",
+      "CONFLICT": "Conflict",
+      "DISCARD": "Discard",
+      "SYNC_NOW": "Sync Now",
+      "BADGE": "{{count}} queued"
+    },
     "TOTAL_AMOUNT": "Invoice Total",
     "PAYMENT_METHODS": "Payment Method",
     "PAYMENT_METHOD": {
