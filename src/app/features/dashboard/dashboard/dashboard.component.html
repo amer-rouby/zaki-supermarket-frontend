@@ -121,6 +121,12 @@
             <mat-icon>receipt_long</mat-icon>
             <span>{{'DASHBOARD.SALES_HISTORY' | translate}}</span>
           </button>
+          @if (dailyBriefEnabled()) {
+          <button type="button" (click)="openDailyBrief()" class="action-btn">
+            <mat-icon>auto_awesome</mat-icon>
+            <span>{{'DASHBOARD.DAILY_BRIEF.TITLE' | translate}}</span>
+          </button>
+          }
         </div>
       </mat-card-content>
     </mat-card>
@@ -143,7 +149,7 @@
             <div class="zaki-insight-info">
               <h4>
                 {{formatCurrency(insights()!.todayRevenue)}}
-                @if (insights()!.salesDeltaPercent !== null) {
+                @if (insights()!.salesDeltaPercent != null) {
                 <small [class.positive]="insights()!.salesDeltaPercent! >= 0" [class.negative]="insights()!.salesDeltaPercent! < 0">
                   ({{insights()!.salesDeltaPercent! >= 0 ? '+' : ''}}{{insights()!.salesDeltaPercent! | number:'1.0-1'}}%)
                 </small>
@@ -153,7 +159,7 @@
             </div>
           </div>
 
-          @if (insights()!.highRiskStockoutCount !== null) {
+          @if (insights()!.highRiskStockoutCount != null) {
           <div class="zaki-insight-item">
             <mat-icon style="color: #ef4444">psychology</mat-icon>
             <div class="zaki-insight-info">
@@ -163,7 +169,7 @@
           </div>
           }
 
-          @if (insights()!.reorderRecommendationsCount !== null) {
+          @if (insights()!.reorderRecommendationsCount != null) {
           <div class="zaki-insight-item">
             <mat-icon style="color: #f59e0b">add_shopping_cart</mat-icon>
             <div class="zaki-insight-info">
@@ -173,7 +179,7 @@
           </div>
           }
 
-          @if (insights()!.pricingRecommendationsCount !== null) {
+          @if (insights()!.pricingRecommendationsCount != null) {
           <div class="zaki-insight-item">
             <mat-icon style="color: #8b5cf6">sell</mat-icon>
             <div class="zaki-insight-info">

@@ -1,0 +1,47 @@
+.daily-brief-dialog {
+  min-width: 340px;
+
+  h2[mat-dialog-title] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+}
+
+.brief-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 8px;
+}
+
+.brief-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  mat-icon {
+    flex-shrink: 0;
+  }
+
+  .brief-label {
+    flex: 1;
+    color: var(--color-text-secondary, #64748b);
+    font-size: 14px;
+  }
+
+  .brief-value {
+    font-weight: 700;
+    color: var(--color-text-primary, #1e293b);
+    white-space: nowrap;
+
+    small {
+      font-weight: 700;
+      margin-inline-start: 4px;
+
+      &.positive { color: var(--color-success, #10b981); }
+      &.negative { color: var(--color-error, #ef4444); }
+    }
+  }
+}

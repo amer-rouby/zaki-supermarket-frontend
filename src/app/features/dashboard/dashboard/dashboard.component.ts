@@ -1,6 +1,7 @@
 import { Component, inject, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
@@ -11,6 +12,8 @@ import { DashboardService } from '../../../core/services/dashboard.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { DashboardStats, ZakiInsights } from '../../../core/models/dashboard.model';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { ZakiFeatureSettingsService } from '../../../core/services/settings/zaki-feature-settings.service';
+import { DailyBriefDialogComponent } from '../daily-brief-dialog/daily-brief-dialog.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -32,7 +35,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly languageService = inject(LanguageService);
   private readonly router = inject(Router);
   private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly dialog = inject(MatDialog);
+  private readonly zakiFeatureSettingsService = inject(ZakiFeatureSettingsService);
   private readonly destroy$ = new Subject<void>();
+
+  readonly dailyBriefEnabled = computed(() => this.zakiFeatureSettingsService.flags().dailyBriefEnabled);
 
   readonly stats = signal<DashboardStats | null>(null);
   readonly loading = signal(true);
@@ -134,5 +141,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   viewAllSales(): void {
     this.router.navigate(['/sales/history']);
+  }
+
+  openDailyBrief(): void {
+    this.dialog.open(DailyBriefDialogComponent, {
+      width: '420px',
+      data: { stats: this.stats(), insights: this.insights() }
+    });
   }
 }
