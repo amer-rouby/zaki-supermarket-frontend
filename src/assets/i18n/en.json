@@ -323,6 +323,7 @@
     "SUCCESS_TITLE": "Sale completed successfully",
     "INSUFFICIENT_STOCK": "Product not available in stock",
     "SCAN_BARCODE": "Scan Barcode",
+    "VOICE_SEARCH": "Search by voice",
     "SCAN_BARCODE_HINT": "Use a barcode scanner or type the code and press Enter",
     "BARCODE_NOT_FOUND": "No product found with barcode: {{code}}",
     "NO_PRICE": "Product \"{{name}}\" has no price!",

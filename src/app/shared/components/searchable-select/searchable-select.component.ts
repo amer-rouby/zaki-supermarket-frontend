@@ -126,6 +126,16 @@ export class SearchableSelectComponent<T = any> implements OnChanges {
     this.cleared.emit();
   }
 
+  // Lets an external input source (e.g. voice search) drive the same
+  // search-text + filter pipeline as typing, without duplicating it.
+  setQuery(text: string): void {
+    this.searchText = text;
+    this.applyFilter();
+    if (this.searchInputRef) {
+      this.searchInputRef.nativeElement.value = text;
+    }
+  }
+
   private applyFilter(): void {
     const query = String(this.searchText ?? '').trim().toLowerCase();
     let opts = this.options;
