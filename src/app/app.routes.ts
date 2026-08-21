@@ -110,6 +110,14 @@ export const routes: Routes = [
         data: { roles: ['ADMIN', 'PHARMACIST', 'MANAGER'] }
       },
       {
+        path: 'customers',
+        loadChildren: () =>
+          import('./features/customers/customers.routes')
+            .then(m => m.CUSTOMERS_ROUTES),
+        canActivate: [roleGuard],
+        data: { roles: ['ADMIN', 'PHARMACIST', 'MANAGER'] }
+      },
+      {
         path: '**',
         redirectTo: 'dashboard'
       }

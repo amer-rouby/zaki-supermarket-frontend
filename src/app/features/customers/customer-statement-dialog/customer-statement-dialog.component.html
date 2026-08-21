@@ -1,0 +1,95 @@
+<div class="statement-dialog">
+  <div class="dialog-header">
+    <h2>{{'CUSTOMERS.STATEMENT_TITLE' | translate}}</h2>
+    <button mat-icon-button (click)="onClose()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  @if (loading()) {
+  <div class="loading-state">
+    <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+  </div>
+  } @else if (statement()) {
+
+  <div class="customer-summary">
+    <h3>{{statement()!.customer.name}}</h3>
+    @if (statement()!.customer.phone) {
+    <p class="muted">{{statement()!.customer.phone}}</p>
+    }
+    <div class="summary-grid">
+      <div class="summary-item">
+        <span class="label">{{'CUSTOMERS.COLUMN.CREDIT_LIMIT' | translate}}</span>
+        <span class="value">{{statement()!.customer.creditLimit | number:'1.2-2'}}</span>
+      </div>
+      <div class="summary-item">
+        <span class="label">{{'CUSTOMERS.COLUMN.BALANCE' | translate}}</span>
+        <span class="value" [style.color]="statement()!.customer.currentBalance > 0 ? '#ef4444' : '#10b981'">
+          {{statement()!.customer.currentBalance | number:'1.2-2'}}
+        </span>
+      </div>
+      <div class="summary-item">
+        <span class="label">{{'CUSTOMERS.AVAILABLE_CREDIT' | translate}}</span>
+        <span class="value">{{statement()!.customer.availableCredit | number:'1.2-2'}}</span>
+      </div>
+    </div>
+
+    @if (statement()!.customer.currentBalance > 0) {
+    <button mat-raised-button color="primary" (click)="onTogglePaymentForm()" class="record-payment-btn">
+      <mat-icon>payments</mat-icon>
+      <span>{{'CUSTOMERS.RECORD_PAYMENT' | translate}}</span>
+    </button>
+    }
+
+    @if (showPaymentForm()) {
+    <div class="payment-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'CUSTOMERS.PAYMENT_AMOUNT' | translate}}</mat-label>
+        <input matInput type="number" min="0.01" [max]="statement()!.customer.currentBalance" [(ngModel)]="paymentAmount">
+      </mat-form-field>
+      <div class="form-actions">
+        <button mat-button (click)="onTogglePaymentForm()">{{'COMMON.CANCEL' | translate}}</button>
+        <button mat-raised-button color="primary" [disabled]="submittingPayment()" (click)="onSubmitPayment()">
+          @if (submittingPayment()) {
+          <mat-spinner diameter="18"></mat-spinner>
+          } @else {
+          <span>{{'COMMON.SAVE' | translate}}</span>
+          }
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+
+  <div class="timeline">
+    @if (statement()!.transactions.length) {
+    @for (txn of statement()!.transactions; track txn.id) {
+    <div class="timeline-item">
+      <mat-icon [style.color]="getTransactionColor(txn.type)">{{getTransactionIcon(txn.type)}}</mat-icon>
+      <div class="timeline-content">
+        <div class="timeline-row">
+          <strong>{{'CUSTOMERS.TXN_TYPE.' + txn.type | translate}}</strong>
+          <span class="amount" [style.color]="getTransactionColor(txn.type)">
+            {{txn.type === 'CREDIT_SALE' ? '+' : '-'}}{{txn.amount | number:'1.2-2'}}
+          </span>
+        </div>
+        <div class="timeline-row muted">
+          <span>{{'CUSTOMERS.BALANCE_AFTER' | translate}}: {{txn.balanceAfter | number:'1.2-2'}}</span>
+          <span>{{formatDate(txn.createdAt)}}</span>
+        </div>
+        @if (txn.createdByName) {
+        <small class="muted">{{txn.createdByName}}</small>
+        }
+      </div>
+    </div>
+    }
+    } @else {
+    <div class="empty-state">
+      <mat-icon>receipt_long</mat-icon>
+      <p>{{'CUSTOMERS.NO_TRANSACTIONS' | translate}}</p>
+    </div>
+    }
+  </div>
+
+  }
+</div>

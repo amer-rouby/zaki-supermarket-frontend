@@ -65,7 +65,8 @@ export enum PaymentMethod {
   INSTAPAY = 'INSTAPAY',
   FAWRY = 'FAWRY',
   WALLET = 'WALLET',
-  BANK_TRANSFER = 'BANK_TRANSFER'
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  CREDIT = 'CREDIT'
 }
 
 export enum PaymentStatus {

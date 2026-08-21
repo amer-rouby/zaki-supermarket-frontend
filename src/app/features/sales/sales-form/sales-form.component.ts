@@ -16,6 +16,9 @@ import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { StoreSettingsService } from '../../../core/services/settings/store-settings.service';
+import { CustomerService } from '../../../core/services/customer.service';
+import { Customer } from '../../../core/models/customer.model';
+import { ZakiFeatureSettingsService } from '../../../core/services/settings/zaki-feature-settings.service';
 
 interface CartItem {
   product: Product;
@@ -34,6 +37,7 @@ interface SaleRequest {
   discountAmount: number;
   paymentMethod: string;
   customerPhone: string;
+  customerId: number | null;
   totalAmount: number;
 }
 
@@ -56,6 +60,8 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   private readonly storeSettingsService = inject(StoreSettingsService);
   private readonly authService = inject(AuthService);
   private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly customerService = inject(CustomerService);
+  private readonly zakiFeatureSettingsService = inject(ZakiFeatureSettingsService);
 
   @ViewChild('barcodeInput') barcodeInputRef?: ElementRef<HTMLInputElement>;
   @ViewChild('productSearchable') productSearchableRef?: SearchableSelectComponent<Product>;
@@ -73,6 +79,15 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   readonly discount = signal(0);
   readonly loading = signal(false);
 
+  readonly customerCreditEnabled = computed(() => this.zakiFeatureSettingsService.flags().customerCreditEnabled);
+  readonly isCreditSale = computed(() => this.paymentMethod() === PaymentMethod.CREDIT);
+  readonly customers = signal<Customer[]>([]);
+  readonly selectedCustomer = signal<Customer | null>(null);
+  readonly customerValueFn = (c: Customer) => c.id;
+  readonly customerLabelFn = (c: Customer) => c.name + (c.phone ? ' - ' + c.phone : '');
+  readonly customerSearchFn = (c: Customer, q: string) =>
+    c.name.toLowerCase().includes(q) || !!c.phone?.toLowerCase().includes(q);
+
   readonly productValueFn = (p: Product) => p.id;
   readonly productLabelFn = (p: Product) => p.name;
   readonly productSearchFn = (p: Product, q: string) =>
@@ -89,6 +104,7 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   readonly isCartEmpty = computed(() => this.cartItems().length === 0);
   readonly isSubmitDisabled = computed(() =>
     this.loading() || this.isCartEmpty() || this.totalAmount() <= 0
+    || (this.isCreditSale() && !this.selectedCustomer())
   );
 
   readonly PaymentMethod = PaymentMethod;
@@ -98,18 +114,36 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     { value: PaymentMethod.INSTAPAY, label: 'SALES.INSTAPAY', icon: 'account_balance' },
     { value: PaymentMethod.FAWRY, label: 'SALES.FAWRY', icon: 'store' },
     { value: PaymentMethod.WALLET, label: 'SALES.WALLET', icon: 'account_balance_wallet' },
-    { value: PaymentMethod.BANK_TRANSFER, label: 'SALES.BANK_TRANSFER', icon: 'transfer_within_a_station' }
+    { value: PaymentMethod.BANK_TRANSFER, label: 'SALES.BANK_TRANSFER', icon: 'transfer_within_a_station' },
+    { value: PaymentMethod.CREDIT, label: 'SALES.CREDIT', icon: 'account_balance_wallet' }
   ];
 
   private readonly enabledPaymentMethodCodes = signal<Set<string>>(new Set(Object.values(PaymentMethod)));
+  // CREDIT isn't a payment-gateway method, so it doesn't belong to the store's
+  // enabledPaymentMethods CSV - it's gated purely by the Zaki feature flag.
   readonly paymentMethods = computed(() =>
-    this.allPaymentMethodOptions.filter(m => this.enabledPaymentMethodCodes().has(m.value))
+    this.allPaymentMethodOptions.filter(m =>
+      m.value === PaymentMethod.CREDIT ? this.customerCreditEnabled() : this.enabledPaymentMethodCodes().has(m.value)
+    )
   );
 
   ngOnInit(): void {
     this.loadProducts();
     this.loadEnabledPaymentMethods();
     this.voiceSearchSupported.set(!!this.getSpeechRecognitionCtor());
+    if (this.customerCreditEnabled()) {
+      this.loadCustomers();
+    }
+  }
+
+  private loadCustomers(): void {
+    this.customerService.getAllCustomers().subscribe({
+      next: (customers) => this.customers.set(customers)
+    });
+  }
+
+  onCustomerSelected(customer: Customer): void {
+    this.selectedCustomer.set(customer);
   }
 
   private getSpeechRecognitionCtor(): any {
@@ -260,6 +294,7 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     this.cartItems.set([]);
     this.discount.set(0);
     this.customerPhone.set('');
+    this.selectedCustomer.set(null);
   }
 
   async onSubmit(): Promise<void> {
@@ -269,7 +304,9 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     const saleRequest = this.mapCartToSaleRequest();
 
     try {
-      if (this.paymentMethod() !== PaymentMethod.CASH) {
+      // CREDIT is a deferred-payment method, not a gateway one - it's settled
+      // against the customer's account server-side, same as CASH needs no gateway.
+      if (this.paymentMethod() !== PaymentMethod.CASH && this.paymentMethod() !== PaymentMethod.CREDIT) {
         const paymentResponse = await this.processPayment(saleRequest.totalAmount);
 
         if (paymentResponse.status === 'FAILED') {
@@ -340,6 +377,10 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
       this.errorHandler.showWarning('SALES.INVALID_TOTAL');
       return false;
     }
+    if (this.isCreditSale() && !this.selectedCustomer()) {
+      this.errorHandler.showWarning('SALES.CREDIT_CUSTOMER_REQUIRED');
+      return false;
+    }
     return true;
   }
 
@@ -354,6 +395,7 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
       discountAmount: this.discount(),
       paymentMethod: this.paymentMethod(),
       customerPhone: this.customerPhone(),
+      customerId: this.isCreditSale() ? (this.selectedCustomer()?.id ?? null) : null,
       totalAmount: this.subtotal()
     };
   }

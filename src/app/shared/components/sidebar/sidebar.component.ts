@@ -88,6 +88,12 @@ export class SidebarComponent {
       roles: ['ADMIN', 'PHARMACIST', 'MANAGER']
     },
     {
+      icon: 'people',
+      label: 'NAV.CUSTOMERS',
+      route: '/customers',
+      roles: ['ADMIN', 'PHARMACIST', 'MANAGER']
+    },
+    {
       icon: 'assessment',
       label: 'NAV.REPORTS',
       children: [
