@@ -70,6 +70,23 @@
   }
 }
 
+.einvoice-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  button {
+    line-height: 28px;
+  }
+}
+
+.einvoice-error {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-error-600, #dc2626);
+}
+
 .dialog-content {
   flex: 1;
   overflow-y: auto;

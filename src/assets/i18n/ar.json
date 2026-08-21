@@ -1237,6 +1237,16 @@
     "PLACEHOLDER": "اكتب سؤالك...",
     "ERROR": "حدث خطأ ما. حاول مرة أخرى."
   },
+  "EINVOICE": {
+    "STATUS": "الفاتورة الإلكترونية (ETA)",
+    "STATUS_PENDING": "قيد الانتظار",
+    "STATUS_SUBMITTED": "تم الإرسال",
+    "STATUS_ACCEPTED": "مقبولة",
+    "STATUS_REJECTED": "مرفوضة",
+    "STATUS_ERROR": "خطأ",
+    "SUBMIT": "إرسال إلى ETA",
+    "RETRY": "إعادة المحاولة"
+  },
   "ANOMALIES": {
     "TITLE": "نشاط غير معتاد",
     "SUBTITLE": "أنماط تستحق المراجعة - ده مش اتهام، بس تنبيه",

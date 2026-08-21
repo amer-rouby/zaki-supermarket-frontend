@@ -54,6 +54,32 @@
         <span class="value">{{data.sale.customerPhone}}</span>
       </div>
       }
+      @if (eInvoiceEnabled()) {
+      <div class="info-item no-print">
+        <span class="label">{{'EINVOICE.STATUS' | translate}}</span>
+        <span class="value einvoice-status">
+          @if (eInvoiceSubmission()) {
+          <mat-chip [color]="getEInvoiceStatusColor(eInvoiceSubmission()!.status)" highlighted>
+            {{'EINVOICE.STATUS_' + eInvoiceSubmission()!.status | translate}}
+          </mat-chip>
+          @if (eInvoiceSubmission()!.errorMessage) {
+          <span class="einvoice-error">{{eInvoiceSubmission()!.errorMessage}}</span>
+          }
+          @if (eInvoiceSubmission()!.status === 'ERROR' || eInvoiceSubmission()!.status === 'REJECTED') {
+          <button mat-stroked-button color="primary" [disabled]="eInvoiceLoading()" (click)="retryEInvoice()">
+            <mat-icon>refresh</mat-icon>
+            {{'EINVOICE.RETRY' | translate}}
+          </button>
+          }
+          } @else {
+          <button mat-stroked-button color="primary" [disabled]="eInvoiceLoading()" (click)="submitEInvoice()">
+            <mat-icon>upload</mat-icon>
+            {{'EINVOICE.SUBMIT' | translate}}
+          </button>
+          }
+        </span>
+      </div>
+      }
     </div>
 
     <h3>{{'SALES.ITEMS' | translate}}</h3>
