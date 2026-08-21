@@ -9,7 +9,7 @@ import { MaterialModule } from '../../../shared/material.module';
 import { formatCurrency as formatCurrencyAmount, formatDateTime } from '../../../core/utils/format.util';
 import { DashboardService } from '../../../core/services/dashboard.service';
 import { LanguageService } from '../../../core/services/language.service';
-import { DashboardStats } from '../../../core/models/dashboard.model';
+import { DashboardStats, ZakiInsights } from '../../../core/models/dashboard.model';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
@@ -37,6 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly stats = signal<DashboardStats | null>(null);
   readonly loading = signal(true);
   readonly error = signal('');
+  readonly insights = signal<ZakiInsights | null>(null);
 
   readonly hasError = computed(() => this.error().length > 0 && !this.loading());
   readonly showStats = computed(() => !this.loading() && !this.error() && !!this.stats());
@@ -52,6 +53,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadDashboardStats();
+    this.loadZakiInsights();
+  }
+
+  loadZakiInsights(): void {
+    this.dashboardService.getZakiInsights()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => this.insights.set(data)
+      });
   }
 
   ngOnDestroy(): void {
@@ -80,6 +90,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   refreshData(): void {
     this.loadDashboardStats();
+    this.loadZakiInsights();
     this.errorHandler.showSuccess('DASHBOARD.REFRESH_SUCCESS');
   }
 

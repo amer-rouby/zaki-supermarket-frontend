@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
-import { DashboardStats } from '../models/dashboard.model';
+import { DashboardStats, ZakiInsights } from '../models/dashboard.model';
 import { ApiResponse } from '../models';
 
 @Injectable({
@@ -42,6 +42,18 @@ export class DashboardService {
         console.error('Error fetching dashboard stats:', error);
         return throwError(() => new Error('Failed to load dashboard stats'));
       })
+    );
+  }
+
+  getZakiInsights(): Observable<ZakiInsights | null> {
+    const storeId = this.getStoreId();
+
+    return this.http.get<ApiResponse<ZakiInsights>>(
+      `${this.baseUrl}/zaki-insights?storeId=${storeId}`,
+      this.getAuthHeaders()
+    ).pipe(
+      map(response => response.data),
+      catchError(() => of(null))
     );
   }
 }

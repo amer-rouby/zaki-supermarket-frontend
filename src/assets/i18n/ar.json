@@ -91,6 +91,13 @@
     "TOP_PRODUCTS": "أكثر المنتجات مبيعاً",
     "RECENT_SALES": "آخر المبيعات",
     "VIEW_ALL": "عرض الكل",
+    "ZAKI_INSIGHTS": {
+      "TITLE": "رؤى زكي",
+      "SALES_VS_AVERAGE": "مبيعات اليوم مقارنة بمتوسط 30 يوم",
+      "HIGH_RISK_STOCKOUT": "منتجات بخطر نفاد مرتفع",
+      "REORDER_RECOMMENDATIONS": "طلبات موصى بإعادتها",
+      "PRICING_RECOMMENDATIONS": "توصيات تسعير"
+    },
     "NO_DATA": "لا توجد بيانات",
     "ALERTS": "التنبيهات",
     "EXPIRING_SOON": "ينتهي قريباً",

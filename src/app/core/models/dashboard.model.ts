@@ -52,3 +52,12 @@ export interface ChartPoint {
   revenue: number;
   orders: number;
 }
+
+export interface ZakiInsights {
+  todayRevenue: number;
+  averageDailyRevenue30d: number;
+  salesDeltaPercent: number | null;
+  highRiskStockoutCount: number | null;
+  reorderRecommendationsCount: number | null;
+  pricingRecommendationsCount: number | null;
+}
