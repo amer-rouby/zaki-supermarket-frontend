@@ -66,6 +66,21 @@
           min-width: 100px;
           height: 56px;
         }
+
+        .voice-search-btn {
+          align-self: center;
+          color: var(--color-text-secondary, #64748b);
+
+          &.listening {
+            color: #ef4444;
+            animation: voice-pulse 1.2s ease-in-out infinite;
+          }
+        }
+      }
+
+      @keyframes voice-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
       }
 
       .cart-table-container {

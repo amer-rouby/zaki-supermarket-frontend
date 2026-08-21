@@ -26,7 +26,7 @@
         </div>
 
         <div class="add-product-section">
-          <app-searchable-select class="product-select"
+          <app-searchable-select #productSearchable class="product-select"
             [options]="products()"
             [valueFn]="productValueFn"
             [labelFn]="productLabelFn"
@@ -39,6 +39,12 @@
             prefixIcon="search"
             (selected)="onProductSelected($event)">
           </app-searchable-select>
+          @if (voiceSearchSupported()) {
+          <button type="button" mat-icon-button class="voice-search-btn" [class.listening]="isListening()"
+            (click)="startVoiceSearch()" [matTooltip]="'SALES.VOICE_SEARCH' | translate">
+            <mat-icon>{{isListening() ? 'mic' : 'mic_none'}}</mat-icon>
+          </button>
+          }
           <ng-template #productOptionTpl let-product>
             <div class="product-option">
               <span class="product-name">{{product.name}}</span>

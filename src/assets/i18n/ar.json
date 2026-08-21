@@ -323,6 +323,7 @@
     "SUCCESS_TITLE": "تمت عملية البيع بنجاح",
     "INSUFFICIENT_STOCK": "المنتج غير متوفر في المخزون",
     "SCAN_BARCODE": "امسح الباركود",
+    "VOICE_SEARCH": "بحث بالصوت",
     "SCAN_BARCODE_HINT": "استخدم قارئ الباركود أو اكتب الرقم واضغط Enter",
     "BARCODE_NOT_FOUND": "لا يوجد منتج بهذا الباركود: {{code}}",
     "NO_PRICE": "المنتج \"{{name}}\" ليس له سعر!",
