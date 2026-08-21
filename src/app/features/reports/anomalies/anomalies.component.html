@@ -1,0 +1,165 @@
+<div class="anomalies-container">
+  <app-page-header [title]="'ANOMALIES.TITLE' | translate" [subtitle]="'ANOMALIES.SUBTITLE' | translate"
+    icon="gpp_maybe">
+  </app-page-header>
+
+  @if (counts()) {
+  <div class="stats-grid">
+    <mat-card class="stat-card info">
+      <mat-card-content>
+        <div class="stat-icon"><mat-icon>fiber_new</mat-icon></div>
+        <div class="stat-info">
+          <h3>{{counts()!.NEW}}</h3>
+          <p>{{'ANOMALIES.STATS.NEW' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card success">
+      <mat-card-content>
+        <div class="stat-icon"><mat-icon>check_circle</mat-icon></div>
+        <div class="stat-info">
+          <h3>{{counts()!.REVIEWED}}</h3>
+          <p>{{'ANOMALIES.STATS.REVIEWED' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card default">
+      <mat-card-content>
+        <div class="stat-icon"><mat-icon>block</mat-icon></div>
+        <div class="stat-info">
+          <h3>{{counts()!.DISMISSED}}</h3>
+          <p>{{'ANOMALIES.STATS.DISMISSED' | translate}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  }
+
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-grid">
+        <form [formGroup]="filterForm">
+          <mat-form-field appearance="outline">
+            <mat-label>{{'ANOMALIES.FILTERS.TYPE' | translate}}</mat-label>
+            <mat-select formControlName="type" (selectionChange)="onFilterChange()">
+              <mat-option value="all">{{'ANOMALIES.FILTERS.ALL_TYPES' | translate}}</mat-option>
+              <mat-option value="EXCESSIVE_RETURNS">{{'ANOMALIES.TYPE.EXCESSIVE_RETURNS' | translate}}</mat-option>
+              <mat-option value="UNUSUAL_DISCOUNT">{{'ANOMALIES.TYPE.UNUSUAL_DISCOUNT' | translate}}</mat-option>
+              <mat-option value="FREQUENT_CANCELLATIONS">{{'ANOMALIES.TYPE.FREQUENT_CANCELLATIONS' | translate}}</mat-option>
+              <mat-option value="REPEATED_STOCK_ADJUSTMENTS">{{'ANOMALIES.TYPE.REPEATED_STOCK_ADJUSTMENTS' | translate}}</mat-option>
+              <mat-option value="LARGE_STOCK_DISCREPANCY">{{'ANOMALIES.TYPE.LARGE_STOCK_DISCREPANCY' | translate}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{'ANOMALIES.FILTERS.STATUS' | translate}}</mat-label>
+            <mat-select formControlName="status" (selectionChange)="onFilterChange()">
+              <mat-option value="all">{{'ANOMALIES.FILTERS.ALL_STATUS' | translate}}</mat-option>
+              <mat-option value="NEW">{{'ANOMALIES.STATUS.NEW' | translate}}</mat-option>
+              <mat-option value="REVIEWED">{{'ANOMALIES.STATUS.REVIEWED' | translate}}</mat-option>
+              <mat-option value="DISMISSED">{{'ANOMALIES.STATUS.DISMISSED' | translate}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
+
+        <button mat-button (click)="loadAnomalies()" [disabled]="loading()">
+          <mat-icon>refresh</mat-icon>
+          <span>{{'COMMON.REFRESH' | translate}}</span>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  @if (loading() && !anomalies().length) {
+  <app-table-loading />
+  } @else if (anomalies().length) {
+
+  <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
+    <mat-card-header>
+      <mat-card-title>{{'ANOMALIES.LIST' | translate}}</mat-card-title>
+      <mat-card-subtitle>{{totalElements()}} {{'ANOMALIES.COUNT' | translate}}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content [class.list-content-refreshing]="loading()">
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="anomalies()" class="anomalies-table">
+
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>{{'ANOMALIES.COLUMN.TYPE' | translate}}</th>
+            <td mat-cell *matCellDef="let a">
+              <mat-chip [style.background]="getSeverityColor(a.severity)" class="type-chip">
+                {{getTypeLabel(a.type)}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>{{'ANOMALIES.COLUMN.DESCRIPTION' | translate}}</th>
+            <td mat-cell *matCellDef="let a">
+              <span class="message-text">{{a.description}}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="severity">
+            <th mat-header-cell *matHeaderCellDef>{{'ANOMALIES.COLUMN.SEVERITY' | translate}}</th>
+            <td mat-cell *matCellDef="let a">
+              <mat-chip [style.background]="getSeverityColor(a.severity)">
+                {{'ANOMALIES.SEVERITY.' + a.severity | translate}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>{{'ANOMALIES.COLUMN.STATUS' | translate}}</th>
+            <td mat-cell *matCellDef="let a">
+              <mat-chip [style.background]="getStatusColor(a.status)">
+                {{getStatusLabel(a.status)}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="detectedAt">
+            <th mat-header-cell *matHeaderCellDef>{{'ANOMALIES.COLUMN.DETECTED_AT' | translate}}</th>
+            <td mat-cell *matCellDef="let a">
+              <span class="text-muted">{{a.detectedAt | date:'medium'}}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
+            <td mat-cell *matCellDef="let a">
+              @if (a.status === 'NEW') {
+              <button mat-icon-button color="primary" (click)="onMarkReviewed(a)"
+                [matTooltip]="'ANOMALIES.MARK_REVIEWED' | translate">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="onDismiss(a)"
+                [matTooltip]="'ANOMALIES.DISMISS' | translate">
+                <mat-icon>block</mat-icon>
+              </button>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="anomaly-row"
+            [class.new]="row.status === 'NEW'"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+
+    <mat-paginator [length]="totalElements()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
+      [pageSizeOptions]="[5, 10, 25, 50]" [disabled]="loading()" (page)="onPageChange($event)"
+      aria-label="Select page of anomalies">
+    </mat-paginator>
+  </mat-card>
+
+  } @else if (!loading()) {
+  <app-empty-state icon="verified" title="ANOMALIES.NO_ANOMALIES" message="ANOMALIES.NO_ANOMALIES_DESC" />
+  }
+</div>

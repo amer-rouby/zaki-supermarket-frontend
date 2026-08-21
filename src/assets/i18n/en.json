@@ -36,6 +36,7 @@
     "REPORTS_STOCK": "Inventory Reports",
     "REPORTS_FINANCIAL": "Financial Reports",
     "REPORTS_EXPIRY": "Expiry Reports",
+    "REPORTS_ANOMALIES": "Unusual Activity",
     "USERS": "Users",
     "USERS_MANAGE": "Manage Users",
     "USERS_ROLES": "Roles & Permissions",
@@ -491,6 +492,8 @@
     "PROFIT_DESC": "Profit and loss analysis",
     "CUSTOMER_REPORTS": "Customer Reports",
     "CUSTOMER_DESC": "Customer data and purchases",
+    "ANOMALIES_REPORTS": "Unusual Activity",
+    "ANOMALIES_DESC": "Patterns worth a second look",
     "FROM": "From",
     "TO": "To",
     "REPORT_TYPE": "Report Type",
@@ -1221,6 +1224,57 @@
     "CONFIRM_MARK_ALL_READ_MSG": "Do you want to mark all alerts as read?",
     "DELETE_ERROR": "Failed to delete alert",
     "RESOLVE_ERROR": "Failed to resolve alert"
+  },
+  "ANOMALIES": {
+    "TITLE": "Unusual Activity",
+    "SUBTITLE": "Patterns worth reviewing - not an accusation, just a heads-up",
+    "STATS": {
+      "NEW": "New",
+      "REVIEWED": "Reviewed",
+      "DISMISSED": "Dismissed"
+    },
+    "FILTERS": {
+      "TYPE": "Type",
+      "STATUS": "Status",
+      "ALL_TYPES": "All Types",
+      "ALL_STATUS": "All Statuses"
+    },
+    "TYPE": {
+      "EXCESSIVE_RETURNS": "Excessive Returns",
+      "UNUSUAL_DISCOUNT": "Unusual Discount",
+      "FREQUENT_CANCELLATIONS": "Frequent Cancellations",
+      "REPEATED_STOCK_ADJUSTMENTS": "Repeated Stock Adjustments",
+      "LARGE_STOCK_DISCREPANCY": "Large Stock Discrepancy"
+    },
+    "SEVERITY": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High"
+    },
+    "STATUS": {
+      "NEW": "New",
+      "REVIEWED": "Reviewed",
+      "DISMISSED": "Dismissed"
+    },
+    "COLUMN": {
+      "TYPE": "Type",
+      "DESCRIPTION": "Description",
+      "SEVERITY": "Severity",
+      "STATUS": "Status",
+      "DETECTED_AT": "Detected"
+    },
+    "LIST": "Unusual Activity List",
+    "COUNT": "item(s)",
+    "MARK_REVIEWED": "Mark reviewed",
+    "DISMISS": "Dismiss",
+    "MARKED_REVIEWED": "Marked as reviewed",
+    "DISMISSED": "Dismissed",
+    "CONFIRM_DISMISS_TITLE": "Dismiss this item?",
+    "CONFIRM_DISMISS_MSG": "This will be marked as dismissed and won't need further review.",
+    "NO_ANOMALIES": "Nothing unusual",
+    "NO_ANOMALIES_DESC": "No unusual activity has been detected",
+    "LOAD_ERROR": "Failed to load activity",
+    "UPDATE_ERROR": "Failed to update"
   },
   "STOCK_MOVEMENTS": {
     "TITLE": "Stock Movement History",
