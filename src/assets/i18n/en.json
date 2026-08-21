@@ -1235,6 +1235,16 @@
     "PLACEHOLDER": "Ask a question...",
     "ERROR": "Something went wrong. Please try again."
   },
+  "EINVOICE": {
+    "STATUS": "E-Invoice (ETA)",
+    "STATUS_PENDING": "Pending",
+    "STATUS_SUBMITTED": "Submitted",
+    "STATUS_ACCEPTED": "Accepted",
+    "STATUS_REJECTED": "Rejected",
+    "STATUS_ERROR": "Error",
+    "SUBMIT": "Submit to ETA",
+    "RETRY": "Retry"
+  },
   "ANOMALIES": {
     "TITLE": "Unusual Activity",
     "SUBTITLE": "Patterns worth reviewing - not an accusation, just a heads-up",
