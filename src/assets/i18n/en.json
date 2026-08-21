@@ -1229,6 +1229,12 @@
     "DELETE_ERROR": "Failed to delete alert",
     "RESOLVE_ERROR": "Failed to resolve alert"
   },
+  "ASSISTANT": {
+    "TITLE": "Zaki Assistant",
+    "WELCOME": "Ask me about your store's data - sales, stock, expiry, and more.",
+    "PLACEHOLDER": "Ask a question...",
+    "ERROR": "Something went wrong. Please try again."
+  },
   "ANOMALIES": {
     "TITLE": "Unusual Activity",
     "SUBTITLE": "Patterns worth reviewing - not an accusation, just a heads-up",
