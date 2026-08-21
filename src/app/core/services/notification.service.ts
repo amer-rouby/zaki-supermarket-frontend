@@ -1,14 +1,25 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
-import { Observable, map, catchError, throwError } from 'rxjs';
+import { Observable, Subject, map, catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 import { LanguageService } from './language.service';
 import { environment } from '../../../environments/environment';
 import { NotificationModel, NotificationsResponse } from '../models/Notification.model';
 
 export interface NotificationStreamEvent {
-  type: 'notification-created' | 'notifications-changed' | 'connected';
+  type: 'notification-created' | 'notifications-changed' | 'connected' | 'stock-changed';
   notification?: NotificationModel;
+}
+
+export interface StockChangedEvent {
+  changeType: 'CREATED' | 'UPDATED' | 'DELETED' | 'ADJUSTED';
+  batch: {
+    id: number;
+    productId: number;
+    productName: string;
+    quantityCurrent: number;
+    status: string;
+  };
 }
 
 @Injectable({
@@ -19,6 +30,11 @@ export class NotificationService {
   private readonly authService = inject(AuthService);
   private readonly languageService = inject(LanguageService);
   private readonly apiUrl = `${environment.apiUrl}/notifications`;
+
+  // Broadcasts real-time stock-batch changes pushed over the existing SSE
+  // connection, so screens can patch their data in place instead of each
+  // opening their own EventSource to the same endpoint.
+  readonly stockChanged$ = new Subject<StockChangedEvent>();
 
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
@@ -161,6 +177,12 @@ export class NotificationService {
 
       eventSource.addEventListener('notifications-changed', () => {
         observer.next({ type: 'notifications-changed' });
+      });
+
+      eventSource.addEventListener('stock-changed', (event) => {
+        const data = JSON.parse((event as MessageEvent).data);
+        this.stockChanged$.next(data);
+        observer.next({ type: 'stock-changed' });
       });
 
       eventSource.onerror = (error) => {
