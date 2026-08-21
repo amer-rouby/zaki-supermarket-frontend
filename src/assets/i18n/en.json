@@ -98,6 +98,14 @@
       "REORDER_RECOMMENDATIONS": "Recommended reorders",
       "PRICING_RECOMMENDATIONS": "Pricing recommendations"
     },
+    "DAILY_BRIEF": {
+      "TITLE": "Daily Brief",
+      "SALES": "Sales",
+      "LOW_STOCK": "Low Stock",
+      "NEAR_EXPIRY": "Near Expiry",
+      "RECOMMENDED_ORDERS": "Recommended Orders",
+      "BEST_SELLER": "Best Seller"
+    },
     "NO_DATA": "No data available",
     "ALERTS": "Alerts",
     "EXPIRING_SOON": "Expiring Soon",

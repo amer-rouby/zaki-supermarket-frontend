@@ -98,6 +98,14 @@
       "REORDER_RECOMMENDATIONS": "طلبات موصى بإعادتها",
       "PRICING_RECOMMENDATIONS": "توصيات تسعير"
     },
+    "DAILY_BRIEF": {
+      "TITLE": "ملخص اليوم",
+      "SALES": "المبيعات",
+      "LOW_STOCK": "مخزون منخفض",
+      "NEAR_EXPIRY": "قريب من انتهاء الصلاحية",
+      "RECOMMENDED_ORDERS": "طلبات موصى بها",
+      "BEST_SELLER": "الأكثر مبيعًا"
+    },
     "NO_DATA": "لا توجد بيانات",
     "ALERTS": "التنبيهات",
     "EXPIRING_SOON": "ينتهي قريباً",
