@@ -165,6 +165,26 @@
           </mat-select>
         </mat-form-field>
 
+        @if (isCreditSale()) {
+        <div class="credit-customer-select">
+          <app-searchable-select
+            [options]="customers()"
+            [valueFn]="customerValueFn"
+            [labelFn]="customerLabelFn"
+            [searchFn]="customerSearchFn"
+            [label]="'SALES.CREDIT_CUSTOMER' | translate"
+            [placeholder]="'SALES.CREDIT_CUSTOMER' | translate"
+            prefixIcon="person"
+            (selected)="onCustomerSelected($event)">
+          </app-searchable-select>
+          @if (selectedCustomer()) {
+          <small class="available-credit-hint">
+            {{'CUSTOMERS.AVAILABLE_CREDIT' | translate}}: {{formatCurrency(selectedCustomer()!.availableCredit)}}
+          </small>
+          }
+        </div>
+        }
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{'SALES.CUSTOMER_PHONE' | translate}}</mat-label>
           <input matInput [(ngModel)]="customerPhone" placeholder="01xxxxxxxxx">
@@ -197,7 +217,7 @@
           <span>{{loading() ? ('COMMON.PROCESSING' | translate) : ('SALES.PROCESS_SALE' | translate)}}</span>
         </button>
 
-        @if (paymentMethod() !== 'CASH') {
+        @if (paymentMethod() !== 'CASH' && !isCreditSale()) {
         <div class="payment-note">
           <mat-icon>info</mat-icon>
           <small>{{'PAYMENTS.GATEWAY_NOTE' | translate}}</small>

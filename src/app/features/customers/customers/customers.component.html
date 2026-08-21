@@ -1,0 +1,170 @@
+<div class="customers-container">
+  <app-page-header [title]="'CUSTOMERS.TITLE' | translate" [subtitle]="'CUSTOMERS.SUBTITLE' | translate"
+    icon="people">
+    <button mat-raised-button color="primary" (click)="onAdd()">
+      <mat-icon>add</mat-icon>
+      <span>{{'CUSTOMERS.ADD' | translate}}</span>
+    </button>
+  </app-page-header>
+
+  @if (loading() && !dataSource.data.length) {
+  <app-table-loading />
+  } @else {
+  <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>people</mat-icon>
+        {{'CUSTOMERS.LIST' | translate}}
+      </mat-card-title>
+      <mat-card-subtitle>{{totalElements()}} {{'CUSTOMERS.COUNT' | translate}}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content [class.list-content-refreshing]="loading()">
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataSource" class="customers-table">
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>{{'CUSTOMERS.COLUMN.NAME' | translate}}</th>
+            <td mat-cell *matCellDef="let customer">
+              <strong>{{customer.name}}</strong>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="phone">
+            <th mat-header-cell *matHeaderCellDef>{{'CUSTOMERS.COLUMN.PHONE' | translate}}</th>
+            <td mat-cell *matCellDef="let customer">{{customer.phone || '-'}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>{{'CUSTOMERS.COLUMN.EMAIL' | translate}}</th>
+            <td mat-cell *matCellDef="let customer">{{customer.email || '-'}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="creditLimit">
+            <th mat-header-cell *matHeaderCellDef>{{'CUSTOMERS.COLUMN.CREDIT_LIMIT' | translate}}</th>
+            <td mat-cell *matCellDef="let customer">{{customer.creditLimit | number:'1.2-2'}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="currentBalance">
+            <th mat-header-cell *matHeaderCellDef>{{'CUSTOMERS.COLUMN.BALANCE' | translate}}</th>
+            <td mat-cell *matCellDef="let customer">
+              <span [style.color]="customer.currentBalance > 0 ? '#ef4444' : '#10b981'">
+                {{customer.currentBalance | number:'1.2-2'}}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>{{'CUSTOMERS.COLUMN.STATUS' | translate}}</th>
+            <td mat-cell *matCellDef="let customer">
+              <mat-chip [style.background]="getStatusColor(customer.status)">
+                {{('COMMON.' + customer.status) | translate}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
+            <td mat-cell *matCellDef="let customer">
+              <div class="action-buttons">
+                <button mat-icon-button color="primary" (click)="onViewStatement(customer)"
+                  [matTooltip]="'CUSTOMERS.VIEW_STATEMENT' | translate">
+                  <mat-icon>receipt_long</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" (click)="onEdit(customer)"
+                  [matTooltip]="'CUSTOMERS.EDIT' | translate">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="onDelete(customer)"
+                  [matTooltip]="'COMMON.DELETE' | translate">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="customer-row"></tr>
+        </table>
+
+        <mat-paginator [length]="totalElements()" [pageIndex]="page()" [pageSize]="size()"
+          [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons aria-label="Select page"
+          (page)="onPageChange($event)">
+        </mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  }
+
+  @if (showDialog()) {
+  <div class="dialog-overlay">
+    <mat-card class="customer-dialog">
+      <mat-card-header>
+        <mat-card-title>
+          {{(isEditMode() ? 'CUSTOMERS.EDIT' : 'CUSTOMERS.ADD') | translate}}
+        </mat-card-title>
+        <button mat-icon-button (click)="onCancel()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="customerForm" (ngSubmit)="onSubmit()" class="customer-form">
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'CUSTOMERS.COLUMN.NAME' | translate}} *</mat-label>
+              <input matInput formControlName="name">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'CUSTOMERS.COLUMN.PHONE' | translate}}</mat-label>
+              <input matInput formControlName="phone" type="tel">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'CUSTOMERS.COLUMN.EMAIL' | translate}}</mat-label>
+              <input matInput formControlName="email" type="email">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'CUSTOMERS.COLUMN.CREDIT_LIMIT' | translate}}</mat-label>
+              <input matInput formControlName="creditLimit" type="number" min="0">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'CUSTOMERS.COLUMN.STATUS' | translate}}</mat-label>
+              <mat-select formControlName="status">
+                <mat-option value="ACTIVE">{{'COMMON.ACTIVE' | translate}}</mat-option>
+                <mat-option value="INACTIVE">{{'COMMON.INACTIVE' | translate}}</mat-option>
+                <mat-option value="BLOCKED">{{'COMMON.BLOCKED' | translate}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{'COMMON.NOTES' | translate}}</mat-label>
+              <textarea matInput formControlName="notes" rows="3"></textarea>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-button type="button" (click)="onCancel()">
+              {{'COMMON.CANCEL' | translate}}
+            </button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
+              @if (loading()) {
+              <mat-spinner diameter="20"></mat-spinner>
+              } @else {
+              <mat-icon>save</mat-icon>
+              }
+              <span>{{(isEditMode() ? 'COMMON.UPDATE' : 'COMMON.SAVE') | translate}}</span>
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  }
+</div>

@@ -299,6 +299,17 @@
         width: 100%;
         margin-bottom: 16px;
       }
+
+      .credit-customer-select {
+        margin-bottom: 16px;
+
+        .available-credit-hint {
+          display: block;
+          margin-top: 4px;
+          color: var(--color-success, #10b981);
+          font-size: 12px;
+        }
+      }
     }
   }
 }
