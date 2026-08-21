@@ -1,0 +1,53 @@
+<div class="assistant-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon>smart_toy</mat-icon>
+      <h2>{{'ASSISTANT.TITLE' | translate}}</h2>
+    </div>
+    <button mat-icon-button (click)="onClose()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="messages-area">
+    @if (!messages().length) {
+    <div class="welcome-state">
+      <mat-icon>smart_toy</mat-icon>
+      <p>{{'ASSISTANT.WELCOME' | translate}}</p>
+      <div class="suggested-chips">
+        @for (q of suggestedQuestions; track q) {
+        <button mat-stroked-button (click)="onAskSuggested(q)" class="suggested-chip">{{q}}</button>
+        }
+      </div>
+    </div>
+    }
+
+    @for (msg of messages(); track $index) {
+    <div class="message-row" [class.user]="msg.role === 'user'">
+      <div class="message-bubble" [class.user]="msg.role === 'user'">
+        <pre>{{msg.text}}</pre>
+      </div>
+    </div>
+    }
+
+    @if (loading()) {
+    <div class="message-row">
+      <div class="message-bubble">
+        <mat-spinner diameter="20"></mat-spinner>
+      </div>
+    </div>
+    }
+
+    <div #messagesEnd></div>
+  </div>
+
+  <div class="input-area">
+    <mat-form-field appearance="outline" class="full-width">
+      <input matInput [(ngModel)]="queryText" [placeholder]="'ASSISTANT.PLACEHOLDER' | translate"
+        (keydown.enter)="onSend()" [disabled]="loading()">
+    </mat-form-field>
+    <button mat-icon-button color="primary" (click)="onSend()" [disabled]="loading() || !queryText.trim()">
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+</div>
